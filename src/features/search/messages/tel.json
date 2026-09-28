@@ -1,22 +1,38 @@
 {
-  "Sort": {
-    "nameAsc": "పేరు: A నుండి Z",
-    "nameDesc": "పేరు: Z నుండి A",
-    "priceAsc": "ధర: తక్కువ నుండి ఎక్కువ",
-    "priceDesc": "ధర: ఎక్కువ నుండి తక్కువ",
-    "placeholder": "క్రమబద్ధీకరించండి"
-  },
-  "Filters": {
-    "title": "ఫిల్టర్‌లు",
-    "clearAll": "అన్నీ క్లియర్ చేయండి",
-    "filtersButton": "ఫిల్టర్‌లు"
-  },
-  "Search": {
-    "title": "శోధించండి",
-    "pageTitle": "ఉత్పత్తులను శోధించండి",
-    "resultsFor": "\"{query}\" కోసం శోధన ఫలితాలు",
-    "resultsTitle": "\"{query}\" కోసం శోధన ఫలితాలు",
-    "metaDescription": "{siteName} వద్ద \"{query}\"కు సరిపోలే ఉత్పత్తులను కనుగొనండి",
-    "metaCatalogDescription": "{siteName} వద్ద మా ఉత్పత్తి కేటలాగ్‌ను శోధించండి"
-  }
+    "Sort": {
+        "nameAsc": "పేరు: A నుండి Z",
+        "nameDesc": "పేరు: Z నుండి A",
+        "priceAsc": "ధర: తక్కువ నుండి ఎక్కువ",
+        "priceDesc": "ధర: ఎక్కువ నుండి తక్కువ",
+        "placeholder": "క్రమబద్ధీకరించండి",
+        "featured": "ప్రత్యేకమైనవి"
+    },
+    "Filters": {
+        "title": "ఫిల్టర్‌లు",
+        "clearAll": "అన్నీ క్లియర్ చేయండి",
+        "filtersButton": "ఫిల్టర్‌లు",
+        "inStockOnly": "స్టాక్‌లో ఉన్నవి మాత్రమే",
+        "categories": "వర్గాలు"
+    },
+    "Search": {
+        "title": "శోధించండి",
+        "pageTitle": "ఉత్పత్తులను శోధించండి",
+        "resultsFor": "\"{query}\" కోసం శోధన ఫలితాలు",
+        "resultsTitle": "\"{query}\" కోసం శోధన ఫలితాలు",
+        "metaDescription": "{siteName} వద్ద \"{query}\"కు సరిపోలే ఉత్పత్తులను కనుగొనండి",
+        "metaCatalogDescription": "{siteName} వద్ద మా ఉత్పత్తి కేటలాగ్‌ను శోధించండి",
+        "loadErrorTitle": "ఉత్పత్తులను లోడ్ చేయలేకపోయాం.",
+        "loadErrorHint": "దయచేసి మీ కనెక్షన్‌ను తనిఖీ చేసి మళ్లీ ప్రయత్నించండి.",
+        "retry": "మళ్లీ ప్రయత్నించండి"
+    },
+    "Shop": {
+        "title": "అన్ని ఉత్పత్తులు కొనండి",
+        "subtitle": "పూర్తి శ్రేణిని చూడండి, వర్గం మరియు లభ్యత ప్రకారం ఫిల్టర్ చేయండి, యంత్రాలను కార్ట్‌కు జోడించండి.",
+        "metaDescription": "{siteName}లో ఆన్‌లైన్‌లో లభించే అన్ని ఉత్పత్తులను కొనండి.",
+        "home": "హోమ్",
+        "categories": "వర్గాలు",
+        "allProducts": "అన్ని ఉత్పత్తులు",
+        "eyebrow": "మిల్నెక్స్ స్టోర్",
+        "browseProducts": "ఉత్పత్తులను చూడండి"
+    }
 }

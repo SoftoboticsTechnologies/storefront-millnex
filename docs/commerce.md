@@ -30,8 +30,10 @@ Vendure integration map for `apps/storefront/src`. Treat everything here as prot
 ## Collections / Search — `src/features/collections/`, `src/features/search/`
 - `collections/graphql.ts`: `GetTopCollectionsQuery`, `GetCollectionProductsQuery`; `collections/data.ts` caches with `'use cache'`/`cacheLife('days')`/`cacheTag`.
 - `search/graphql.ts`: `SearchProductsQuery`; `search/search-helpers.ts`: `buildSearchInput`.
+- **Category filter / sort (2026-09-28)**: `?category=<slug>` (repeatable) maps to `SearchInput.collectionSlugs` on unscoped listings only (ignored when `collectionSlug` is set). Default sort is `featured` = no `sort` field sent. No price-range input exists in this schema.
 - **Facet semantics (confirmed correct as of 2026-08-31)**: URL encodes `facets=<facetId>:<facetValueId>`, grouped by facetId into `facetValueFilters: [{or: [...ids]}]` — **OR within a facet group, AND across groups**. Do not regress this to flat AND-only matching.
 - **Gotcha**: `GetTopCollectionsQuery` hardcodes `parentId: {eq: "1"}` for the root collection — fragile if seed data changes.
+- **Empty catalog (2026-09-28)**: the Millnex channel currently has no products. `generateStaticParams` for product/collection routes falls back to a `__empty__` placeholder that 404s (`platform/next/static-export.ts`) so `output: 'export'` can still build — keep that fallback when touching those routes.
 
 ## Pricing / Currency — `src/features/pricing/`, `src/features/currency/`
 - `pricing/price.tsx` (Client Component, `Intl.NumberFormat`) — **has a silent `currencyCode = 'USD'` default prop**; audit all call sites pass an explicit `order.currencyCode` / variant currency.

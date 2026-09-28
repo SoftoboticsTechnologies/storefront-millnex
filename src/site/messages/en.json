@@ -1,28 +1,67 @@
 {
-  "NotFound": {
-    "title": "Page Not Found",
-    "message": "The page you are looking for does not exist, has been moved, or is temporarily unavailable.",
-    "goHome": "Go to Home",
-    "browseProducts": "Browse Products",
-    "popularCollections": "Popular Collections"
-  },
-  "AnnouncementBar": {
-    "message1": "Secure checkout",
-    "message2": "Curated collections",
-    "message3": "Worldwide shipping"
-  },
-  "Footer": {
-    "description": "A modern, headless e-commerce storefront built with Vendure and Next.js. Fast, flexible, and ready for production.",
-    "categories": "Categories",
-    "customer": "Customer",
-    "shopAll": "Shop All",
-    "orders": "Orders",
-    "account": "Account",
-    "vendure": "Vendure",
-    "github": "GitHub",
-    "documentation": "Documentation",
-    "sourceCode": "Source Code",
-    "copyright": "DripFunnel. All rights reserved.",
-    "poweredBy": "Powered by"
-  }
+    "NotFound": {
+        "title": "Page Not Found",
+        "message": "The page you are looking for does not exist, has been moved, or is temporarily unavailable.",
+        "goHome": "Go to Home",
+        "browseProducts": "Browse Products",
+        "popularCollections": "Popular Collections"
+    },
+    "Footer": {
+        "company": "Company",
+        "contact": "Contact",
+        "address": "Address",
+        "phone": "Phone",
+        "email": "Email",
+        "copyright": "Millnex, Rajkot, Gujarat. All rights reserved.",
+        "imageCredits": "Image credits",
+        "shop": "Shop",
+        "allProducts": "All products",
+        "customer": "Customer",
+        "myAccount": "My account",
+        "myOrders": "My orders",
+        "cart": "Cart",
+        "signIn": "Sign in",
+        "poweredBy": "Powered By",
+        "poweredByDripFunnel": "Powered by DripFunnel (opens in a new tab)",
+        "marketedBy": "Promoted and Marketed By"
+    },
+    "Site": {
+        "exploreProducts": "Explore Products",
+        "builtFor": "Built for",
+        "discoverMillnex": "Discover Millnex",
+        "stillHaveQuestions": "Still deciding? Talk to our team.",
+        "askOnWhatsApp": "Ask on WhatsApp",
+        "callNow": "Call",
+        "chatNow": "Chat",
+        "emailNow": "Email",
+        "enquiryFormTitle": "Send an enquiry",
+        "enquiryFormBody": "Tell us what you need and we will recommend the right machine with a quote.",
+        "breadcrumb": "Breadcrumb",
+        "aboutEyebrow": "About Millnex",
+        "aboutTitle": "Engineered for performance. Built for business.",
+        "aboutBody": "Millnex manufactures milling and food-processing machinery for homes, shops and commercial operations.",
+        "contactEyebrow": "Contact",
+        "contactTitle": "Talk to the Millnex team",
+        "contactBody": "Request a quote, ask about a machine or get help choosing the right model for your requirement.",
+        "askOurTeam": "Ask our team",
+        "creditsTitle": "Image credits",
+        "creditsBody": "Some photography on this site is openly licensed stock imagery, credited below.",
+        "creditsNote": "Product photographs are Millnex’s own.",
+        "sendMessage": "Send us a message",
+        "faqEyebrow": "FAQ",
+        "faqTitle": "Frequently asked questions",
+        "faqBody": "Answers about choosing a machine, ordering and support. Can’t find what you need? Our team is happy to help.",
+        "marketedBy": "Promoted and Marketed By"
+    },
+    "SiteMeta": {
+        "aboutTitle": "About Us",
+        "aboutDescription": "Millnex manufactures domestic flour mills, pulverizers, masala machinery and food-processing machines built for durability and consistent performance.",
+        "contactTitle": "Contact Millnex",
+        "contactDescription": "Questions about a product, an order or delivery? Contact the Millnex team about flour mills, pulverizers and food-processing machines.",
+        "insightsTitle": "Insights",
+        "insightsDescription": "Guides on choosing, running and maintaining flour mills and grinding machines from the Millnex team.",
+        "creditsTitle": "Image credits",
+        "faqTitle": "FAQ",
+        "faqDescription": "Answers to common questions about Millnex flour mills, pulverizers and food-processing machines — choosing a model, ordering and support."
+    }
 }

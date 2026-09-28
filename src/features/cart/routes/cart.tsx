@@ -1,48 +1,32 @@
 'use client';
 
-import {useCallback, useEffect, useState} from 'react';
-import {useParams} from 'next/navigation';
+import {useTranslations} from 'next-intl';
+import {RotateCcw} from 'lucide-react';
+import {Button} from '@/components/ui/button';
 import {CartItems} from '@/features/cart/routes/cart-items';
 import {OrderSummary} from '@/features/cart/routes/order-summary';
 import {PromotionCode} from '@/features/cart/routes/promotion-code';
-import {getActiveCurrencyCode} from '@/features/currency/currency-client';
-import {query} from '@/platform/vendure/client-api';
-import {GetActiveOrderQuery} from '@/features/cart/graphql';
-import {CART_CHANGED_EVENT} from '@/features/cart/cart-events';
-import {AUTH_TOKEN_CHANGED_EVENT} from '@/platform/vendure/auth-token';
+import {useActiveOrder} from '@/features/cart/active-order';
 import {CartSkeleton} from '@/features/cart/components/cart-skeleton';
-import type {ResultOf} from '@/platform/vendure/graphql';
-
-type ActiveOrder = NonNullable<ResultOf<typeof GetActiveOrderQuery>['activeOrder']>;
 
 export function Cart() {
-    const {locale} = useParams<{locale: string}>();
-    const [activeOrder, setActiveOrder] = useState<ActiveOrder | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
-
-    const refresh = useCallback(async () => {
-        const currencyCode = await getActiveCurrencyCode();
-        const {data} = await query(GetActiveOrderQuery, {}, {
-            useAuthToken: true,
-            languageCode: locale,
-            currencyCode,
-        });
-        setActiveOrder(data.activeOrder ?? null);
-        setIsLoading(false);
-    }, [locale]);
-
-    useEffect(() => {
-        refresh();
-        window.addEventListener(CART_CHANGED_EVENT, refresh);
-        window.addEventListener(AUTH_TOKEN_CHANGED_EVENT, refresh);
-        return () => {
-            window.removeEventListener(CART_CHANGED_EVENT, refresh);
-            window.removeEventListener(AUTH_TOKEN_CHANGED_EVENT, refresh);
-        };
-    }, [refresh]);
+    const t = useTranslations('Cart');
+    const {order: activeOrder, isLoading, error, refresh} = useActiveOrder();
 
     if (isLoading) {
         return <CartSkeleton/>;
+    }
+
+    if (error) {
+        return (
+            <div role="alert" className="flex flex-col items-center gap-4 rounded-2xl border border-destructive/25 bg-destructive/5 px-6 py-14 text-center">
+                <p className="text-sm text-muted-foreground">{t('loadError')}</p>
+                <Button variant="outline" className="rounded-xl" onClick={refresh}>
+                    <RotateCcw className="mr-2 size-4" />
+                    {t('retry')}
+                </Button>
+            </div>
+        );
     }
 
     if (!activeOrder || activeOrder.lines.length === 0) {
@@ -50,10 +34,10 @@ export function Cart() {
     }
 
     return (
-        <div className="grid lg:grid-cols-3 gap-8">
+        <div className="grid gap-8 lg:grid-cols-3">
             <CartItems activeOrder={activeOrder}/>
 
-            <div className="lg:col-span-1">
+            <div className="space-y-4 lg:col-span-1">
                 <OrderSummary activeOrder={activeOrder}/>
                 <PromotionCode activeOrder={activeOrder}/>
             </div>

@@ -1,46 +1,37 @@
 {
-  "Hero": {
-    "eyebrow": "New Collection",
-    "titlePrefix": "Discover",
-    "titleFallback": "Discover Quality Products",
-    "subtitle": "Thoughtfully curated products, presented with the care they deserve.",
-    "shopNow": "Shop Now",
-    "viewAllProducts": "View All Products"
-  },
   "Home": {
-    "pageTitle": "Your One-Stop Shop",
-    "description": "Discover high-quality products at competitive prices. Shop now for the best deals on electronics, fashion, home goods, and more.",
-    "ogDescription": "Discover high-quality products at competitive prices. Shop now for the best deals.",
-    "whyShopWithUs": "Why Shop With Us",
-    "features": {
-      "highQuality": {
-        "title": "High Quality",
-        "description": "Premium products carefully selected for you"
-      },
-      "bestPrices": {
-        "title": "Best Prices",
-        "description": "Competitive pricing on all our products"
-      },
-      "fastDelivery": {
-        "title": "Fast Delivery",
-        "description": "Quick and reliable shipping worldwide"
-      }
-    },
-    "categoryDiscovery": {
-      "title": "Shop by Category"
-    },
-    "editorialBanner": {
-      "eyebrow": "Editor's Pick",
-      "cta": "Explore the collection",
-      "fallbackDescription": "A curated edit of our favorite pieces, chosen for their quality and design."
-    },
-    "shopByCategory": {
-      "title": "Browse Our Collections"
-    },
-    "ctaBanner": {
-      "title": "Join the Community",
-      "subtitle": "Create an account for a faster checkout, order tracking, and early access to new arrivals.",
-      "cta": "Create Account"
-    }
+    "metaTitle": "Millnex | Shop Flour Mills, Atta Chakki & Milling Machines Online",
+    "metaDescription": "Shop Millnex flour mills, atta chakki, pulverizers and food processing machines online — browse the range, add to cart and check out securely.",
+    "heroEyebrow": "Millnex Atta Chakki and Grinding Equipment",
+    "heroTitle": "Explore our products",
+    "shopNow": "Shop now",
+    "browseCategories": "Browse categories",
+    "heroPointBrowse": "Browse the full range",
+    "heroPointCart": "Order online",
+    "heroPointCheckout": "Secure checkout",
+    "spotlight": "In the store",
+    "featuredCategories": "Featured categories",
+    "allProducts": "All products",
+    "categoriesEyebrow": "Categories",
+    "shopByCategory": "Shop by category",
+    "shopCategory": "Shop now",
+    "promoEyebrow": "Your Millnex account",
+    "promoTitle": "Create an account for faster checkout",
+    "promoBody": "Save your delivery addresses, check out in fewer steps and follow every order from your account.",
+    "promoCta": "Create account",
+    "needHelp": "Need help choosing?",
+    "catalogEmptyTitle": "Our online catalog is coming soon",
+    "catalogEmptyBody": "Products will appear here as soon as they are added to the store. In the meantime, our team is happy to help.",
+    "contactUs": "Contact us",
+    "viewAllProducts": "View all products",
+    "viewAll": "View all",
+    "featuredEyebrow": "Shop",
+    "featuredProducts": "Featured products",
+    "ourProducts": "Our products",
+    "newArrivalsEyebrow": "Just added",
+    "newArrivals": "New arrivals",
+    "bestSellersEyebrow": "Popular",
+    "bestSellers": "Best sellers",
+    "shopApplication": "Browse machines"
   }
 }

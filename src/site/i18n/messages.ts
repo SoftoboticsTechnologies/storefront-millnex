@@ -3,6 +3,7 @@ import {authenticationMessageLoaders} from '@/features/authentication/messages';
 import {cartMessageLoaders} from '@/features/cart/messages';
 import {checkoutMessageLoaders} from '@/features/checkout/messages';
 import {collectionsMessageLoaders} from '@/features/collections/messages';
+import {enquiryMessageLoaders} from '@/features/enquiry/messages';
 import {ordersMessageLoaders} from '@/features/orders/messages';
 import {productsMessageLoaders} from '@/features/products/messages';
 import {searchMessageLoaders} from '@/features/search/messages';
@@ -22,6 +23,7 @@ const registrations: MessageLoaders[] = [
     cartMessageLoaders,
     checkoutMessageLoaders,
     collectionsMessageLoaders,
+    enquiryMessageLoaders,
     ordersMessageLoaders,
     productsMessageLoaders,
     searchMessageLoaders,

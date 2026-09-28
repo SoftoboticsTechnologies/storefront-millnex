@@ -2,11 +2,12 @@
 
 import { Link, usePathname } from '@/platform/i18n/navigation';
 import {cn} from '@/lib/utils';
-import {Package, User, MapPin} from 'lucide-react';
+import {LayoutDashboard, Package, User, MapPin} from 'lucide-react';
 import type {LucideIcon} from 'lucide-react';
 import {useTranslations} from 'next-intl';
 
 const iconMap: Record<string, LucideIcon> = {
+    LayoutDashboard,
     Package,
     MapPin,
     User,
@@ -16,6 +17,8 @@ interface NavItem {
     href: string;
     labelKey: string;
     icon: string;
+    /** Highlight only on an exact path match (for the `/account` overview). */
+    exact?: boolean;
 }
 
 interface AccountNavLinksProps {
@@ -31,7 +34,7 @@ export function AccountNavLinks({items, layout}: AccountNavLinksProps) {
         return (
             <nav className="flex gap-1 overflow-x-auto border-b border-border pb-px">
                 {items.map((item) => {
-                    const isActive = pathname.startsWith(item.href);
+                    const isActive = item.exact ? pathname.replace(/\/$/, '') === item.href : pathname.startsWith(item.href);
                     const Icon = iconMap[item.icon];
                     return (
                         <Link
@@ -56,7 +59,7 @@ export function AccountNavLinks({items, layout}: AccountNavLinksProps) {
     return (
         <nav className="space-y-1">
             {items.map((item) => {
-                const isActive = pathname.startsWith(item.href);
+                const isActive = item.exact ? pathname.replace(/\/$/, '') === item.href : pathname.startsWith(item.href);
                 const Icon = iconMap[item.icon];
                 return (
                     <Link

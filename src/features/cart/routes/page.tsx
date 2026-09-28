@@ -18,8 +18,8 @@ export default async function CartPage() {
     const t = await getTranslations({locale, namespace: 'Cart'});
 
     return (
-        <div className="container mx-auto px-4 py-20">
-            <h1 className="text-3xl font-bold mb-8">{t('title')}</h1>
+        <div className="site-container pb-16 pt-24 sm:pt-28">
+            <h1 className="mb-8 text-3xl font-extrabold tracking-tight sm:text-4xl">{t('title')}</h1>
 
             <Cart/>
         </div>

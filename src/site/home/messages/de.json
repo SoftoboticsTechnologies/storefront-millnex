@@ -1,46 +1,37 @@
 {
-  "Hero": {
-    "eyebrow": "Neue Kollektion",
-    "titlePrefix": "Entdecke",
-    "titleFallback": "Entdecke hochwertige Produkte",
-    "subtitle": "Sorgfältig kuratierte Produkte, präsentiert mit der Sorgfalt, die sie verdienen.",
-    "shopNow": "Jetzt einkaufen",
-    "viewAllProducts": "Alle Produkte anzeigen"
-  },
   "Home": {
-    "pageTitle": "Ihr One-Stop-Shop",
-    "description": "Entdecken Sie hochwertige Produkte zu wettbewerbsfähigen Preisen. Jetzt einkaufen und die besten Angebote für Elektronik, Mode, Haushaltswaren und mehr finden.",
-    "ogDescription": "Entdecken Sie hochwertige Produkte zu wettbewerbsfähigen Preisen. Jetzt die besten Angebote sichern.",
-    "whyShopWithUs": "Warum bei uns einkaufen",
-    "features": {
-      "highQuality": {
-        "title": "Hohe Qualität",
-        "description": "Sorgfältig ausgewählte Premiumprodukte für Sie"
-      },
-      "bestPrices": {
-        "title": "Beste Preise",
-        "description": "Wettbewerbsfähige Preise für alle unsere Produkte"
-      },
-      "fastDelivery": {
-        "title": "Schnelle Lieferung",
-        "description": "Schneller und zuverlässiger Versand weltweit"
-      }
-    },
-    "categoryDiscovery": {
-      "title": "Nach Kategorie einkaufen"
-    },
-    "editorialBanner": {
-      "eyebrow": "Redaktionstipp",
-      "cta": "Kollektion entdecken",
-      "fallbackDescription": "Eine kuratierte Auswahl unserer Favoriten, ausgewählt für ihre Qualität und ihr Design."
-    },
-    "shopByCategory": {
-      "title": "Unsere Kollektionen entdecken"
-    },
-    "ctaBanner": {
-      "title": "Werde Teil der Community",
-      "subtitle": "Erstellen Sie ein Konto für einen schnelleren Checkout, Bestellverfolgung und frühzeitigen Zugang zu Neuheiten.",
-      "cta": "Konto erstellen"
-    }
+    "metaTitle": "Millnex | Getreidemühlen, Atta Chakki & Mahlmaschinen online kaufen",
+    "metaDescription": "Millnex Getreidemühlen, Atta Chakki, Pulverisierer und Lebensmittelmaschinen online kaufen — Sortiment ansehen, in den Warenkorb legen und sicher bezahlen.",
+    "heroEyebrow": "Millnex Atta Chakki und Mahlanlagen",
+    "heroTitle": "Entdecken Sie unsere Produkte",
+    "shopNow": "Jetzt einkaufen",
+    "browseCategories": "Kategorien ansehen",
+    "heroPointBrowse": "Gesamtes Sortiment",
+    "heroPointCart": "Online bestellen",
+    "heroPointCheckout": "Sicherer Checkout",
+    "spotlight": "Im Shop",
+    "featuredCategories": "Ausgewählte Kategorien",
+    "allProducts": "Alle Produkte",
+    "categoriesEyebrow": "Kategorien",
+    "shopByCategory": "Nach Kategorie einkaufen",
+    "shopCategory": "Jetzt einkaufen",
+    "promoEyebrow": "Ihr Millnex-Konto",
+    "promoTitle": "Konto erstellen und schneller bezahlen",
+    "promoBody": "Speichern Sie Lieferadressen, bezahlen Sie in weniger Schritten und verfolgen Sie jede Bestellung in Ihrem Konto.",
+    "promoCta": "Konto erstellen",
+    "needHelp": "Hilfe bei der Auswahl?",
+    "catalogEmptyTitle": "Unser Online-Katalog folgt in Kürze",
+    "catalogEmptyBody": "Produkte erscheinen hier, sobald sie dem Shop hinzugefügt werden. Bis dahin hilft Ihnen unser Team gerne weiter.",
+    "contactUs": "Kontakt",
+    "viewAllProducts": "Alle Produkte ansehen",
+    "viewAll": "Alle ansehen",
+    "featuredEyebrow": "Shop",
+    "featuredProducts": "Empfohlene Produkte",
+    "ourProducts": "Unsere Produkte",
+    "newArrivalsEyebrow": "Neu im Shop",
+    "newArrivals": "Neuheiten",
+    "bestSellersEyebrow": "Beliebt",
+    "bestSellers": "Bestseller",
+    "shopApplication": "Maschinen ansehen"
   }
 }

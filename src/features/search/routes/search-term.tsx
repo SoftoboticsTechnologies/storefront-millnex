@@ -10,7 +10,7 @@ export function SearchTerm() {
 
     return (
         <div className="mb-6">
-            <h1 className="text-3xl font-bold">
+            <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
                 {searchTerm ? t('resultsFor', {query: searchTerm}) : t('title')}
             </h1>
         </div>
@@ -20,7 +20,7 @@ export function SearchTerm() {
 export function SearchTermSkeleton() {
     return (
         <div className="mb-6">
-            <div className="h-9 w-64 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+            <div className="h-9 w-64 rounded bg-muted animate-pulse" />
         </div>
     )
 }

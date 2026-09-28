@@ -37,7 +37,7 @@ export default async function NotFound() {
                         <Home className="mr-2 h-4 w-4" />
                         {t('goHome')}
                     </Button>
-                    <Button nativeButton={false} render={<Link href="/search" />} variant="outline" size="lg">
+                    <Button nativeButton={false} render={<Link href="/shop" />} variant="outline" size="lg">
                         <ShoppingBag className="mr-2 h-4 w-4" />
                         {t('browseProducts')}
                     </Button>

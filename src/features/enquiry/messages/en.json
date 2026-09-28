@@ -1,0 +1,52 @@
+{
+  "Enquiry": {
+    "fields": {
+      "name": "Name",
+      "phone": "Phone number",
+      "email": "Email",
+      "company": "Company / business name",
+      "product": "Product interested in",
+      "message": "Requirement / message"
+    },
+    "placeholders": {
+      "name": "Your full name",
+      "phone": "+91 98765 43210",
+      "email": "you@business.com",
+      "company": "Optional",
+      "message": "What will you grind, roughly how much per day, and where should we deliver?"
+    },
+    "productNotSure": "Not sure yet — help me choose",
+    "validation": {
+      "name": "Please enter your name.",
+      "phone": "Please enter a valid phone number (10–15 digits).",
+      "email": "Please enter a valid email address.",
+      "message": "Please tell us a little about your requirement (at least 10 characters).",
+      "messageTooLong": "Please keep your message under 2000 characters."
+    },
+    "requiredNote": "* Required. We only use your details to respond to this enquiry.",
+    "submit": "Send Enquiry",
+    "submitting": "Sending…",
+    "subject": "Website enquiry: {product}",
+    "generalEnquiry": "General enquiry",
+    "handoffIntro": "Hello {company}, I'd like a quote. My requirement:",
+    "success": {
+      "title": "Thank you — your enquiry has been sent",
+      "body": "Our team will review your requirement and get back to you shortly.",
+      "handoffTitle": "Almost done — finish sending your enquiry",
+      "whatsappBody": "We've opened WhatsApp with your enquiry filled in. Tap send there to reach our team.",
+      "emailBody": "We've opened your email app with your enquiry filled in. Press send there to reach our team.",
+      "openWhatsApp": "Open WhatsApp",
+      "openEmail": "Open email",
+      "sendAnother": "Send another enquiry"
+    },
+    "error": {
+      "title": "We couldn't send your enquiry",
+      "body": "Please try again in a moment, or contact us directly:",
+      "notConfiguredTitle": "Online enquiries aren't available yet",
+      "notConfiguredBody": "Please contact our team directly for now."
+    },
+    "requestQuote": "Request a quote",
+    "quoteTitle": "Request a quote",
+    "quoteDescription": "Tell us what you need and our team will recommend the right machine and send you a quote."
+  }
+}

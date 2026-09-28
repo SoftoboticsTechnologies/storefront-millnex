@@ -1,22 +1,38 @@
 {
-  "Sort": {
-    "nameAsc": "नाम: A से Z",
-    "nameDesc": "नाम: Z से A",
-    "priceAsc": "मूल्य: कम से अधिक",
-    "priceDesc": "मूल्य: अधिक से कम",
-    "placeholder": "इसके अनुसार क्रमबद्ध करें"
-  },
-  "Filters": {
-    "title": "फ़िल्टर",
-    "clearAll": "सभी साफ़ करें",
-    "filtersButton": "फ़िल्टर"
-  },
-  "Search": {
-    "title": "खोजें",
-    "pageTitle": "उत्पाद खोजें",
-    "resultsFor": "\"{query}\" के लिए खोज परिणाम",
-    "resultsTitle": "\"{query}\" के लिए खोज परिणाम",
-    "metaDescription": "{siteName} पर \"{query}\" से मेल खाते उत्पाद खोजें",
-    "metaCatalogDescription": "{siteName} पर हमारा उत्पाद कैटलॉग खोजें"
-  }
+    "Sort": {
+        "nameAsc": "नाम: A से Z",
+        "nameDesc": "नाम: Z से A",
+        "priceAsc": "मूल्य: कम से अधिक",
+        "priceDesc": "मूल्य: अधिक से कम",
+        "placeholder": "इसके अनुसार क्रमबद्ध करें",
+        "featured": "विशेष"
+    },
+    "Filters": {
+        "title": "फ़िल्टर",
+        "clearAll": "सभी साफ़ करें",
+        "filtersButton": "फ़िल्टर",
+        "inStockOnly": "केवल स्टॉक में उपलब्ध",
+        "categories": "श्रेणियाँ"
+    },
+    "Search": {
+        "title": "खोजें",
+        "pageTitle": "उत्पाद खोजें",
+        "resultsFor": "\"{query}\" के लिए खोज परिणाम",
+        "resultsTitle": "\"{query}\" के लिए खोज परिणाम",
+        "metaDescription": "{siteName} पर \"{query}\" से मेल खाते उत्पाद खोजें",
+        "metaCatalogDescription": "{siteName} पर हमारा उत्पाद कैटलॉग खोजें",
+        "loadErrorTitle": "उत्पाद लोड नहीं हो सके।",
+        "loadErrorHint": "कृपया अपना कनेक्शन जाँचें और फिर से प्रयास करें।",
+        "retry": "फिर से प्रयास करें"
+    },
+    "Shop": {
+        "title": "सभी उत्पाद खरीदें",
+        "subtitle": "पूरी रेंज देखें, श्रेणी और उपलब्धता के अनुसार फ़िल्टर करें, और मशीनें कार्ट में जोड़ें।",
+        "metaDescription": "{siteName} पर ऑनलाइन उपलब्ध सभी उत्पाद खरीदें।",
+        "home": "होम",
+        "categories": "श्रेणियाँ",
+        "allProducts": "सभी उत्पाद",
+        "eyebrow": "मिलनेक्स स्टोर",
+        "browseProducts": "उत्पाद देखें"
+    }
 }

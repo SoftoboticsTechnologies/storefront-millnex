@@ -7,8 +7,22 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-manrope);
+  --font-display: var(--font-manrope);
   --font-mono: var(--font-geist-mono);
+  --color-brand: var(--brand);
+  --color-brand-foreground: var(--brand-foreground);
+  --color-brand-bright: var(--brand-bright);
+  --color-wheat: var(--wheat);
+  --color-logo-blue: var(--logo-blue);
+  --color-logo-orange: var(--logo-orange);
+  --color-ink: var(--ink);
+  --color-ink-card: var(--ink-card);
+  --color-ink-foreground: var(--ink-foreground);
+  --color-ink-muted: var(--ink-muted);
+  --color-ink-border: var(--ink-border);
+  --color-surface: var(--surface);
+  --color-success: var(--success);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -45,38 +59,62 @@
 }
 
 :root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.129 0.042 264.695);
+  /* Millnex brand system (2026-09 redesign): warm off-white surfaces (fully light
+     since 2026-09-28 — the --ink tokens remain for photo scrims only), and a red-orange accent drawn from the logo
+     wordmark. --brand is a darkened logo orange so white text on it passes
+     WCAG AA (4.7:1); --brand-bright is for decorative accents only. */
+  --radius: 0.75rem;
+  --brand: oklch(0.566 0.176 37.6);
+  --brand-foreground: oklch(1 0 0);
+  --brand-bright: oklch(0.665 0.19 42);
+  --wheat: oklch(0.8 0.13 80);
+  /* Millnex logo ring colours (sampled from public/logo/millnex-logo.png) and
+     the darkened footer gradient stops built from them — white text passes
+     WCAG AA on every stop. Same in light and dark mode. */
+  --logo-blue: #0070c0;
+  --logo-orange: #f07010;
+  --footer-navy: #06294f;
+  --footer-blue: #0a5596;
+  --footer-green: #1b7a45;
+  --footer-orange: #b8430b;
+  --ink: oklch(0.185 0.007 60);
+  --ink-card: oklch(0.228 0.008 60);
+  --ink-foreground: oklch(0.975 0.004 85);
+  --ink-muted: oklch(0.74 0.01 75);
+  --ink-border: oklch(1 0 0 / 10%);
+  --surface: oklch(0.968 0.007 85);
+  --success: oklch(0.55 0.13 150);
+  --background: oklch(0.993 0.003 85);
+  --foreground: oklch(0.21 0.008 60);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.129 0.042 264.695);
+  --card-foreground: oklch(0.21 0.008 60);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.129 0.042 264.695);
-  --primary: oklch(0.208 0.042 265.755);
-  --primary-foreground: oklch(0.984 0.003 247.858);
-  --secondary: oklch(0.968 0.007 247.896);
-  --secondary-foreground: oklch(0.208 0.042 265.755);
-  --muted: oklch(0.968 0.007 247.896);
-  --muted-foreground: oklch(0.554 0.046 257.417);
-  --accent: oklch(0.968 0.007 247.896);
-  --accent-foreground: oklch(0.208 0.042 265.755);
+  --popover-foreground: oklch(0.21 0.008 60);
+  --primary: oklch(0.566 0.176 37.6);
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.955 0.008 85);
+  --secondary-foreground: oklch(0.21 0.008 60);
+  --muted: oklch(0.962 0.006 85);
+  --muted-foreground: oklch(0.47 0.01 60);
+  --accent: oklch(0.955 0.008 85);
+  --accent-foreground: oklch(0.21 0.008 60);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.929 0.013 255.508);
-  --input: oklch(0.929 0.013 255.508);
-  --ring: oklch(0.704 0.04 256.788);
+  --border: oklch(0.905 0.007 85);
+  --input: oklch(0.88 0.008 85);
+  --ring: oklch(0.566 0.176 37.6);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.984 0.003 247.858);
-  --sidebar-foreground: oklch(0.129 0.042 264.695);
-  --sidebar-primary: oklch(0.208 0.042 265.755);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.968 0.007 247.896);
-  --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
-  --sidebar-border: oklch(0.929 0.013 255.508);
-  --sidebar-ring: oklch(0.704 0.04 256.788);
+  --sidebar: oklch(0.984 0.003 85);
+  --sidebar-foreground: oklch(0.21 0.008 60);
+  --sidebar-primary: oklch(0.566 0.176 37.6);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.955 0.008 85);
+  --sidebar-accent-foreground: oklch(0.21 0.008 60);
+  --sidebar-border: oklch(0.905 0.007 85);
+  --sidebar-ring: oklch(0.566 0.176 37.6);
 }
 
 .dark {
@@ -114,12 +152,18 @@
 }
 
 @layer base {
-  html {}
+  html {
+    scroll-padding-top: 5rem;
+  }
   * {
     @apply border-border outline-ring/50;
   }
   body {
     @apply bg-background text-foreground;
+  }
+  h1, h2, h3, h4 {
+    @apply font-display tracking-tight;
+    text-wrap: balance;
   }
 }
 
@@ -138,10 +182,164 @@
   animation: fade-up 0.4s ease-out both;
 }
 
+/* ---------- Millnex marketing layer ---------- */
+
+@utility site-container {
+  width: 100%;
+  max-width: 80rem;
+  margin-inline: auto;
+  padding-inline: 1rem;
+  @media (width >= 40rem) {
+    padding-inline: 1.5rem;
+  }
+  @media (width >= 64rem) {
+    padding-inline: 2rem;
+  }
+}
+
+/* Engineering grid texture (light surfaces). */
+@utility bg-blueprint {
+  background-image:
+    linear-gradient(to right, oklch(0.21 0.008 60 / 5%) 1px, transparent 1px),
+    linear-gradient(to bottom, oklch(0.21 0.008 60 / 5%) 1px, transparent 1px);
+  background-size: 56px 56px;
+}
+
+/* Scroll reveal: elements carrying data-reveal start hidden and are revealed
+   by site/ui/reveal-observer.tsx via IntersectionObserver. Stagger with an
+   inline --reveal-delay. Content is never hidden without JS or when the
+   visitor prefers reduced motion. */
+[data-reveal] {
+  opacity: 0;
+  transform: translate3d(0, 24px, 0);
+  transition:
+    opacity 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) var(--reveal-delay, 0ms),
+    transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) var(--reveal-delay, 0ms);
+}
+[data-reveal].is-revealed {
+  opacity: 1;
+  transform: none;
+}
+/* A connector line that draws left-to-right instead of fading up. */
+.reveal-line[data-reveal] {
+  opacity: 1;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 1.6s cubic-bezier(0.4, 0, 0.2, 1) 0.2s;
+}
+.reveal-line[data-reveal].is-revealed {
+  transform: scaleX(1);
+}
+@media (scripting: none) {
+  [data-reveal],
+  .reveal-line[data-reveal] {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes hero-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 20px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.animate-hero-in {
+  animation: hero-in 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation-delay: var(--hero-delay, 0ms);
+}
+
+/* Transform-only on purpose: the hero image and headline are LCP candidates,
+   and an opacity:0 start would delay Largest Contentful Paint. */
+@keyframes hero-rise {
+  from {
+    transform: translate3d(0, 18px, 0);
+  }
+  to {
+    transform: none;
+  }
+}
+.animate-hero-rise {
+  animation: hero-rise 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation-delay: var(--hero-delay, 0ms);
+}
+
+@keyframes hero-image-in {
+  from {
+    transform: scale(0.96) translate3d(0, 16px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.animate-hero-image-in {
+  animation: hero-image-in 1s cubic-bezier(0.2, 0.7, 0.2, 1) 0.15s both;
+}
+
+/* Very subtle drift for the hero spec cards. */
+@keyframes drift {
+  0%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -6px, 0);
+  }
+}
+.animate-drift {
+  animation: drift 7s ease-in-out infinite;
+  animation-delay: var(--drift-delay, 0ms);
+}
+
+/* WhatsApp button attention ring. */
+@keyframes pulse-ring {
+  0% {
+    transform: scale(1);
+    opacity: 0.55;
+  }
+  80%, 100% {
+    transform: scale(1.55);
+    opacity: 0;
+  }
+}
+.animate-pulse-ring {
+  animation: pulse-ring 2.6s cubic-bezier(0.2, 0.6, 0.3, 1) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal],
+  .reveal-line[data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .animate-hero-in,
+  .animate-hero-rise,
+  .animate-hero-image-in,
+  .animate-drift,
+  .animate-pulse-ring {
+    animation: none;
+  }
+}
+
 /* next-themes sets color-scheme on <html>, which browsers propagate into
    embedded iframes. Razorpay's checkout iframe doesn't support dark mode,
    so it falls back to an opaque white background instead of its normal
    semi-transparent backdrop. Force it back to light regardless of theme. */
 iframe[src*="razorpay"] {
   color-scheme: light;
+}
+
+/* Footer: Millnex logo blue -> green -> orange. Solid navy first, then an sRGB
+   gradient, then the OKLab one (richer mid-tones) — a browser that does not
+   understand a declaration keeps the previous one, so white footer text
+   always sits on a dark background. */
+.footer-gradient {
+  background-color: var(--footer-navy);
+  background-image: linear-gradient(110deg, var(--footer-navy) 0%, var(--footer-blue) 30%, var(--footer-green) 58%, var(--footer-orange) 90%);
+  background-image: linear-gradient(in oklab 110deg, var(--footer-navy) 0%, var(--footer-blue) 30%, var(--footer-green) 58%, var(--footer-orange) 90%);
 }

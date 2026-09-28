@@ -1,18 +1,15 @@
-import {ProductGridSkeleton} from '@/features/products/product-grid-skeleton';
+import {ListingBannerSkeleton} from '@/components/listing-banner';
+import {SearchResultsSkeleton} from '@/features/search/search-results-skeleton';
 
 export default function CollectionLoading() {
     return (
-        <div className="container mx-auto px-4 py-8 mt-16">
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-                {/* Filters Sidebar Skeleton */}
-                <aside className="lg:col-span-1">
-                    <div className="h-64 animate-pulse bg-muted rounded-lg" />
-                </aside>
-
-                {/* Product Grid Skeleton */}
-                <div className="lg:col-span-3">
-                    <ProductGridSkeleton />
-                </div>
+        <div className="pb-16 pt-24 sm:pt-28">
+            <div className="site-container">
+                <div className="mb-4 h-4 w-40 animate-pulse rounded bg-muted" />
+            </div>
+            <ListingBannerSkeleton />
+            <div className="site-container">
+                <SearchResultsSkeleton />
             </div>
         </div>
     );

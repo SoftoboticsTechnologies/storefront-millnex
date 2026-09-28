@@ -1,22 +1,38 @@
 {
-  "Sort": {
-    "nameAsc": "Name: A bis Z",
-    "nameDesc": "Name: Z bis A",
-    "priceAsc": "Preis: Niedrig bis Hoch",
-    "priceDesc": "Preis: Hoch bis Niedrig",
-    "placeholder": "Sortieren nach"
-  },
-  "Filters": {
-    "title": "Filter",
-    "clearAll": "Alle löschen",
-    "filtersButton": "Filter"
-  },
-  "Search": {
-    "title": "Suche",
-    "pageTitle": "Produkte suchen",
-    "resultsFor": "Suchergebnisse für \"{query}\"",
-    "resultsTitle": "Suchergebnisse für \"{query}\"",
-    "metaDescription": "Produkte für \"{query}\" bei {siteName} finden",
-    "metaCatalogDescription": "Durchsuchen Sie unseren Produktkatalog bei {siteName}"
-  }
+    "Sort": {
+        "nameAsc": "Name: A bis Z",
+        "nameDesc": "Name: Z bis A",
+        "priceAsc": "Preis: Niedrig bis Hoch",
+        "priceDesc": "Preis: Hoch bis Niedrig",
+        "placeholder": "Sortieren nach",
+        "featured": "Empfohlen"
+    },
+    "Filters": {
+        "title": "Filter",
+        "clearAll": "Alle löschen",
+        "filtersButton": "Filter",
+        "inStockOnly": "Nur verfügbare Artikel",
+        "categories": "Kategorien"
+    },
+    "Search": {
+        "title": "Suche",
+        "pageTitle": "Produkte suchen",
+        "resultsFor": "Suchergebnisse für \"{query}\"",
+        "resultsTitle": "Suchergebnisse für \"{query}\"",
+        "metaDescription": "Produkte für \"{query}\" bei {siteName} finden",
+        "metaCatalogDescription": "Durchsuchen Sie unseren Produktkatalog bei {siteName}",
+        "loadErrorTitle": "Produkte konnten nicht geladen werden.",
+        "loadErrorHint": "Bitte prüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
+        "retry": "Erneut versuchen"
+    },
+    "Shop": {
+        "title": "Alle Produkte",
+        "subtitle": "Stöbern Sie im gesamten Sortiment, filtern Sie nach Kategorie und Verfügbarkeit und legen Sie Maschinen in den Warenkorb.",
+        "metaDescription": "Alle online verfügbaren Produkte bei {siteName} kaufen.",
+        "home": "Startseite",
+        "categories": "Kategorien",
+        "allProducts": "Alle Produkte",
+        "eyebrow": "Millnex Shop",
+        "browseProducts": "Produkte ansehen"
+    }
 }

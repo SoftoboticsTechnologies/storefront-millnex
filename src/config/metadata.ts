@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 
-export const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME || 'DripFunnel';
+export const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME || 'Millnex';
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://example.com';
 
 /**

@@ -6,7 +6,10 @@ import {Button} from '@/components/ui/button';
 import {Label} from '@/components/ui/label';
 import {RadioGroup, RadioGroupItem} from '@/components/ui/radio-group';
 import {Separator} from '@/components/ui/separator';
-import {ShoppingCart, CheckCircle2} from 'lucide-react';
+import {ShoppingCart, CheckCircle2, Minus, Plus, Zap, Lock, MessageSquareText} from 'lucide-react';
+import {WishlistButton} from './wishlist-button';
+import {Link} from '@/platform/i18n/navigation';
+import {stripHtml} from '@/features/products/product-card-data';
 import {addToCart} from '@/features/products/add-to-cart';
 import {toast} from 'sonner';
 import {Price} from '@/features/pricing/price';
@@ -57,9 +60,16 @@ interface ProductInfoProps {
      * client render matches the statically-exported HTML exactly.
      */
     initialVariantId: string;
+    /** Most specific Vendure collection the product belongs to, if any. */
+    category?: {name: string; slug: string};
 }
 
-export function ProductInfo({product, buildCurrencyCode, initialVariantId}: ProductInfoProps) {
+// Upper bound for the quantity stepper only; Vendure remains the authority
+// on how many can actually be ordered (it answers with an
+// InsufficientStockError / OrderLimitError, surfaced as a toast).
+const MAX_QUANTITY = 99;
+
+export function ProductInfo({product, buildCurrencyCode, initialVariantId, category}: ProductInfoProps) {
     const t = useTranslations('Product');
     // Build-time price/stock for every variant, in the channel default
     // currency — passed as initialData so useLiveProductPricing can skip its
@@ -81,6 +91,8 @@ export function ProductInfo({product, buildCurrencyCode, initialVariantId}: Prod
     const router = useRouter();
     const [isPending, startTransition] = useTransition();
     const [isAdded, setIsAdded] = useState(false);
+    const [quantity, setQuantity] = useState(1);
+    const [isBuyingNow, setIsBuyingNow] = useState(false);
 
     // Seeded from the variant the current URL resolved to (server-side, in
     // routes/page.tsx) rather than read here via next/navigation's
@@ -146,13 +158,18 @@ export function ProductInfo({product, buildCurrencyCode, initialVariantId}: Prod
         );
     };
 
-    const handleAddToCart = async () => {
+    const handleAddToCart = (buyNow = false) => {
         if (!selectedVariant) return;
+        setIsBuyingNow(buyNow);
 
         startTransition(async () => {
-            const result = await addToCart(selectedVariant.id, 1);
+            const result = await addToCart(selectedVariant.id, quantity);
 
             if (result.success) {
+                if (buyNow) {
+                    router.push('/checkout');
+                    return;
+                }
                 setIsAdded(true);
                 toast.success(t('addedToCartMessage'), {
                     description: t('addedToCartDescription', {name: product.name}),
@@ -185,40 +202,77 @@ export function ProductInfo({product, buildCurrencyCode, initialVariantId}: Prod
     const displayCurrencyCode = livePricing?.currencyCode ?? buildCurrencyCode;
     const isCheckingAvailability = pricingLoading && !liveVariant;
     const isInStock = !!displayVariant && displayVariant.stockLevel !== 'OUT_OF_STOCK';
+    const isLowStock = displayVariant?.stockLevel === 'LOW_STOCK';
+    const summary = stripHtml(product.description);
     const canAddToCart = !!selectedVariant && !isCheckingAvailability && isInStock;
+
+    const addToCartLabel = isPending && !isBuyingNow
+        ? t('adding')
+        : !selectedVariant && product.optionGroups.length > 0
+            ? t('selectOptions')
+            : selectedVariant && isCheckingAvailability
+                ? t('checkingAvailability')
+                : !isInStock
+                    ? t('outOfStock')
+                    : t('addToCart');
 
     return (
         <div className="space-y-6">
-            {/* Product Title & Price */}
-            <div className="space-y-2">
-                <h1 className="text-3xl md:text-4xl font-bold tracking-tight">{product.name}</h1>
+            {/* Category, Title, Price & Availability */}
+            <div className="space-y-3">
+                {category && (
+                    <Link href={`/collection/${category.slug}`} className="text-xs font-bold uppercase tracking-[0.16em] text-brand hover:underline">
+                        {category.name}
+                    </Link>
+                )}
+                <h1 className="text-3xl font-extrabold tracking-tight md:text-4xl">{product.name}</h1>
                 {displayVariant && (
-                    <p className="text-2xl md:text-3xl text-muted-foreground font-semibold mt-3">
+                    <p className="text-2xl font-extrabold tracking-tight md:text-3xl">
                         <Price value={displayVariant.priceWithTax} currencyCode={displayCurrencyCode}/>
+                        <span className="ml-2 align-middle text-xs font-medium text-muted-foreground">{t('inclusiveOfTaxes')}</span>
+                    </p>
+                )}
+                {displayVariant && (
+                    <p className="text-sm">
+                        {!isInStock ? (
+                            <span className="inline-flex items-center gap-1.5 font-semibold text-destructive">
+                                <span className="size-2 rounded-full bg-destructive" />
+                                {t('outOfStock')}
+                            </span>
+                        ) : isLowStock ? (
+                            <span className="inline-flex items-center gap-1.5 font-semibold text-amber-700">
+                                <span className="size-2 rounded-full bg-amber-500" />
+                                {t('lowStock')}
+                            </span>
+                        ) : (
+                            <span className="inline-flex items-center gap-1.5 font-semibold text-emerald-700">
+                                <span className="size-2 rounded-full bg-emerald-600" />
+                                {t('inStock')}
+                            </span>
+                        )}
                     </p>
                 )}
             </div>
 
-            <Separator />
+            {summary && (
+                <p className="line-clamp-4 text-[15px] leading-relaxed text-muted-foreground">{summary}</p>
+            )}
 
-            {/* Product Description */}
-            <div className="prose prose-sm max-w-none text-muted-foreground">
-                <div dangerouslySetInnerHTML={{__html: product.description}}/>
-            </div>
+            <Separator />
 
             {/* Option Groups */}
             {product.optionGroups.length > 0 && (
                 <div className="space-y-5">
                     {product.optionGroups.map((group) => (
                         <div key={group.id} className="space-y-3">
-                            <Label className="text-base font-semibold">
+                            <Label className="text-sm font-bold">
                                 {group.name}
                             </Label>
                             <RadioGroup
                                 value={selectedOptions[group.id] || ''}
                                 onValueChange={(value) => handleOptionChange(group.id, value)}
                             >
-                                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                                     {group.options.map((option) => (
                                         <div key={option.id}>
                                             <RadioGroupItem
@@ -228,7 +282,7 @@ export function ProductInfo({product, buildCurrencyCode, initialVariantId}: Prod
                                             />
                                             <Label
                                                 htmlFor={option.id}
-                                                className="flex items-center justify-center rounded-lg border-2 border-muted bg-popover px-4 py-3 text-sm font-medium hover:bg-accent hover:text-accent-foreground peer-data-[checked]:border-primary peer-data-[checked]:ring-2 peer-data-[checked]:ring-primary/20 peer-data-[checked]:bg-primary/5 cursor-pointer transition-all"
+                                                className="flex cursor-pointer items-center justify-center rounded-xl border-2 border-border bg-card px-4 py-3 text-sm font-semibold transition-all hover:border-foreground/30 peer-data-[checked]:border-brand peer-data-[checked]:bg-brand/5 peer-data-[checked]:ring-2 peer-data-[checked]:ring-brand/20"
                                             >
                                                 {option.name}
                                             </Label>
@@ -241,58 +295,89 @@ export function ProductInfo({product, buildCurrencyCode, initialVariantId}: Prod
                 </div>
             )}
 
-            {/* Stock Status */}
-            {displayVariant && (
-                <div className="text-sm">
-                    {isInStock ? (
-                        <span className="inline-flex items-center gap-1.5 text-green-600 font-medium">
-                            <span className="h-2 w-2 rounded-full bg-green-600" />
-                            {t('inStock')}
-                        </span>
-                    ) : (
-                        <span className="inline-flex items-center gap-1.5 text-destructive font-medium">
-                            <span className="h-2 w-2 rounded-full bg-destructive" />
-                            {t('outOfStock')}
-                        </span>
-                    )}
+            {/* Quantity + Add to Cart / Buy Now */}
+            <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                    <span className="text-sm font-bold">{t('quantity')}</span>
+                    <div className="flex items-center rounded-xl border border-border bg-card">
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="size-10 rounded-l-xl rounded-r-none"
+                            disabled={quantity <= 1}
+                            onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                            aria-label={t('decreaseQuantity')}
+                        >
+                            <Minus className="size-4"/>
+                        </Button>
+                        <span className="w-10 text-center font-bold tabular-nums" aria-live="polite">{quantity}</span>
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="size-10 rounded-l-none rounded-r-xl"
+                            disabled={quantity >= MAX_QUANTITY || !isInStock}
+                            onClick={() => setQuantity((q) => Math.min(MAX_QUANTITY, q + 1))}
+                            aria-label={t('increaseQuantity')}
+                        >
+                            <Plus className="size-4"/>
+                        </Button>
+                    </div>
                 </div>
-            )}
 
-            {/* Add to Cart Button */}
-            <div className="pt-2 space-y-3">
-                <Button
-                    size="lg"
-                    className="w-full h-12 text-base font-semibold rounded-lg"
-                    disabled={!canAddToCart || isPending}
-                    onClick={handleAddToCart}
-                >
-                    {isAdded ? (
-                        <>
-                            <CheckCircle2 className="mr-2 h-5 w-5"/>
-                            {t('addedToCart')}
-                        </>
-                    ) : (
-                        <>
-                            <ShoppingCart className="mr-2 h-5 w-5"/>
-                            {isPending
-                                ? t('adding')
-                                : !selectedVariant && product.optionGroups.length > 0
-                                    ? t('selectOptions')
-                                    : selectedVariant && isCheckingAvailability
-                                        ? t('checkingAvailability')
-                                        : !isInStock
-                                            ? t('outOfStock')
-                                            : t('addToCart')}
-                        </>
-                    )}
-                </Button>
+                <div className="grid gap-3 sm:grid-cols-2">
+                    <Button
+                        size="lg"
+                        className="h-12 rounded-xl bg-brand text-base font-bold text-brand-foreground hover:bg-brand/90"
+                        disabled={!canAddToCart || isPending}
+                        onClick={() => handleAddToCart(false)}
+                    >
+                        {isAdded ? (
+                            <>
+                                <CheckCircle2 className="mr-2 size-5"/>
+                                {t('addedToCart')}
+                            </>
+                        ) : (
+                            <>
+                                <ShoppingCart className="mr-2 size-5"/>
+                                {addToCartLabel}
+                            </>
+                        )}
+                    </Button>
+                    <Button
+                        size="lg"
+                        variant="outline"
+                        className="h-12 rounded-xl border-foreground/20 text-base font-bold"
+                        disabled={!canAddToCart || isPending}
+                        onClick={() => handleAddToCart(true)}
+                    >
+                        <Zap className="mr-2 size-5"/>
+                        {isPending && isBuyingNow ? t('adding') : t('buyNow')}
+                    </Button>
+                </div>
+                <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <Lock className="size-3.5" />
+                    {t('secureCheckoutNote')}
+                </p>
+                <div className="flex flex-wrap gap-2 pt-1">
+                    <WishlistButton productId={product.id} name={product.name} variant="full" />
+                    {/* The enquiry form pre-selects the product from `?product=<slug>`. */}
+                    <Link
+                        href={`/contact?product=${encodeURIComponent(product.slug)}#enquiry`}
+                        className="inline-flex h-11 items-center gap-2 rounded-xl border border-border bg-card px-4 text-sm font-semibold transition-colors hover:border-foreground/30 hover:bg-muted"
+                    >
+                        <MessageSquareText className="size-[18px]" />
+                        {t('productEnquiry')}
+                    </Link>
+                </div>
             </div>
 
             {/* SKU */}
             {selectedVariant && (
-                <div className="text-xs text-muted-foreground">
+                <p className="text-xs text-muted-foreground">
                     {t('sku', {sku: selectedVariant.sku})}
-                </div>
+                </p>
             )}
         </div>
     );

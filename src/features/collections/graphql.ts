@@ -14,6 +14,20 @@ export const GetTopCollectionsQuery = graphql(`
                     id
                     preview
                 }
+                # Product images for the homepage category cards, used when the
+                # collection has no featuredAsset of its own.
+                productVariants(options: {take: 24}) {
+                    items {
+                        product {
+                            id
+                            name
+                            featuredAsset {
+                                id
+                                preview
+                            }
+                        }
+                    }
+                }
                 children {
                     id
                     name

@@ -1,28 +1,67 @@
 {
-  "NotFound": {
-    "title": "Seite nicht gefunden",
-    "message": "Die gesuchte Seite existiert nicht, wurde verschoben oder ist vorübergehend nicht verfügbar.",
-    "goHome": "Zur Startseite",
-    "browseProducts": "Produkte durchsuchen",
-    "popularCollections": "Beliebte Kategorien"
-  },
-  "AnnouncementBar": {
-    "message1": "Sicherer Checkout",
-    "message2": "Kuratierte Kollektionen",
-    "message3": "Weltweiter Versand"
-  },
-  "Footer": {
-    "description": "Ein moderner, Headless-E-Commerce-Shop, erstellt mit Vendure und Next.js. Schnell, flexibel und produktionsbereit.",
-    "categories": "Kategorien",
-    "customer": "Kunde",
-    "shopAll": "Alle Produkte",
-    "orders": "Bestellungen",
-    "account": "Konto",
-    "vendure": "Vendure",
-    "github": "GitHub",
-    "documentation": "Dokumentation",
-    "sourceCode": "Quellcode",
-    "copyright": "DripFunnel. Alle Rechte vorbehalten.",
-    "poweredBy": "Powered by"
-  }
+    "NotFound": {
+        "title": "Seite nicht gefunden",
+        "message": "Die gesuchte Seite existiert nicht, wurde verschoben oder ist vorübergehend nicht verfügbar.",
+        "goHome": "Zur Startseite",
+        "browseProducts": "Produkte durchsuchen",
+        "popularCollections": "Beliebte Kategorien"
+    },
+    "Footer": {
+        "company": "Unternehmen",
+        "contact": "Kontakt",
+        "address": "Adresse",
+        "phone": "Telefon",
+        "email": "E-Mail",
+        "copyright": "Millnex, Rajkot, Gujarat. Alle Rechte vorbehalten.",
+        "imageCredits": "Bildnachweise",
+        "shop": "Shop",
+        "allProducts": "Alle Produkte",
+        "customer": "Kunde",
+        "myAccount": "Mein Konto",
+        "myOrders": "Meine Bestellungen",
+        "cart": "Warenkorb",
+        "signIn": "Anmelden",
+        "poweredBy": "Bereitgestellt von",
+        "poweredByDripFunnel": "Bereitgestellt von DripFunnel (öffnet in neuem Tab)",
+        "marketedBy": "Beworben und vermarktet von"
+    },
+    "Site": {
+        "exploreProducts": "Produkte entdecken",
+        "builtFor": "Gebaut für",
+        "discoverMillnex": "Millnex entdecken",
+        "stillHaveQuestions": "Noch unentschlossen? Sprechen Sie mit unserem Team.",
+        "askOnWhatsApp": "Per WhatsApp fragen",
+        "callNow": "Anrufen",
+        "chatNow": "Chatten",
+        "emailNow": "E-Mail",
+        "enquiryFormTitle": "Anfrage senden",
+        "enquiryFormBody": "Beschreiben Sie Ihren Bedarf – wir empfehlen die passende Maschine mit Angebot.",
+        "breadcrumb": "Brotkrümelnavigation",
+        "aboutEyebrow": "Über Millnex",
+        "aboutTitle": "Für Leistung konstruiert. Für Ihr Geschäft gebaut.",
+        "aboutBody": "Millnex fertigt Mahl- und Lebensmittelmaschinen für Haushalte, Geschäfte und Gewerbebetriebe.",
+        "contactEyebrow": "Kontakt",
+        "contactTitle": "Sprechen Sie mit dem Millnex-Team",
+        "contactBody": "Fordern Sie ein Angebot an, fragen Sie zu einer Maschine oder lassen Sie sich bei der Modellwahl beraten.",
+        "askOurTeam": "Unser Team fragen",
+        "creditsTitle": "Bildnachweise",
+        "creditsBody": "Einige Fotos auf dieser Website sind frei lizenzierte Bilder und werden unten genannt.",
+        "creditsNote": "Produktfotos stammen von Millnex.",
+        "sendMessage": "Nachricht senden",
+        "faqEyebrow": "FAQ",
+        "faqTitle": "Häufig gestellte Fragen",
+        "faqBody": "Antworten zur Maschinenauswahl, Bestellung und zum Support. Nicht gefunden, was Sie suchen? Unser Team hilft gern.",
+        "marketedBy": "Beworben und vermarktet von"
+    },
+    "SiteMeta": {
+        "aboutTitle": "Über uns",
+        "aboutDescription": "Millnex fertigt Haushalts-Getreidemühlen, Pulverisierer, Masala- und Lebensmittelmaschinen für Langlebigkeit und gleichbleibende Leistung.",
+        "contactTitle": "Millnex kontaktieren",
+        "contactDescription": "Fragen zu einem Produkt, einer Bestellung oder Lieferung? Kontaktieren Sie das Millnex-Team zu Getreidemühlen, Pulverisierern und Lebensmittelmaschinen.",
+        "insightsTitle": "Einblicke",
+        "insightsDescription": "Ratgeber zur Auswahl, zum Betrieb und zur Wartung von Getreidemühlen und Mahlmaschinen vom Millnex-Team.",
+        "creditsTitle": "Bildnachweise",
+        "faqTitle": "FAQ",
+        "faqDescription": "Antworten auf häufige Fragen zu Millnex-Mühlen, Pulverisierern und Lebensmittelmaschinen – Modellwahl, Bestellung und Support."
+    }
 }

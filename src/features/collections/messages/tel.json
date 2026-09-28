@@ -1,7 +1,11 @@
 {
-  "Collection": {
-    "home": "హోమ్",
-    "collectionNotFound": "సేకరణ కనుగొనబడలేదు",
-    "browseCollectionAt": "{siteName} వద్ద మా {name} సేకరణను బ్రౌజ్ చేయండి"
-  }
+    "Collection": {
+        "home": "హోమ్",
+        "collectionNotFound": "సేకరణ కనుగొనబడలేదు",
+        "browseCollectionAt": "{siteName} వద్ద మా {name} సేకరణను బ్రౌజ్ చేయండి",
+        "shop": "షాప్",
+        "category": "వర్గం",
+        "productCount": "{count, plural, =0 {ఇంకా ఉత్పత్తులు లేవు} one {# ఉత్పత్తి} other {# ఉత్పత్తులు}}",
+        "browseProducts": "ఉత్పత్తులను చూడండి"
+    }
 }

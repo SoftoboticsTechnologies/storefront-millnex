@@ -17,6 +17,17 @@
     "remove": "Entfernen",
     "enterCode": "Code eingeben",
     "apply": "Einlösen",
-    "sku": "Art.-Nr.: {sku}"
+    "sku": "Art.-Nr.: {sku}",
+    "updateFailed": "Warenkorb konnte nicht aktualisiert werden",
+    "lineOutOfStock": "Nicht vorrätig — zum Fortfahren entfernen",
+    "lineLowStock": "Nur noch wenige verfügbar",
+    "decreaseQuantity": "Menge verringern",
+    "increaseQuantity": "Menge erhöhen",
+    "taxIncluded": "Steuer (enthalten)",
+    "openCartWithCount": "Warenkorb öffnen, {count, plural, =0 {leer} one {# Artikel} other {# Artikel}}",
+    "itemCount": "{count, plural, one {# Artikel} other {# Artikel}}",
+    "loadError": "Ihr Warenkorb konnte nicht geladen werden.",
+    "retry": "Erneut versuchen",
+    "viewCart": "Warenkorb ansehen"
   }
 }

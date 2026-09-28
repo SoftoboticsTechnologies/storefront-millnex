@@ -1,7 +1,9 @@
 import {query} from '@/platform/vendure/api';
 import {SearchProductsQuery} from '@/features/search/graphql';
+import {getActiveCurrencyCode} from '@/features/currency/currency-server';
 import {readFragment} from '@/platform/vendure/graphql';
-import {ProductCardFragment, GetProductDetailQuery} from './graphql';
+import {ProductCardFragment, GetProductDetailQuery, GetNewestProductsQuery} from './graphql';
+import {cardFromProduct, cardFromSearchResult, type ProductCardData} from './product-card-data';
 
 // Page size used while enumerating the full catalog at build time.
 const PRODUCT_SLUG_PAGE_SIZE = 100;
@@ -12,7 +14,22 @@ const PRODUCT_SLUG_PAGE_SIZE = 100;
  * that wasn't prerendered, so this must enumerate the full catalog (paginated)
  * rather than a "popular" subset. Not used for any pricing/stock display.
  */
-export async function getPopularProductSlugs(locale: string): Promise<string[]> {
+export function getPopularProductSlugs(locale: string): Promise<string[]> {
+    // Build-time memo (see collections/data.ts#getTopCollections): read by
+    // generateStaticParams, the homepage and the sitemap.
+    if (process.env.NODE_ENV !== 'production') return fetchProductSlugs(locale);
+    let pending = productSlugsByLocale.get(locale);
+    if (!pending) {
+        pending = fetchProductSlugs(locale);
+        pending.catch(() => productSlugsByLocale.delete(locale));
+        productSlugsByLocale.set(locale, pending);
+    }
+    return pending;
+}
+
+const productSlugsByLocale = new Map<string, Promise<string[]>>();
+
+async function fetchProductSlugs(locale: string): Promise<string[]> {
     const slugs: string[] = [];
     let skip = 0;
     let fetched = 0;
@@ -67,4 +84,75 @@ export async function getProductVariantParams(locale: string): Promise<Array<{sl
     }));
 
     return params;
+}
+
+export interface CatalogListing {
+    totalItems: number;
+    products: ProductCardData[];
+}
+
+/**
+ * Build-time product listing (channel default currency) for homepage rails
+ * and related-product sections — real Vendure search results, never a
+ * fixture. Prices are superseded client-side when the viewer's currency
+ * differs (see product-price-client.tsx).
+ */
+export async function getCatalogListing(
+    locale: string,
+    {take, collectionSlug, inStockOnly}: {take: number; collectionSlug?: string; inStockOnly?: boolean},
+): Promise<CatalogListing> {
+    const currencyCode = await getActiveCurrencyCode();
+    const result = await query(SearchProductsQuery, {
+        input: {
+            take,
+            skip: 0,
+            groupByProduct: true,
+            sort: {name: 'ASC'},
+            ...(collectionSlug && {collectionSlug}),
+            ...(inStockOnly && {inStock: true}),
+        },
+    }, {languageCode: locale, currencyCode});
+
+    return {
+        totalItems: result.data.search.totalItems,
+        products: result.data.search.items.map(cardFromSearchResult),
+    };
+}
+
+/**
+ * Most recently created products (Vendure `createdAt DESC`), for "New
+ * arrivals". Restricted to products that also appear in the search index:
+ * product pages are prerendered from the index (getPopularProductSlugs), so
+ * linking to an unindexed product would 404 on the static host.
+ */
+export async function getNewestProducts(locale: string, take: number): Promise<ProductCardData[]> {
+    const currencyCode = await getActiveCurrencyCode();
+    const [result, indexedSlugs] = await Promise.all([
+        query(GetNewestProductsQuery, {take: take * 3}, {languageCode: locale, currencyCode}),
+        getPopularProductSlugs(locale),
+    ]);
+    const prerendered = new Set(indexedSlugs);
+
+    return result.data.products.items
+        .filter((product) => product.slug && prerendered.has(product.slug))
+        .slice(0, take)
+        .map(cardFromProduct);
+}
+
+/** `{value: slug, label: name}` for every indexed product — e.g. an enquiry form's product picker. */
+export async function getProductOptions(locale: string): Promise<Array<{value: string; label: string}>> {
+    const options: Array<{value: string; label: string}> = [];
+    let skip = 0;
+
+    for (;;) {
+        const result = await query(SearchProductsQuery, {
+            input: {take: PRODUCT_SLUG_PAGE_SIZE, skip, groupByProduct: true, sort: {name: 'ASC'}},
+        }, {languageCode: locale});
+        const items = result.data.search.items.map((item) => readFragment(ProductCardFragment, item));
+        options.push(...items.filter((item) => item.slug).map((item) => ({value: item.slug, label: item.productName})));
+        if (items.length < PRODUCT_SLUG_PAGE_SIZE || options.length >= result.data.search.totalItems) break;
+        skip += PRODUCT_SLUG_PAGE_SIZE;
+    }
+
+    return options;
 }

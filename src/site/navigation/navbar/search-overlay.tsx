@@ -84,6 +84,9 @@ export function SearchOverlay({open, onOpenChange}: SearchOverlayProps) {
                     }}
                 />
                 <CommandList>
+                    {value.trim() && isPending && suggestions.length === 0 && (
+                        <div className="py-6 text-center text-sm text-muted-foreground" aria-live="polite">{t('searching')}</div>
+                    )}
                     {value.trim() && !isPending && suggestions.length === 0 && (
                         <CommandEmpty>{t('searchNoResults', {term: value.trim()})}</CommandEmpty>
                     )}
@@ -120,6 +123,13 @@ export function SearchOverlay({open, onOpenChange}: SearchOverlayProps) {
                                     </CommandItem>
                                 );
                             })}
+                        </CommandGroup>
+                    )}
+                    {suggestions.length > 0 && (
+                        <CommandGroup>
+                            <CommandItem value="__all__" onSelect={submitSearch} className="justify-center font-semibold text-brand">
+                                {t('seeAllResults', {term: value.trim()})}
+                            </CommandItem>
                         </CommandGroup>
                     )}
                 </CommandList>

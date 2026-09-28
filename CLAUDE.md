@@ -18,6 +18,15 @@ Treat as protected infrastructure — preserve behavior exactly, only restyle pr
 
 Never: hardcode product/variant/collection IDs, prices, stock, currency, discounts, ratings, or reviews. Never fake data that isn't backed by a real Vendure field.
 
+## Millnex marketing layer (2026-09-28)
+
+The storefront presents the Millnex machinery site; details in `docs/ui-system.md` and `docs/decisions.md`.
+- Contact details: `src/config/contact.ts` only (filled 2026-09-28 with the millnex.in address, email and phone/WhatsApp; never hardcode a number/email elsewhere).
+- Products: **Vendure only** — no frontend product catalogue (the old `site/catalog/machines.ts` was removed; `/machines` redirects to `/shop`). Copy: `src/site/content/*`. Replaceable stock imagery + credits: `src/site/content/media.ts`.
+- Wishlist: device-local product IDs (`src/features/products/wishlist.ts`); Vendure has no wishlist API.
+- Enquiries: `src/features/enquiry` (endpoint via `NEXT_PUBLIC_ENQUIRY_ENDPOINT`, else WhatsApp/email hand-off).
+- No fake statistics, testimonials, certifications or ratings — the stats/testimonials/insights sections render only real entries.
+
 ## Coding rules
 
 - Keep `src/app/**` thin; substantial logic lives in the owning `src/features/*` module (per `docs/architecture.md`).

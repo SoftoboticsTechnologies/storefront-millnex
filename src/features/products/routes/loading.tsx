@@ -2,11 +2,11 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 export default function ProductLoading() {
     return (
-        <div className="container mx-auto px-4 py-8 mt-16">
+        <div className="site-container pb-12 pt-24 sm:pt-28">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
                 {/* Left Column: Image Carousel Skeleton */}
                 <div className="lg:sticky lg:top-20 lg:self-start">
-                    <Skeleton className="aspect-square w-full rounded-lg" />
+                    <Skeleton className="aspect-square w-full rounded-2xl" />
                     <div className="flex gap-2 mt-4">
                         {Array.from({ length: 4 }).map((_, i) => (
                             <Skeleton key={i} className="h-16 w-16 rounded-md" />

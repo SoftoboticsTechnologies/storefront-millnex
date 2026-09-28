@@ -1,59 +1,51 @@
-import Image from "next/image";
-import {NavigationLink} from '@/site/navigation/navigation-link';
-import {NavbarCollections} from '@/site/navigation/navbar/navbar-collections';
-import {NavbarCart} from '@/site/navigation/navbar/navbar-cart';
-import {NavbarUser} from '@/site/navigation/navbar/navbar-user';
-import {ThemeSwitcher} from '@/site/navigation/navbar/theme-switcher';
-import {LanguagePicker} from '@/site/navigation/navbar/language-picker';
-import {CurrencyPickerWrapper} from '@/site/navigation/navbar/currency-picker-wrapper';
-import {MobileNavWrapper} from '@/site/navigation/navbar/mobile-nav-wrapper';
-import {Suspense} from "react";
-import {SearchInput} from '@/site/navigation/search-input';
-import {NavbarUserSkeleton} from '@/site/navigation/skeletons/navbar-user-skeleton';
-import {SearchInputSkeleton} from '@/site/navigation/skeletons/search-input-skeleton';
+import {getTranslations} from 'next-intl/server';
+import {getRouteLocale} from '@/platform/i18n/server';
+import {getShopCategories} from '@/features/collections/data';
+import {BRAND_LOGO} from '@/site/content/media';
+import {SiteHeader, type SiteNavItem} from '@/site/navigation/navbar/site-header';
+import {MobileTabBar} from '@/site/navigation/navbar/mobile-tab-bar';
 
-export function Navbar() {
+/**
+ * Site-wide storefront header (+ mobile bottom tab bar). Resolves translated
+ * labels and the real Vendure category list at build time, then hands them
+ * to the client `SiteHeader` (scroll state, dropdowns, account/cart state).
+ */
+export async function Navbar() {
+    const locale = await getRouteLocale();
+    const t = await getTranslations({locale, namespace: 'Navigation'});
+    const categories = (await getShopCategories(locale)).map(({name, slug}) => ({name: name.trim(), slug}));
+
+    const items: SiteNavItem[] = [
+        {key: 'home', label: t('home'), href: '/'},
+        {key: 'shop', label: t('shop'), href: '/shop'},
+        // Only offered when Vendure actually has categories.
+        ...(categories.length > 0 ? [{key: 'categories', label: t('categories'), href: '/shop'}] : []),
+        {key: 'about', label: t('about'), href: '/about'},
+        {key: 'contact', label: t('contact'), href: '/contact'},
+    ];
+
     return (
-        <header className="fixed top-0 left-0 right-0 z-50 border-b backdrop-blur-md bg-background/80">
-            <div className="container mx-auto px-4">
-                <div className="flex items-center justify-between h-16">
-                    <div className="flex items-center gap-8">
-                        <Suspense>
-                            <MobileNavWrapper />
-                        </Suspense>
-                        <NavigationLink href="/" className="text-xl font-bold">
-                            <Image src="/dripfunnel-logo.png" alt="DripFunnel" width={300} height={51} className="h-8 w-auto" priority />
-                        </NavigationLink>
-                        <nav className="hidden md:flex items-center gap-6">
-                            <Suspense>
-                                <NavbarCollections/>
-                            </Suspense>
-                        </nav>
-                    </div>
-                    <div className="flex items-center gap-4">
-                        <div className="hidden lg:flex">
-                            <Suspense fallback={<SearchInputSkeleton />}>
-                                <SearchInput/>
-                            </Suspense>
-                        </div>
-                        <Suspense>
-                            <LanguagePicker />
-                        </Suspense>
-                        <Suspense>
-                            <CurrencyPickerWrapper />
-                        </Suspense>
-                        <Suspense>
-                            <ThemeSwitcher />
-                        </Suspense>
-                        <Suspense>
-                            <NavbarCart/>
-                        </Suspense>
-                        <Suspense fallback={<NavbarUserSkeleton />}>
-                            <NavbarUser/>
-                        </Suspense>
-                    </div>
-                </div>
-            </div>
-        </header>
+        <>
+            <SiteHeader
+                items={items}
+                categories={categories}
+                logo={{...BRAND_LOGO, alt: t('logoAlt')}}
+                labels={{
+                    categories: t('categories'),
+                    allProducts: t('allProducts'),
+                    searchProducts: t('searchProducts'),
+                    openMenu: t('openMenu'),
+                    menu: t('menu'),
+                    primaryNavigation: t('primaryNavigation'),
+                    account: t('account'),
+                    myAccount: t('myAccount'),
+                    myOrders: t('myOrders'),
+                    signIn: t('signIn'),
+                    createAccount: t('createAccount'),
+                    wishlist: t('wishlist'),
+                }}
+            />
+            <MobileTabBar />
+        </>
     );
 }

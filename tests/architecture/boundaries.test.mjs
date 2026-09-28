@@ -48,8 +48,19 @@ test('Next.js app files remain re-export shims', async () => {
                 && ts.isNamedExports(statement.exportClause)
                 && statement.moduleSpecifier
                 && ts.isStringLiteral(statement.moduleSpecifier);
+            // Next.js route segment config (e.g. `dynamic = 'force-static'`, required
+            // on metadata routes under `output: 'export'`) must be declared in the
+            // app file itself — Next rejects re-exported config — so a literal-valued
+            // `export const dynamic|revalidate` is allowed alongside the re-export.
+            const isSegmentConfig = ts.isVariableStatement(statement)
+                && statement.modifiers?.some(modifier => modifier.kind === ts.SyntaxKind.ExportKeyword)
+                && statement.declarationList.declarations.every(declaration =>
+                    ts.isIdentifier(declaration.name)
+                    && ['dynamic', 'revalidate'].includes(declaration.name.text)
+                    && declaration.initializer !== undefined
+                    && (ts.isStringLiteral(declaration.initializer) || ts.isNumericLiteral(declaration.initializer)));
             if (isExplicitReExport) hasReExport = true;
-            if (!isStylesheetImport && !isExplicitReExport) {
+            if (!isStylesheetImport && !isExplicitReExport && !isSegmentConfig) {
                 violations.push(`${path.relative(root, file)} contains behavior instead of only explicit re-exports`);
             }
         }

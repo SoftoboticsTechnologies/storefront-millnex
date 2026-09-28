@@ -1,22 +1,38 @@
 {
-  "Sort": {
-    "nameAsc": "Name: A to Z",
-    "nameDesc": "Name: Z to A",
-    "priceAsc": "Price: Low to High",
-    "priceDesc": "Price: High to Low",
-    "placeholder": "Sort by"
-  },
-  "Filters": {
-    "title": "Filters",
-    "clearAll": "Clear all",
-    "filtersButton": "Filters"
-  },
-  "Search": {
-    "title": "Search",
-    "pageTitle": "Search Products",
-    "resultsFor": "Search results for \"{query}\"",
-    "resultsTitle": "Search results for \"{query}\"",
-    "metaDescription": "Find products matching \"{query}\" at {siteName}",
-    "metaCatalogDescription": "Search our product catalog at {siteName}"
-  }
+    "Sort": {
+        "nameAsc": "Name: A to Z",
+        "nameDesc": "Name: Z to A",
+        "priceAsc": "Price: Low to High",
+        "priceDesc": "Price: High to Low",
+        "placeholder": "Sort by",
+        "featured": "Featured"
+    },
+    "Filters": {
+        "title": "Filters",
+        "clearAll": "Clear all",
+        "filtersButton": "Filters",
+        "inStockOnly": "In stock only",
+        "categories": "Categories"
+    },
+    "Search": {
+        "title": "Search",
+        "pageTitle": "Search Products",
+        "resultsFor": "Search results for \"{query}\"",
+        "resultsTitle": "Search results for \"{query}\"",
+        "metaDescription": "Find products matching \"{query}\" at {siteName}",
+        "metaCatalogDescription": "Search our product catalog at {siteName}",
+        "loadErrorTitle": "Unable to load products.",
+        "loadErrorHint": "Please check your connection and try again.",
+        "retry": "Retry"
+    },
+    "Shop": {
+        "title": "Shop all products",
+        "subtitle": "Browse the full range, filter by category and availability, and add machines to your cart.",
+        "metaDescription": "Shop every product available online at {siteName}.",
+        "home": "Home",
+        "categories": "Categories",
+        "allProducts": "All products",
+        "eyebrow": "Millnex store",
+        "browseProducts": "Browse products"
+    }
 }

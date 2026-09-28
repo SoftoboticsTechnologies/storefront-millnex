@@ -116,6 +116,16 @@
       "errorMessage": "Please try again later or contact support if the problem persists.",
       "verifying": "Verifying Email...",
       "verifyingDesc": "Please wait while we verify your email address."
-    }
+    },
+    "overview": "Overview",
+    "signOut": "Sign out",
+    "welcomeBack": "Welcome back, {name}",
+    "ordersShortcut": "Track and review your orders",
+    "addressesShortcut": "Manage delivery addresses",
+    "profileShortcut": "Update your details and password",
+    "recentOrders": "Recent orders",
+    "viewAllOrders": "View all",
+    "ordersLoadError": "We couldn’t load your orders. Please try again later.",
+    "startShopping": "Start shopping"
   }
 }

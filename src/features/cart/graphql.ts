@@ -25,6 +25,7 @@ export const GetActiveOrderQuery = graphql(`
                     id
                     name
                     sku
+                    stockLevel
                     product {
                         id
                         name

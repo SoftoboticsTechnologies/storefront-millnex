@@ -3,7 +3,7 @@
     "loading": "Loading...",
     "sending": "Sending...",
     "sku": "SKU",
-    "siteDescription": "Shop the best products at {siteName}. Quality products, competitive prices, and fast delivery."
+    "siteDescription": "{siteName} manufactures domestic flour mills, pulverizers, masala machinery and food-processing machines."
   },
   "Errors": {
     "fieldsRequired": "All fields are required",

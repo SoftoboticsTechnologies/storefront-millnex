@@ -17,6 +17,17 @@
     "remove": "తీసివేయండి",
     "enterCode": "కోడ్‌ను నమోదు చేయండి",
     "apply": "వర్తింపజేయండి",
-    "sku": "SKU: {sku}"
+    "sku": "SKU: {sku}",
+    "updateFailed": "మీ కార్ట్‌ను అప్‌డేట్ చేయలేకపోయాం",
+    "lineOutOfStock": "స్టాక్‌లో లేదు — కొనసాగడానికి తొలగించండి",
+    "lineLowStock": "స్టాక్ తక్కువగా ఉంది",
+    "decreaseQuantity": "పరిమాణం తగ్గించండి",
+    "increaseQuantity": "పరిమాణం పెంచండి",
+    "taxIncluded": "పన్ను (చేర్చబడింది)",
+    "openCartWithCount": "కార్ట్ తెరవండి, {count, plural, =0 {ఖాళీ} one {# వస్తువు} other {# వస్తువులు}}",
+    "itemCount": "{count, plural, one {# వస్తువు} other {# వస్తువులు}}",
+    "loadError": "మీ కార్ట్‌ను లోడ్ చేయలేకపోయాం.",
+    "retry": "మళ్లీ ప్రయత్నించండి",
+    "viewCart": "కార్ట్ చూడండి"
   }
 }

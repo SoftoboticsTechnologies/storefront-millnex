@@ -3,6 +3,8 @@ import { Link } from '@/platform/i18n/navigation';
 import { query } from '@/platform/vendure/api';
 import {GetCollectionProductsQuery} from '@/features/collections/graphql';
 import {SearchProductsQuery} from '@/features/search/graphql';
+import {ListingBanner} from '@/components/listing-banner';
+import {cardFromSearchResult} from '@/features/products/product-card-data';
 import {buildSearchInput} from '@/features/search/search-helpers';
 import {getActiveCurrencyCode} from '@/features/currency/currency-server';
 import {CollectionResults} from '@/features/collections/routes/collection-results';
@@ -24,7 +26,9 @@ import {
 import {toOgLocale} from '@/platform/i18n/locale-utils';
 import {getRouteLocale} from '@/platform/i18n/server';
 import {getTranslations} from 'next-intl/server';
-import {getTopCollections} from '@/features/collections/data';
+import {getCollectionNames, getTopCollections} from '@/features/collections/data';
+import {EMPTY_STATIC_PARAM, withEmptyCatalogFallback} from '@/platform/next/static-export';
+import {notFound} from 'next/navigation';
 
 // Prerenders every known collection (root + children) at build time — static
 // export has no on-demand fallback for a slug that wasn't prerendered.
@@ -38,7 +42,7 @@ export async function generateStaticParams({
         collection.slug,
         ...(collection.children?.map((child) => child.slug) ?? []),
     ]);
-    return slugs.map((slug) => ({slug}));
+    return withEmptyCatalogFallback(slugs.map((slug) => ({slug})), {slug: EMPTY_STATIC_PARAM});
 }
 
 async function getCollectionMetadata(slug: string) {
@@ -120,34 +124,68 @@ export default async function CollectionPage({params}: PageProps<'/[locale]/coll
     const locale = await getRouteLocale();
     const t = await getTranslations({locale, namespace: 'Collection'});
 
-    // Name/breadcrumb are baked in at build time for SEO; product listing,
-    // filters, sort, and pagination are resolved live client-side (currency-
-    // and query-string-dependent) — see collection-results.tsx.
-    const collectionResult = await getCollectionMetadata(slug);
-    const collectionName = collectionResult.data.collection?.name ?? slug;
-    const initialProducts = await getDefaultCollectionProducts(slug);
+    if (slug === EMPTY_STATIC_PARAM) {
+        notFound();
+    }
+
+    // Name/description/breadcrumb are baked in at build time for SEO; the
+    // product listing, filters, sort, and pagination are resolved live
+    // client-side (currency- and query-string-dependent) — see
+    // collection-results.tsx.
+    const [collectionResult, initialProducts, collectionNames] = await Promise.all([
+        getCollectionMetadata(slug),
+        getDefaultCollectionProducts(slug),
+        getCollectionNames(locale),
+    ]);
+    const collection = collectionResult.data.collection;
+    const collectionName = collection?.name ?? slug;
+
+    // Real product images for the banner artwork (first page of results).
+    const bannerTiles = initialProducts.data.search.items.flatMap((item) => {
+        const card = cardFromSearchResult(item);
+        return card.imageUrl ? [{src: card.imageUrl, alt: card.name}] : [];
+    });
 
     return (
-        <div className="container mx-auto px-4 py-8 mt-16">
+        <div className="pb-16 pt-24 sm:pt-28">
             {/* Breadcrumbs */}
-            <Breadcrumb className="mb-6">
-                <BreadcrumbList>
-                    <BreadcrumbItem>
-                        <BreadcrumbLink render={<Link href="/" />}>{t('home')}</BreadcrumbLink>
-                    </BreadcrumbItem>
-                    <BreadcrumbSeparator />
-                    <BreadcrumbItem>
-                        <BreadcrumbPage>{collectionName}</BreadcrumbPage>
-                    </BreadcrumbItem>
-                </BreadcrumbList>
-            </Breadcrumb>
-
-            {/* Collection Header */}
-            <div className="mb-8">
-                <h1 className="text-3xl font-bold tracking-tight">{collectionName}</h1>
+            <div className="site-container">
+                <Breadcrumb className="mb-4">
+                    <BreadcrumbList>
+                        <BreadcrumbItem>
+                            <BreadcrumbLink render={<Link href="/" />}>{t('home')}</BreadcrumbLink>
+                        </BreadcrumbItem>
+                        <BreadcrumbSeparator />
+                        <BreadcrumbItem>
+                            <BreadcrumbLink render={<Link href="/shop" />}>{t('shop')}</BreadcrumbLink>
+                        </BreadcrumbItem>
+                        <BreadcrumbSeparator />
+                        <BreadcrumbItem>
+                            <BreadcrumbPage>{collectionName}</BreadcrumbPage>
+                        </BreadcrumbItem>
+                    </BreadcrumbList>
+                </Breadcrumb>
             </div>
 
-            <CollectionResults collectionSlug={slug} initialProducts={initialProducts.data} />
+            <ListingBanner
+                eyebrow={t('category')}
+                title={collectionName}
+                description={collection?.description ? {html: collection.description} : undefined}
+                ctaLabel={t('browseProducts')}
+                cover={collection?.featuredAsset ? {src: collection.featuredAsset.preview, alt: collectionName} : null}
+                tiles={bannerTiles}
+            />
+
+            <div className="site-container">
+                <div id="products" className="scroll-mt-28">
+                    <CollectionResults
+                        collectionSlug={slug}
+                        collectionId={collection?.id}
+                        initialProducts={initialProducts.data}
+                        collectionNames={collectionNames}
+                    />
+                </div>
+            </div>
         </div>
     );
 }

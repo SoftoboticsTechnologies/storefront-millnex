@@ -4,7 +4,7 @@ import {getTranslations} from 'next-intl/server';
 import {getRouteLocale} from '@/platform/i18n/server';
 import {SearchResults} from "@/features/search/routes/search-results";
 import {SearchTerm, SearchTermSkeleton} from "@/features/search/routes/search-term";
-import {SearchResultsSkeleton} from "@/features/search/components/search-results-skeleton";
+import {SearchResultsSkeleton} from "@/features/search/search-results-skeleton";
 import {SITE_NAME, noIndexRobots} from '@/config/metadata';
 
 // searchParams can't be read server-side under output: 'export' (no
@@ -24,7 +24,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default function SearchPage() {
     return (
-        <div className="container mx-auto px-4 py-8 mt-16">
+        <div className="site-container pb-16 pt-24 sm:pt-28">
             <Suspense fallback={<SearchTermSkeleton/>}>
                 <SearchTerm/>
             </Suspense>

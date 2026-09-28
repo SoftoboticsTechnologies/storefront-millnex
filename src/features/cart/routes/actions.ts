@@ -24,20 +24,25 @@ async function withCartModificationRetry<T extends {__typename: string}>(
 
 export async function removeFromCart(lineId: string) {
     const currencyCode = await getActiveCurrencyCode();
-    await withCartModificationRetry(async () => {
+    const result = await withCartModificationRetry(async () => {
         const result = await mutate(RemoveFromCartMutation, {lineId}, {useAuthToken: true, currencyCode});
         return result.data.removeOrderLine;
     });
     dispatchCartChanged();
+    return result;
 }
 
 export async function adjustQuantity(lineId: string, quantity: number) {
     const currencyCode = await getActiveCurrencyCode();
-    await withCartModificationRetry(async () => {
+    // Returned so callers can surface Vendure's own error (e.g.
+    // INSUFFICIENT_STOCK_ERROR, ORDER_LIMIT_ERROR) — stock limits are
+    // enforced by Vendure, never guessed client-side.
+    const result = await withCartModificationRetry(async () => {
         const result = await mutate(AdjustCartItemMutation, {lineId, quantity}, {useAuthToken: true, currencyCode});
         return result.data.adjustOrderLine;
     });
     dispatchCartChanged();
+    return result;
 }
 
 export async function applyPromotionCode(code: string) {

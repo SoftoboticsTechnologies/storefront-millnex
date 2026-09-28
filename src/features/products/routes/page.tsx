@@ -7,12 +7,6 @@ import { ProductInfo } from '@/features/products/components/product-info';
 import {getDisplayOptionGroups} from '@/features/products/product-options';
 import { RelatedProducts } from '@/features/products/components/related-products';
 import {
-    Accordion,
-    AccordionContent,
-    AccordionItem,
-    AccordionTrigger,
-} from '@/components/ui/accordion';
-import {
     Breadcrumb,
     BreadcrumbList,
     BreadcrumbItem,
@@ -21,7 +15,8 @@ import {
     BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 import { notFound } from 'next/navigation';
-import { Truck, RotateCcw, ShieldCheck, Clock } from 'lucide-react';
+import {MessageSquareText, PackageSearch, ShieldCheck, Truck} from 'lucide-react';
+import {stripHtml} from '@/features/products/product-card-data';
 import { routing } from '@/platform/i18n/routing';
 import {
     SITE_NAME,
@@ -34,6 +29,7 @@ import {toOgLocale} from '@/platform/i18n/locale-utils';
 import {getRouteLocale} from '@/platform/i18n/server';
 import {getPopularProductSlugs, getProductVariantParams} from '@/features/products/data';
 import {getActiveCurrencyCode} from '@/features/currency/currency-server';
+import {EMPTY_STATIC_PARAM, withEmptyCatalogFallback} from '@/platform/next/static-export';
 
 // Prerenders every product slug in the catalog at build time — static export
 // has no on-demand fallback for a slug that wasn't prerendered. Content
@@ -62,10 +58,10 @@ export async function generateStaticParams({
         getProductVariantParams(params.locale),
     ]);
 
-    return [
+    return withEmptyCatalogFallback<{slug: string; variant: string[]}>([
         ...slugs.map((slug) => ({slug, variant: []})),
         ...variantParams.map(({slug, variant}) => ({slug, variant: [variant]})),
-    ];
+    ], {slug: EMPTY_STATIC_PARAM, variant: []});
 }
 
 async function getProductData(slug: string) {
@@ -163,20 +159,36 @@ export default async function ProductDetailPage({
     // this product (Vendure 3.6 shared/global option groups).
     const productForDisplay = {...product, optionGroups: getDisplayOptionGroups(product)};
 
+    // Vendure facet values ("Type: Flour Mill") are the only structured
+    // product attributes the default schema has — grouped by facet for the
+    // "Product information" table. Hidden when the product has none.
+    const productInformation = Object.values(
+        (product.facetValues ?? []).reduce<Record<string, {facet: string; values: string[]}>>((groups, value) => {
+            const key = value.facet.id;
+            (groups[key] ??= {facet: value.facet.name, values: []}).values.push(value.name.replace(/,\s*$/, ''));
+            return groups;
+        }, {})
+    );
+    const hasDescription = stripHtml(product.description).length > 0;
+
     return (
         <>
-            <div className="container mx-auto px-4 py-8 mt-16">
+            <div className="site-container pb-12 pt-24 sm:pt-28">
                 {/* Breadcrumb Navigation */}
                 <Breadcrumb className="mb-6">
                     <BreadcrumbList>
                         <BreadcrumbItem>
                             <BreadcrumbLink render={<Link href="/" />}>{t('home')}</BreadcrumbLink>
                         </BreadcrumbItem>
+                        <BreadcrumbSeparator />
+                        <BreadcrumbItem>
+                            <BreadcrumbLink render={<Link href="/shop" />}>{t('shop')}</BreadcrumbLink>
+                        </BreadcrumbItem>
                         {primaryCollection && (
                             <>
                                 <BreadcrumbSeparator />
                                 <BreadcrumbItem>
-                                    <BreadcrumbLink render={<Link href={`/collection/${primaryCollection.slug}`} prefetch={false} />}>
+                                    <BreadcrumbLink render={<Link href={`/collection/${primaryCollection.slug}`} />}>
                                         {primaryCollection.name}
                                     </BreadcrumbLink>
                                 </BreadcrumbItem>
@@ -184,78 +196,84 @@ export default async function ProductDetailPage({
                         )}
                         <BreadcrumbSeparator />
                         <BreadcrumbItem>
-                            <BreadcrumbPage>{product.name}</BreadcrumbPage>
+                            <BreadcrumbPage className="line-clamp-1">{product.name}</BreadcrumbPage>
                         </BreadcrumbItem>
                     </BreadcrumbList>
                 </Breadcrumb>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-                    {/* Left Column: Image Carousel */}
-                    <div className="lg:sticky lg:top-20 lg:self-start">
+                <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-14">
+                    {/* Left Column: Image Gallery */}
+                    <div className="lg:sticky lg:top-24 lg:self-start">
                         <ProductImageCarousel images={product.assets} />
                     </div>
 
                     {/* Right Column: Product Info */}
                     <div>
-                        <ProductInfo product={productForDisplay} buildCurrencyCode={buildCurrencyCode} initialVariantId={initialVariant.id} />
+                        <ProductInfo
+                            product={productForDisplay}
+                            buildCurrencyCode={buildCurrencyCode}
+                            initialVariantId={initialVariant.id}
+                            category={primaryCollection ? {name: primaryCollection.name, slug: primaryCollection.slug} : undefined}
+                        />
                     </div>
                 </div>
             </div>
 
-            {/* Shipping & Trust Badges */}
-            <section className="py-8 mt-8 border-y border-border/50">
-                <div className="container mx-auto px-4">
-                    <div className="flex flex-wrap items-center justify-center gap-4 md:gap-8">
-                        <div className="inline-flex items-center gap-2 rounded-full bg-muted/60 px-4 py-2 text-sm font-medium text-muted-foreground">
-                            <Truck className="h-4 w-4 text-primary" />
-                            {t('trustBadges.fastShipping')}
-                        </div>
-                        <div className="inline-flex items-center gap-2 rounded-full bg-muted/60 px-4 py-2 text-sm font-medium text-muted-foreground">
-                            <RotateCcw className="h-4 w-4 text-primary" />
-                            {t('trustBadges.freeReturns')}
-                        </div>
-                        <div className="inline-flex items-center gap-2 rounded-full bg-muted/60 px-4 py-2 text-sm font-medium text-muted-foreground">
-                            <ShieldCheck className="h-4 w-4 text-primary" />
-                            {t('trustBadges.secureCheckout')}
-                        </div>
-                        <div className="inline-flex items-center gap-2 rounded-full bg-muted/60 px-4 py-2 text-sm font-medium text-muted-foreground">
-                            <Clock className="h-4 w-4 text-primary" />
-                            {t('trustBadges.guarantee')}
-                        </div>
+            {(hasDescription || productInformation.length > 0) && (
+                <section className="border-t border-border py-12 sm:py-16">
+                    <div className="site-container grid gap-10 lg:grid-cols-12 lg:gap-14">
+                        {hasDescription && (
+                            <div className={productInformation.length > 0 ? 'lg:col-span-7' : 'lg:col-span-12 lg:max-w-3xl'}>
+                                <h2 className="text-xl font-extrabold tracking-tight sm:text-2xl">{t('description')}</h2>
+                                <div
+                                    className="prose prose-sm mt-4 max-w-none text-muted-foreground sm:prose-base"
+                                    dangerouslySetInnerHTML={{__html: product.description}}
+                                />
+                            </div>
+                        )}
+                        {productInformation.length > 0 && (
+                            <div className={hasDescription ? 'lg:col-span-5' : 'lg:col-span-12 lg:max-w-xl'}>
+                                <h2 className="text-xl font-extrabold tracking-tight sm:text-2xl">{t('productInformation')}</h2>
+                                <dl className="mt-4 divide-y divide-border overflow-hidden rounded-2xl border border-border bg-card">
+                                    {productInformation.map((row) => (
+                                        <div key={row.facet} className="grid grid-cols-5 gap-4 px-4 py-3 text-sm">
+                                            <dt className="col-span-2 font-semibold">{row.facet}</dt>
+                                            <dd className="col-span-3 text-muted-foreground">{row.values.join(', ')}</dd>
+                                        </div>
+                                    ))}
+                                </dl>
+                            </div>
+                        )}
                     </div>
-                </div>
-            </section>
+                </section>
+            )}
 
-            {/* Store FAQ Section */}
-            <section className="py-16 bg-muted/30">
-                <div className="container mx-auto px-4 max-w-2xl">
-                    <h2 className="text-2xl font-bold text-center mb-8">{t('faq.title')}</h2>
-                    <Accordion className="w-full">
-                        <AccordionItem value="shipping">
-                            <AccordionTrigger>{t('faq.shipping.question')}</AccordionTrigger>
-                            <AccordionContent>
-                                {t('faq.shipping.answer')}
-                            </AccordionContent>
-                        </AccordionItem>
-                        <AccordionItem value="returns">
-                            <AccordionTrigger>{t('faq.returns.question')}</AccordionTrigger>
-                            <AccordionContent>
-                                {t('faq.returns.answer')}
-                            </AccordionContent>
-                        </AccordionItem>
-                        <AccordionItem value="tracking">
-                            <AccordionTrigger>{t('faq.tracking.question')}</AccordionTrigger>
-                            <AccordionContent>
-                                {t('faq.tracking.answer')}
-                            </AccordionContent>
-                        </AccordionItem>
-                        <AccordionItem value="international">
-                            <AccordionTrigger>{t('faq.international.question')}</AccordionTrigger>
-                            <AccordionContent>
-                                {t('faq.international.answer')}
-                            </AccordionContent>
-                        </AccordionItem>
-                    </Accordion>
+            {/* Only what the store actually does: Vendure prices shipping per
+                address at checkout, payment runs through the secure checkout,
+                orders are tracked in the account, and enquiries reach the team. */}
+            <section aria-labelledby="shipping-support" className="border-t border-border bg-surface/60 py-12 sm:py-16">
+                <div className="site-container">
+                    <h2 id="shipping-support" className="text-xl font-extrabold tracking-tight sm:text-2xl">{t('shippingSupport')}</h2>
+                    <ul className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                        {[
+                            {icon: Truck, title: t('shippingTitle'), body: t('shippingBody')},
+                            {icon: ShieldCheck, title: t('paymentTitle'), body: t('paymentBody')},
+                            {icon: PackageSearch, title: t('ordersTitle'), body: t('ordersBody'), href: '/account/orders'},
+                            {icon: MessageSquareText, title: t('helpTitle'), body: t('helpBody'), href: `/contact?product=${encodeURIComponent(product.slug)}#enquiry`},
+                        ].map(({icon: Icon, title, body, href}) => (
+                            <li key={title} className="relative rounded-2xl border border-border bg-card p-5 transition-colors hover:border-foreground/20">
+                                <span className="flex size-10 items-center justify-center rounded-xl bg-brand/10 text-brand">
+                                    <Icon className="size-5" />
+                                </span>
+                                <h3 className="mt-4 text-sm font-bold">
+                                    {href ? (
+                                        <Link href={href} className="after:absolute after:inset-0 hover:text-brand">{title}</Link>
+                                    ) : title}
+                                </h3>
+                                <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{body}</p>
+                            </li>
+                        ))}
+                    </ul>
                 </div>
             </section>
 

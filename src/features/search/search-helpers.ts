@@ -1,11 +1,17 @@
+export const DEFAULT_SORT = 'featured';
+
 export interface SearchInputParams {
     term?: string;
     collectionSlug?: string;
+    /** Category filter (`?category=<slug>`, repeatable) — Vendure matches products in any of them. */
+    collectionSlugs?: string[];
     take: number;
     skip: number;
     groupByProduct: boolean;
-    sort: { name?: 'ASC' | 'DESC'; price?: 'ASC' | 'DESC' };
+    /** Omitted for the default "featured" order (Vendure's own ranking — relevance when there's a term). */
+    sort?: { name?: 'ASC' | 'DESC'; price?: 'ASC' | 'DESC' };
     facetValueFilters?: Array<{ or: string[] }>;
+    inStock?: boolean;
 }
 
 interface BuildSearchInputOptions {
@@ -17,7 +23,7 @@ export function buildSearchInput({ searchParams, collectionSlug }: BuildSearchIn
     const page = Number(searchParams.page) || 1;
     const take = 12;
     const skip = (page - 1) * take;
-    const sort = (searchParams.sort as string) || 'name-asc';
+    const sort = (searchParams.sort as string) || DEFAULT_SORT;
     const searchTerm = searchParams.q as string;
 
     // Extract facet entries from search params, encoded as "<facetId>:<facetValueId>"
@@ -42,8 +48,13 @@ export function buildSearchInput({ searchParams, collectionSlug }: BuildSearchIn
         }
     }
 
-    // Map sort parameter to Vendure SearchResultSortParameter
-    const sortMapping: Record<string, { name?: 'ASC' | 'DESC'; price?: 'ASC' | 'DESC' }> = {
+    const categorySlugs = (Array.isArray(searchParams.category) ? searchParams.category : [searchParams.category])
+        .filter((slug): slug is string => !!slug);
+
+    // Map sort parameter to Vendure SearchResultSortParameter. "featured"
+    // sends no sort, leaving the order to Vendure (relevance for a term).
+    const sortMapping: Record<string, { name?: 'ASC' | 'DESC'; price?: 'ASC' | 'DESC' } | null> = {
+        'featured': null,
         'name-asc': { name: 'ASC' },
         'name-desc': { name: 'DESC' },
         'price-asc': { price: 'ASC' },
@@ -56,10 +67,16 @@ export function buildSearchInput({ searchParams, collectionSlug }: BuildSearchIn
         take,
         skip,
         groupByProduct: true,
-        sort: sortMapping[sort] || sortMapping['name-asc'],
+        ...(sortMapping[sort] && { sort: sortMapping[sort] }),
+        // A collection page is already scoped to one collection, so the
+        // category filter only applies to unscoped listings (shop, search).
+        ...(!collectionSlug && categorySlugs.length > 0 && { collectionSlugs: categorySlugs }),
         ...(facetValueIdsByFacet.size > 0 && {
             facetValueFilters: Array.from(facetValueIdsByFacet.values()).map(ids => ({ or: ids }))
-        })
+        }),
+        // Availability filter (`?inStock=1`) — Vendure's own SearchInput.inStock,
+        // independent of (and AND'd with) the facet groups above.
+        ...(searchParams.inStock === '1' && { inStock: true })
     };
 }
 

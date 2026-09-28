@@ -2,7 +2,7 @@ import type {Metadata, Viewport} from "next";
 import Script from "next/script";
 import {locale as rootLocale} from "next/root-params";
 import {hasLocale, NextIntlClientProvider} from "next-intl";
-import {Geist, Geist_Mono} from "next/font/google";
+import {Geist_Mono, Manrope} from "next/font/google";
 import {getMessages, getTranslations, setRequestLocale} from "next-intl/server";
 import {notFound} from "next/navigation";
 import {routing} from "@/platform/i18n/routing";
@@ -11,19 +11,24 @@ import {getRouteLocale} from "@/platform/i18n/server";
 import {Toaster} from "@/components/ui/sonner";
 import {Navbar} from '@/site/navigation/navbar';
 import {Footer} from "@/site/footer";
-import {AnnouncementBar} from "@/site/announcement-bar";
-import {ThemeProvider} from "@/site/providers/theme-provider";
+import {WhatsAppFloat} from "@/site/whatsapp-float";
+import {BackToTop} from "@/site/back-to-top";
+import {RevealObserver} from "@/site/ui/reveal-observer";
+import {BRAND_LOGO, OG_IMAGE} from "@/site/content/media";
+import {BareRouteHome, SiteChrome} from "@/site/navigation/site-chrome";
 import {AuthProvider} from "@/features/authentication/auth-context";
 import {SITE_NAME, SITE_URL} from "@/config/metadata";
 
-const geistSans = Geist({
-    variable: "--font-geist-sans",
+const manrope = Manrope({
+    variable: "--font-manrope",
     subsets: ["latin"],
+    display: "swap",
 });
 
 const geistMono = Geist_Mono({
     variable: "--font-geist-mono",
     subsets: ["latin"],
+    display: "swap",
 });
 
 export function generateStaticParams() {
@@ -46,9 +51,11 @@ export async function generateMetadata(): Promise<Metadata> {
             type: "website",
             siteName: SITE_NAME,
             locale: ogLocale,
+            images: [{url: OG_IMAGE.src, width: OG_IMAGE.width, height: OG_IMAGE.height, alt: SITE_NAME}],
         },
         twitter: {
             card: "summary_large_image",
+            images: [OG_IMAGE.src],
         },
         robots: {
             index: true,
@@ -73,10 +80,7 @@ export const viewport: Viewport = {
     width: "device-width",
     initialScale: 1,
     maximumScale: 5,
-    themeColor: [
-        {media: "(prefers-color-scheme: light)", color: "#ffffff"},
-        {media: "(prefers-color-scheme: dark)", color: "#000000"},
-    ],
+    themeColor: "#1b1917",
 };
 
 export default async function LocaleLayout({children}: {children: React.ReactNode}) {
@@ -88,22 +92,38 @@ export default async function LocaleLayout({children}: {children: React.ReactNod
 
     setRequestLocale(locale);
     const messages = await getMessages({locale});
+    const t = await getTranslations({locale, namespace: 'Navigation'});
 
+    // The Millnex brand system is light-first (with dedicated dark "ink"
+    // sections), so next-themes' ThemeProvider is no longer mounted — it also
+    // injected the inline <script> React warned about on every client render.
+    // Remount site/providers/theme-provider.tsx to bring theme switching back.
     return (
-        <html lang={locale} data-scroll-behavior="smooth" suppressHydrationWarning>
+        <html lang={locale} data-scroll-behavior="smooth">
             <body
-                className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}
+                /* Bottom padding reserves room for the mobile tab bar (navbar/mobile-tab-bar.tsx);
+                   dropped on auth routes, which render without it (site-chrome.tsx). */
+                className={`${manrope.variable} ${geistMono.variable} font-sans antialiased flex flex-col min-h-screen pb-[calc(4rem+env(safe-area-inset-bottom))] lg:pb-0 has-[[data-bare-route]]:pb-0`}
             >
+                <a
+                    href="#main-content"
+                    className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-lg focus:bg-brand focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-brand-foreground"
+                >
+                    {t('skipToContent')}
+                </a>
                 <NextIntlClientProvider locale={locale} messages={messages}>
-                    <ThemeProvider>
-                        <AuthProvider>
-                            <AnnouncementBar />
-                            <Navbar />
+                    <AuthProvider>
+                        <SiteChrome><Navbar /></SiteChrome>
+                        <BareRouteHome logo={{...BRAND_LOGO, alt: t('logoAlt')}} />
+                        <div id="main-content" className="flex flex-1 flex-col">
                             {children}
-                            <Footer/>
-                            <Toaster/>
-                        </AuthProvider>
-                    </ThemeProvider>
+                        </div>
+                        <SiteChrome><Footer/></SiteChrome>
+                        <BackToTop label={t('backToTop')} />
+                        <WhatsAppFloat />
+                        <RevealObserver />
+                        <Toaster theme="light" />
+                    </AuthProvider>
                 </NextIntlClientProvider>
                 <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="afterInteractive" />
                 <Script src="https://sdk.cashfree.com/js/v3/cashfree.js" strategy="afterInteractive" />

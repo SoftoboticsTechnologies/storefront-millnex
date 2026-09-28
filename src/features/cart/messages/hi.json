@@ -17,6 +17,17 @@
     "remove": "हटाएं",
     "enterCode": "कोड दर्ज करें",
     "apply": "लागू करें",
-    "sku": "SKU: {sku}"
+    "sku": "SKU: {sku}",
+    "updateFailed": "आपका कार्ट अपडेट नहीं हो सका",
+    "lineOutOfStock": "स्टॉक में नहीं — जारी रखने के लिए हटाएँ",
+    "lineLowStock": "स्टॉक कम है",
+    "decreaseQuantity": "मात्रा घटाएँ",
+    "increaseQuantity": "मात्रा बढ़ाएँ",
+    "taxIncluded": "कर (शामिल)",
+    "openCartWithCount": "कार्ट खोलें, {count, plural, =0 {खाली} one {# आइटम} other {# आइटम}}",
+    "itemCount": "{count, plural, one {# आइटम} other {# आइटम}}",
+    "loadError": "आपका कार्ट लोड नहीं हो सका।",
+    "retry": "फिर से प्रयास करें",
+    "viewCart": "कार्ट देखें"
   }
 }

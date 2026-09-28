@@ -2,39 +2,33 @@
 
 import {ProductCard} from "@/features/products/components/product-card";
 import {Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious,} from "@/components/ui/carousel";
-import {FragmentOf, readFragment} from "@/platform/vendure/graphql";
-import {ProductCardFragment} from '@/features/products/graphql';
+import type {ProductCardData} from '@/features/products/product-card-data';
 
 interface ProductCarouselClientProps {
-    title: string;
-    products: Array<FragmentOf<typeof ProductCardFragment>>;
+    products: ProductCardData[];
+    collectionNames?: Record<string, string>;
     preloadFirstProduct?: boolean;
 }
 
-export function ProductCarousel({title, products, preloadFirstProduct}: ProductCarouselClientProps) {
+export function ProductCarousel({products, collectionNames, preloadFirstProduct}: ProductCarouselClientProps) {
     return (
-        <section className="py-12 md:py-16">
-            <div className="container mx-auto px-4">
-                <h2 className="text-3xl md:text-4xl font-bold mb-8">{title}</h2>
-                <Carousel
-                    opts={{
-                        align: "start",
-                        loop: true,
-                    }}
-                    className="w-full"
-                >
-                    <CarouselContent className="-ml-2 md:-ml-4">
-                        {products.map((product, index) => (
-                            <CarouselItem key={readFragment(ProductCardFragment, product).productId}
-                                          className="pl-2 md:pl-4 basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4">
-                                <ProductCard product={product} preload={preloadFirstProduct && index === 0}/>
-                            </CarouselItem>
-                        ))}
-                    </CarouselContent>
-                    <CarouselPrevious className="hidden md:flex"/>
-                    <CarouselNext className="hidden md:flex"/>
-                </Carousel>
-            </div>
-        </section>
+        <Carousel opts={{align: "start"}} className="w-full">
+            <CarouselContent className="-ml-3 sm:-ml-5">
+                {products.map((product, index) => (
+                    <CarouselItem
+                        key={product.productId}
+                        className="basis-1/2 pl-3 sm:pl-5 md:basis-1/3 xl:basis-1/4"
+                    >
+                        <ProductCard
+                            product={product}
+                            category={product.collectionIds.map((id) => collectionNames?.[id]).find(Boolean)}
+                            preload={preloadFirstProduct && index === 0}
+                        />
+                    </CarouselItem>
+                ))}
+            </CarouselContent>
+            <CarouselPrevious className="-left-4 hidden bg-card md:flex"/>
+            <CarouselNext className="-right-4 hidden bg-card md:flex"/>
+        </Carousel>
     );
 }

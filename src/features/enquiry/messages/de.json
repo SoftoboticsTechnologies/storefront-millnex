@@ -1,0 +1,52 @@
+{
+  "Enquiry": {
+    "fields": {
+      "name": "Name",
+      "phone": "Telefonnummer",
+      "email": "E-Mail",
+      "company": "Firma / Unternehmen",
+      "product": "Gewünschtes Produkt",
+      "message": "Anforderung / Nachricht"
+    },
+    "placeholders": {
+      "name": "Ihr vollständiger Name",
+      "phone": "+91 98765 43210",
+      "email": "sie@unternehmen.de",
+      "company": "Optional",
+      "message": "Was möchten Sie mahlen, wie viel ungefähr pro Tag, und wohin soll geliefert werden?"
+    },
+    "productNotSure": "Noch unsicher – bitte beraten Sie mich",
+    "validation": {
+      "name": "Bitte geben Sie Ihren Namen ein.",
+      "phone": "Bitte geben Sie eine gültige Telefonnummer ein (10–15 Ziffern).",
+      "email": "Bitte geben Sie eine gültige E-Mail-Adresse ein.",
+      "message": "Bitte beschreiben Sie kurz Ihre Anforderung (mindestens 10 Zeichen).",
+      "messageTooLong": "Bitte halten Sie Ihre Nachricht unter 2000 Zeichen."
+    },
+    "requiredNote": "* Pflichtfeld. Wir verwenden Ihre Angaben nur zur Beantwortung dieser Anfrage.",
+    "submit": "Anfrage senden",
+    "submitting": "Wird gesendet…",
+    "subject": "Website-Anfrage: {product}",
+    "generalEnquiry": "Allgemeine Anfrage",
+    "handoffIntro": "Hallo {company}, ich hätte gern ein Angebot. Meine Anforderung:",
+    "success": {
+      "title": "Vielen Dank – Ihre Anfrage wurde gesendet",
+      "body": "Unser Team prüft Ihre Anforderung und meldet sich in Kürze bei Ihnen.",
+      "handoffTitle": "Fast geschafft – senden Sie Ihre Anfrage ab",
+      "whatsappBody": "Wir haben WhatsApp mit Ihrer Anfrage geöffnet. Tippen Sie dort auf Senden.",
+      "emailBody": "Wir haben Ihr E-Mail-Programm mit Ihrer Anfrage geöffnet. Klicken Sie dort auf Senden.",
+      "openWhatsApp": "WhatsApp öffnen",
+      "openEmail": "E-Mail öffnen",
+      "sendAnother": "Weitere Anfrage senden"
+    },
+    "error": {
+      "title": "Ihre Anfrage konnte nicht gesendet werden",
+      "body": "Bitte versuchen Sie es gleich noch einmal oder kontaktieren Sie uns direkt:",
+      "notConfiguredTitle": "Online-Anfragen sind noch nicht verfügbar",
+      "notConfiguredBody": "Bitte kontaktieren Sie unser Team vorerst direkt."
+    },
+    "requestQuote": "Angebot anfordern",
+    "quoteTitle": "Angebot anfordern",
+    "quoteDescription": "Sagen Sie uns, was Sie brauchen – unser Team empfiehlt die passende Maschine und sendet Ihnen ein Angebot."
+  }
+}

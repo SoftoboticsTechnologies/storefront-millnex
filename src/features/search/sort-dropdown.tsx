@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/select';
 import {usePathname, useRouter} from '@/platform/i18n/navigation';
 import {useTranslations} from 'next-intl';
+import {DEFAULT_SORT} from '@/features/search/search-helpers';
 
 interface SortDropdownProps {
     /**
@@ -27,13 +28,14 @@ export function SortDropdown({searchParamsString}: SortDropdownProps) {
     const router = useRouter();
 
     const sortOptions = [
+        {value: 'featured', label: t('featured')},
         {value: 'name-asc', label: t('nameAsc')},
         {value: 'name-desc', label: t('nameDesc')},
         {value: 'price-asc', label: t('priceAsc')},
         {value: 'price-desc', label: t('priceDesc')},
     ];
 
-    const currentSort = new URLSearchParams(searchParamsString).get('sort') || 'name-asc';
+    const currentSort = new URLSearchParams(searchParamsString).get('sort') || DEFAULT_SORT;
 
     const handleSortChange = (value: string | null) => {
         if (!value) return;

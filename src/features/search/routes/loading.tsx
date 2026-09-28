@@ -1,9 +1,9 @@
 import { SearchTermSkeleton } from '@/features/search/routes/search-term';
-import { SearchResultsSkeleton } from '@/features/search/components/search-results-skeleton';
+import { SearchResultsSkeleton } from '@/features/search/search-results-skeleton';
 
 export default function SearchLoading() {
     return (
-        <div className="container mx-auto px-4 py-8 mt-16">
+        <div className="site-container pb-16 pt-24 sm:pt-28">
             <SearchTermSkeleton />
             <SearchResultsSkeleton />
         </div>
