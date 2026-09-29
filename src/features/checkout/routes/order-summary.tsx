@@ -18,13 +18,13 @@ function OrderSummaryContent({ order, t }: { order: ReturnType<typeof useCheckou
         {order.lines.map((line: OrderLine) => (
           <div key={line.id} className="flex gap-3">
             {line.productVariant.product.featuredAsset ? (
-              <div className="flex-shrink-0 w-14 h-14 rounded-lg overflow-hidden bg-muted">
+              <div className="flex-shrink-0 w-14 h-14 rounded-lg overflow-hidden border border-border bg-stage">
                 <Image
                   src={line.productVariant.product.featuredAsset.preview}
                   alt={line.productVariant.name}
                   width={56}
                   height={56}
-                  className="object-cover w-full h-full"
+                  className="object-contain p-0.5 mix-blend-multiply w-full h-full"
                 />
               </div>
             ) : (
@@ -111,7 +111,7 @@ export default function OrderSummary() {
             <CollapsibleTrigger className="w-full">
               <CardHeader className="cursor-pointer">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2 font-display font-bold">
                     <ShoppingBag className="h-5 w-5" />
                     {t('orderSummary')} ({order.lines.length} {order.lines.length === 1 ? t('item') : t('items')})
                   </CardTitle>
@@ -135,9 +135,9 @@ export default function OrderSummary() {
 
       {/* Desktop: Always visible sticky summary */}
       <div className="hidden lg:block">
-        <Card className="sticky top-24">
+        <Card className="sticky top-32 shadow-none">
           <CardHeader>
-            <CardTitle>{t('orderSummary')}</CardTitle>
+            <CardTitle className="font-display-wide text-lg font-extrabold">{t('orderSummary')}</CardTitle>
           </CardHeader>
           <CardContent>
             <OrderSummaryContent order={order} t={t} />

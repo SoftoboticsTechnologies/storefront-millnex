@@ -1,7 +1,15 @@
 import type {ReactNode} from 'react';
 import Image from 'next/image';
-import {ArrowDown} from 'lucide-react';
+import {Link} from '@/platform/i18n/navigation';
 import {cn} from '@/lib/utils';
+import {
+    Breadcrumb,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbList,
+    BreadcrumbPage,
+    BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb';
 
 export interface ListingBannerImage {
     /** Vendure asset preview URL (without a preset query). */
@@ -9,99 +17,102 @@ export interface ListingBannerImage {
     alt: string;
 }
 
+export interface ListingBreadcrumb {
+    label: string;
+    /** Omit for the current page (last crumb). */
+    href?: string;
+}
+
+const MAX_TILES = 3;
+
 /**
- * Full-width dark title banner for product listing pages (shop, collection).
- * Render it outside `site-container`; its content re-aligns to the container.
+ * Title band for product listing pages (shop, collection, search): a dark
+ * graphite band with a faint blueprint grid, breadcrumb, headline, short
+ * description, a live-data meta line and optional actions. It includes the
+ * fixed header's height in its own top padding, so render it as the first
+ * element of the page, outside `site-container`.
  *
- * Artwork is always real Vendure imagery, never stock:
- * - `cover` — a collection's own featured image, bled in from the right
- *   behind a charcoal scrim (full-bleed behind the text on phones).
- * - `tiles` — product images, shown whole on white cards from md up; they
- *   are portrait promo tiles with captions, so they are never cropped to a
- *   landscape frame. On phones the first one sits faintly behind the scrim.
+ * Artwork is only ever real Vendure imagery (product photos / a collection's
+ * own image), shown whole on white "stage" tiles — product photos carry
+ * baked-in captions and white backgrounds, so they are never cropped.
  */
 export function ListingBanner({
-    eyebrow,
+    breadcrumbs,
     title,
     description,
-    ctaLabel,
-    ctaHref = '#products',
-    cover,
+    meta,
+    actions,
     tiles = [],
-    children,
 }: {
-    eyebrow: string;
-    title: string;
+    breadcrumbs: ListingBreadcrumb[];
+    /** Rendered inside the page's single <h1>. */
+    title: ReactNode;
     /** Plain text, or trusted Vendure rich-text HTML. */
     description?: {text: string} | {html: string};
-    ctaLabel: string;
-    ctaHref?: string;
-    cover?: ListingBannerImage | null;
+    /** Short live-data line, e.g. the product count. */
+    meta?: ReactNode;
+    actions?: ReactNode;
     tiles?: ListingBannerImage[];
-    children?: ReactNode;
 }) {
-    const shownTiles = cover ? [] : tiles.slice(0, 3);
-    const backdrop = cover ?? shownTiles[0] ?? null;
+    const shownTiles = dedupeTiles(tiles).slice(0, MAX_TILES);
 
     return (
-        <section className="relative isolate mb-8 overflow-hidden bg-ink text-ink-foreground">
-            {backdrop && (
-                <div aria-hidden="true" className={cn('absolute inset-0 -z-10', !cover && 'md:hidden', cover && 'md:left-[45%]')}>
-                    <Image
-                        src={`${backdrop.src}?preset=large`}
-                        alt=""
-                        fill
-                        priority
-                        sizes="(min-width: 768px) 60vw, 100vw"
-                        className={cn('object-cover', !cover && 'object-top opacity-60')}
-                    />
-                    {/* Scrim: solid behind the text, fading out towards the image. */}
-                    <div className="absolute inset-0 bg-ink/75 md:bg-transparent md:bg-gradient-to-r md:from-ink md:via-ink/60 md:to-transparent" />
-                </div>
-            )}
-            <div aria-hidden="true" className="absolute -left-24 -top-24 -z-10 size-72 rounded-full bg-brand/25 blur-[110px]" />
+        <section className="relative isolate overflow-hidden bg-tint-sheen text-foreground">
 
-            <div className="site-container flex items-center gap-8 py-6 sm:py-8 lg:py-9">
-                <div className="min-w-0 max-w-xl flex-1">
-                    <p className="text-xs font-bold uppercase tracking-[0.2em] text-brand-bright">{eyebrow}</p>
-                    <h1 className="mt-2 text-2xl font-extrabold leading-[1.1] tracking-tight sm:text-3xl lg:text-4xl">{title}</h1>
+            <div className="site-container flex items-end gap-10 pb-10 pt-24 sm:pb-12 lg:pb-14 lg:pt-36">
+                <div className="min-w-0 max-w-2xl flex-1">
+                    <Breadcrumb>
+                        <BreadcrumbList className="text-xs text-muted-foreground sm:text-[13px]">
+                            {breadcrumbs.map((crumb, index) => (
+                                <BreadcrumbCrumb key={`${crumb.label}-${index}`} crumb={crumb} first={index === 0} />
+                            ))}
+                        </BreadcrumbList>
+                    </Breadcrumb>
+
+                    <h1 className="animate-hero-rise mt-6 sm:mt-8 font-display-wide text-[2rem] font-bold leading-[1.05] text-balance text-foreground sm:text-5xl lg:text-[3.5rem]">
+                        {title}
+                    </h1>
                     {description && ('html' in description ? (
                         <div
-                            className="mt-2 line-clamp-2 text-sm leading-relaxed text-ink-muted sm:text-base [&_*]:text-inherit"
+                            className="mt-4 line-clamp-3 max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-base [&_*]:text-inherit"
                             dangerouslySetInnerHTML={{__html: description.html}}
                         />
                     ) : (
-                        <p className="mt-2 text-sm leading-relaxed text-ink-muted sm:text-base">{description.text}</p>
+                        <p className="mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-base">{description.text}</p>
                     ))}
-                    <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-3 sm:mt-5">
-                        <a
-                            href={ctaHref}
-                            className="inline-flex h-10 items-center gap-2 rounded-full bg-brand px-5 text-sm font-bold text-brand-foreground transition-colors hover:bg-brand/90 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-brand-bright/50"
-                        >
-                            {ctaLabel}
-                            <ArrowDown className="size-4" />
-                        </a>
-                        {children && <div className="text-sm font-semibold text-ink-muted">{children}</div>}
-                    </div>
+
+                    {(meta || actions) && (
+                        <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-4 sm:mt-8">
+                            {actions}
+                            {meta && (
+                                <p className="spec-label flex items-center gap-2 text-muted-foreground">
+                                    <span aria-hidden="true" className="size-1.5 rounded-full bg-brand" />
+                                    {meta}
+                                </p>
+                            )}
+                        </div>
+                    )}
                 </div>
 
                 {shownTiles.length > 0 && (
-                    // Negative margins let the tiles use the banner's vertical padding,
-                    // so they grow without making the banner any taller.
-                    <ul aria-hidden="true" className="-my-6 ml-auto hidden shrink-0 items-center md:flex lg:-my-[25.5px]">
+                    <ul aria-hidden="true" className="ml-auto hidden shrink-0 items-end gap-3 md:flex lg:gap-4">
                         {shownTiles.map((tile, index) => (
                             <li
                                 key={tile.src}
                                 className={cn(
-                                    'relative aspect-[3/4] w-28 overflow-hidden rounded-xl bg-white shadow-[0_18px_40px_-18px_rgb(0_0_0/0.7)] ring-1 ring-white/10 lg:w-[150px]',
-                                    index > 0 && '-ml-5 lg:-ml-7',
-                                    index === 0 && '-rotate-3',
-                                    index === 2 && 'rotate-3',
+                                    'frame-ticks relative aspect-[4/5] w-28 overflow-hidden rounded-xl bg-white ring-1 ring-border shadow-[0_28px_50px_-30px_rgb(10_40_80/0.3)] lg:w-36 xl:w-40',
+                                    // Stepped heights read as a considered composition, not a stack of cards.
+                                    index === 1 && 'mb-6 lg:mb-10',
                                     index === 2 && 'hidden lg:block',
                                 )}
-                                style={{zIndex: index === 1 ? 3 : 2 - index}}
                             >
-                                <Image src={`${tile.src}?preset=medium`} alt="" fill sizes="(min-width: 1024px) 150px, 112px" className="object-contain" />
+                                <Image
+                                    src={`${tile.src}?preset=medium`}
+                                    alt=""
+                                    fill
+                                    sizes="(min-width: 1280px) 160px, (min-width: 1024px) 144px, 112px"
+                                    className="object-contain p-2 mix-blend-multiply"
+                                />
                             </li>
                         ))}
                     </ul>
@@ -111,16 +122,44 @@ export function ListingBanner({
     );
 }
 
-/** Loading placeholder with the banner's footprint, for route `loading.tsx` files. */
+function BreadcrumbCrumb({crumb, first}: {crumb: ListingBreadcrumb; first: boolean}) {
+    return (
+        <>
+            {!first && <BreadcrumbSeparator className="text-muted-foreground">/</BreadcrumbSeparator>}
+            <BreadcrumbItem>
+                {crumb.href ? (
+                    <BreadcrumbLink render={<Link href={crumb.href} />} className="hover:text-foreground">
+                        {crumb.label}
+                    </BreadcrumbLink>
+                ) : (
+                    <BreadcrumbPage className="font-medium text-foreground">{crumb.label}</BreadcrumbPage>
+                )}
+            </BreadcrumbItem>
+        </>
+    );
+}
+
+function dedupeTiles(tiles: ListingBannerImage[]): ListingBannerImage[] {
+    const seen = new Set<string>();
+    return tiles.filter((tile) => {
+        if (seen.has(tile.src)) return false;
+        seen.add(tile.src);
+        return true;
+    });
+}
+
+/** Loading placeholder with the band's footprint, for route `loading.tsx` files. */
 export function ListingBannerSkeleton() {
     return (
-        <div aria-hidden="true" className="mb-8 bg-ink py-6 sm:py-8 lg:py-9">
-            <div className="site-container">
-                <div className="max-w-xl space-y-3">
-                    <div className="h-3 w-24 animate-pulse rounded bg-white/15" />
-                    <div className="h-8 w-2/3 animate-pulse rounded bg-white/15 lg:h-10" />
-                    <div className="h-4 w-full animate-pulse rounded bg-white/10" />
-                    <div className="h-10 w-40 animate-pulse rounded-full bg-white/15" />
+        <div aria-hidden="true" className="bg-tint-sheen">
+            <div className="site-container pb-10 pt-24 sm:pb-12 lg:pb-14 lg:pt-36">
+                <div className="max-w-2xl">
+                    <div className="h-3 w-32 animate-pulse rounded bg-foreground/10" />
+                    <div className="mt-6 h-3 w-24 animate-pulse rounded bg-foreground/10 sm:mt-8" />
+                    <div className="mt-4 h-9 w-4/5 animate-pulse rounded-lg bg-foreground/10 sm:h-12 lg:h-14" />
+                    <div className="mt-4 h-4 w-full max-w-xl animate-pulse rounded bg-foreground/10" />
+                    <div className="mt-2 h-4 w-2/3 max-w-md animate-pulse rounded bg-foreground/10" />
+                    <div className="mt-6 h-3 w-40 animate-pulse rounded bg-foreground/10 sm:mt-8" />
                 </div>
             </div>
         </div>

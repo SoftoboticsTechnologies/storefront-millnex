@@ -1,54 +1,29 @@
-import {Card, CardContent, CardDescription, CardHeader, CardTitle} from '@/components/ui/card';
 import {Skeleton} from '@/components/ui/skeleton';
 
+/** Mirrors the profile page: heading band + three form cards. */
 export default function ProfileLoading() {
     return (
-        <div className="space-y-6">
-            <div>
-                <h1 className="text-3xl font-bold">Profile</h1>
-                <p className="text-muted-foreground mt-2">
-                    Manage your account information
-                </p>
+        <div className="space-y-6" aria-busy="true">
+            <div className="border-b border-border pb-6">
+                <Skeleton className="h-10 w-56" />
+                <Skeleton className="mt-3 h-4 w-64 max-w-full" />
             </div>
 
-            <Card>
-                <CardHeader>
-                    <CardTitle>Account Information</CardTitle>
-                    <CardDescription>
-                        Your personal details
-                    </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                    <div>
-                        <p className="text-sm font-medium">Email</p>
-                        <Skeleton className="h-4 w-48 mt-1"/>
-                    </div>
-                    <div>
-                        <p className="text-sm font-medium">Name</p>
-                        <Skeleton className="h-4 w-32 mt-1"/>
-                    </div>
-                </CardContent>
-            </Card>
-
-            <Card>
-                <CardHeader>
-                    <CardTitle>Change Password</CardTitle>
-                    <CardDescription>
-                        Update your password
-                    </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
+            {[2, 3, 3].map((fields, i) => (
+                <div key={i} className="space-y-5 rounded-xl border border-border bg-card p-6">
                     <div className="space-y-2">
-                        <Skeleton className="h-4 w-32"/>
-                        <Skeleton className="h-10 w-full"/>
+                        <Skeleton className="h-5 w-44" />
+                        <Skeleton className="h-4 w-64 max-w-full" />
                     </div>
-                    <div className="space-y-2">
-                        <Skeleton className="h-4 w-32"/>
-                        <Skeleton className="h-10 w-full"/>
-                    </div>
-                    <Skeleton className="h-10 w-32"/>
-                </CardContent>
-            </Card>
+                    {Array.from({length: fields}).map((_, j) => (
+                        <div key={j} className="space-y-2">
+                            <Skeleton className="h-4 w-28" />
+                            <Skeleton className="h-10 w-full rounded-lg" />
+                        </div>
+                    ))}
+                    <Skeleton className="h-10 w-36 rounded-lg" />
+                </div>
+            ))}
         </div>
     );
 }

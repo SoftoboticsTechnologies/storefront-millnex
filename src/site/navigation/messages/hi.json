@@ -42,6 +42,27 @@
     "seeAllResults": "\"{term}\" के सभी परिणाम देखें",
     "wishlist": "विशलिस्ट",
     "faq": "सामान्य प्रश्न",
-    "backToTop": "ऊपर जाएँ"
+    "backToTop": "ऊपर जाएँ",
+    "manufacturing": "निर्माण",
+    "compare": "मशीनों की तुलना करें",
+    "utilityDomestic": "घरेलू और व्यावसायिक मिलिंग समाधान",
+    "utilitySupport": "विशेषज्ञ सहायता",
+    "utilitySecure": "सुरक्षित खरीदारी",
+    "megaCategories": "श्रेणी के अनुसार खरीदें",
+    "megaByType": "{facet} के अनुसार खरीदें",
+    "megaViewCategory": "सभी देखें",
+    "megaMachineCount": "{count} मशीनें",
+    "megaHelpTitle": "कौन सी मशीन, तय नहीं?",
+    "megaHelpBody": "बताइए आप क्या और कितना पीसते हैं। हमारी टीम मॉडल की सिफारिश करेगी और कोटेशन भेजेगी।",
+    "browseAllMachines": "सभी मशीनें देखें",
+    "recentSearches": "हाल की खोजें",
+    "clearRecent": "साफ़ करें",
+    "popularCategories": "लोकप्रिय श्रेणियाँ",
+    "searchHint": "मशीन का नाम, श्रेणी, प्रकार या SKU से खोजें",
+    "matchingProducts": "मिलती-जुलती मशीनें",
+    "closeSearch": "खोज बंद करें",
+    "chatWithMillnex": "Millnex से चैट करें",
+    "company": "कंपनी",
+    "callUs": "कॉल करें {phone}"
   }
 }

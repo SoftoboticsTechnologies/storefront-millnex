@@ -31,17 +31,17 @@ export default async function CreditsPage() {
                 body={t('creditsBody')}
                 crumbs={[{label: tNav('home'), href: '/'}, {label: t('creditsTitle')}]}
             />
-            <section className="py-16 lg:py-24">
+            <section className="bg-background py-16 sm:py-20 lg:py-24">
                 <div className="site-container">
-                    <ul className="divide-y divide-border overflow-hidden rounded-2xl border border-border bg-card">
+                    <ul className="divide-y divide-border overflow-hidden rounded-xl border border-border bg-card">
                         {credited.map(({src, credit}) => credit && (
-                            <li key={src} className="flex flex-col gap-1 px-6 py-4 text-sm sm:flex-row sm:items-center sm:justify-between">
-                                <a href={credit.sourceUrl} target="_blank" rel="noopener noreferrer" className="font-semibold hover:text-brand">
+                            <li key={src} className="flex flex-col gap-1.5 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6 sm:px-6">
+                                <a href={credit.sourceUrl} target="_blank" rel="noopener noreferrer" className="min-w-0 font-semibold break-words transition-colors hover:text-brand">
                                     “{credit.title}”
                                 </a>
-                                <span className="text-muted-foreground">
-                                    {credit.author} ·{' '}
-                                    <a href={LICENSE_URLS[credit.license]} target="_blank" rel="noopener noreferrer license" className="underline underline-offset-2 hover:text-foreground">
+                                <span className="flex shrink-0 flex-wrap items-center gap-x-2 text-sm text-muted-foreground">
+                                    {credit.author}
+                                    <a href={LICENSE_URLS[credit.license]} target="_blank" rel="noopener noreferrer license" className="spec-label rounded border border-border px-1.5 py-0.5 text-steel transition-colors hover:text-foreground">
                                         {credit.license}
                                     </a>
                                 </span>

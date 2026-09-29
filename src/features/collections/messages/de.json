@@ -5,7 +5,10 @@
         "browseCollectionAt": "Entdecken Sie unsere {name}-Kollektion bei {siteName}",
         "shop": "Shop",
         "category": "Kategorie",
-        "productCount": "{count, plural, =0 {Noch keine Produkte} one {# Produkt} other {# Produkte}}",
-        "browseProducts": "Produkte ansehen"
+        "productCount": "{count, plural, =0 {Noch keine Maschinen} one {# Maschine} other {# Maschinen}}",
+        "browseProducts": "Produkte ansehen",
+        "fallbackDescription": "Alle Maschinen der Kategorie {name} im Millnex-Katalog, mit aktuellen Preisen und Verfügbarkeit. Technische Daten oder ein Angebot erhalten Sie von unserem Team.",
+        "allTab": "Alle",
+        "categoryTabs": "Maschinenkategorien"
     }
 }

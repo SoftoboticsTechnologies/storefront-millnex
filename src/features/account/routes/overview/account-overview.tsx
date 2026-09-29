@@ -2,14 +2,12 @@
 
 import {useEffect, useState} from 'react';
 import {useLocale, useTranslations} from 'next-intl';
-import {ArrowRight, MapPin, Package, User} from 'lucide-react';
+import {ArrowRight, ArrowUpRight, Heart, MapPin, Package, User} from 'lucide-react';
 import type {ResultOf} from '@/platform/vendure/graphql';
 import {query} from '@/platform/vendure/client-api';
 import {Link} from '@/platform/i18n/navigation';
-import {formatDate} from '@/platform/i18n/format';
-import {Price} from '@/features/pricing/price';
-import {OrderStatusBadge} from '@/features/orders/order-status-badge';
 import {useActiveCustomer} from '@/features/account/customer';
+import {RecentOrderCard} from '@/features/account/components/order-card';
 import {GetCustomerOrdersQuery} from '@/features/account/graphql';
 
 type OrderListItem = NonNullable<ResultOf<typeof GetCustomerOrdersQuery>['activeCustomer']>['orders']['items'][number];
@@ -49,38 +47,67 @@ export function AccountOverview() {
         };
     }, []);
 
+    const fullName = [customer?.firstName, customer?.lastName].filter(Boolean).join(' ');
     const shortcuts = [
-        {href: '/account/orders', icon: Package, title: t('orders'), body: t('ordersShortcut')},
-        {href: '/account/addresses', icon: MapPin, title: t('addresses'), body: t('addressesShortcut')},
-        {href: '/account/profile', icon: User, title: t('profile'), body: t('profileShortcut')},
+        {
+            href: '/account/orders',
+            icon: Package,
+            title: t('orders'),
+            // Real count from the orders query this page already runs.
+            summary: orders !== null && !ordersFailed ? t('ordersCount', {count: totalOrders}) : null,
+            body: t('ordersShortcut'),
+        },
+        {
+            href: '/wishlist',
+            icon: Heart,
+            title: t('wishlist'),
+            summary: null,
+            body: t('wishlistShortcut'),
+        },
+        {href: '/account/addresses', icon: MapPin, title: t('addresses'), summary: null, body: t('addressesShortcut')},
+        {
+            href: '/account/profile',
+            icon: User,
+            title: t('accountDetails'),
+            summary: fullName || null,
+            body: customer?.emailAddress ?? t('profileShortcut'),
+        },
     ];
 
     return (
-        <div className="space-y-8">
-            <header>
-                <h1 className="text-3xl font-extrabold tracking-tight">
+        <div className="space-y-10">
+            <header className="border-b border-border pb-6">
+                <p className="spec-label text-steel">{t('pageTitle')}</p>
+                <h1 className="mt-2 font-display-wide text-3xl font-extrabold tracking-tight sm:text-4xl">
                     {customer?.firstName ? t('welcomeBack', {name: customer.firstName}) : t('pageTitle')}
                 </h1>
-                {customer?.emailAddress && <p className="mt-1 text-muted-foreground">{customer.emailAddress}</p>}
+                <p className="mt-2 text-muted-foreground">{t('dashboardIntro')}</p>
             </header>
 
-            <ul className="grid gap-4 sm:grid-cols-3">
-                {shortcuts.map(({href, icon: Icon, title, body}) => (
+            <ul className="grid gap-4 sm:grid-cols-2 2xl:grid-cols-4">
+                {shortcuts.map(({href, icon: Icon, title, summary, body}) => (
                     <li key={href}>
-                        <Link href={href} className="group flex h-full flex-col rounded-2xl border border-border bg-card p-5 transition-[border-color,box-shadow] hover:border-foreground/20 hover:shadow-sm">
-                            <span className="flex size-10 items-center justify-center rounded-xl bg-brand/10 text-brand">
-                                <Icon className="size-5" />
+                        <Link
+                            href={href}
+                            className="group flex h-full flex-col rounded-xl border border-border bg-card p-5 transition-[border-color,box-shadow] hover:border-foreground/20 hover:shadow-[0_28px_50px_-34px_rgb(15_20_30/0.5)]"
+                        >
+                            <span className="flex items-start justify-between gap-3">
+                                <span className="flex size-10 items-center justify-center rounded-lg bg-brand/10 text-brand">
+                                    <Icon className="size-5" />
+                                </span>
+                                <ArrowUpRight className="size-4 text-steel transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-brand" />
                             </span>
-                            <span className="mt-4 font-bold">{title}</span>
-                            <span className="mt-1 text-sm text-muted-foreground">{body}</span>
+                            <span className="mt-4 font-display font-bold">{title}</span>
+                            {summary && <span className="spec-label mt-1 truncate text-foreground">{summary}</span>}
+                            <span className="mt-1 line-clamp-2 break-words text-sm text-muted-foreground">{body}</span>
                         </Link>
                     </li>
                 ))}
             </ul>
 
-            <section className="rounded-2xl border border-border bg-card">
-                <div className="flex items-center justify-between border-b border-border px-5 py-4">
-                    <h2 className="font-bold">{t('recentOrders')}</h2>
+            <section aria-labelledby="recent-orders-heading">
+                <div className="mb-4 flex items-end justify-between gap-3">
+                    <h2 id="recent-orders-heading" className="font-display-wide text-xl font-extrabold">{t('recentOrders')}</h2>
                     {totalOrders > 0 && (
                         <Link href="/account/orders" className="inline-flex items-center gap-1 text-sm font-semibold text-brand hover:underline">
                             {t('viewAllOrders')}
@@ -89,32 +116,25 @@ export function AccountOverview() {
                     )}
                 </div>
                 {ordersFailed ? (
-                    <p className="px-5 py-8 text-center text-sm text-muted-foreground">{t('ordersLoadError')}</p>
+                    <p className="rounded-xl border border-border bg-card px-5 py-8 text-center text-sm text-muted-foreground">{t('ordersLoadError')}</p>
                 ) : orders === null ? (
-                    <div className="space-y-3 p-5" aria-busy="true">
-                        {Array.from({length: 2}).map((_, i) => <div key={i} className="h-14 animate-pulse rounded-xl bg-muted" />)}
+                    <div className="space-y-3" aria-busy="true">
+                        {Array.from({length: 2}).map((_, i) => <div key={i} className="h-28 animate-pulse rounded-xl bg-muted" />)}
                     </div>
                 ) : orders.length === 0 ? (
-                    <div className="px-5 py-10 text-center">
-                        <p className="text-sm text-muted-foreground">{t('noOrders')}</p>
-                        <Link href="/shop" className="mt-4 inline-flex h-10 items-center rounded-xl bg-brand px-4 text-sm font-bold text-brand-foreground hover:bg-brand/90">
+                    <div className="flex flex-col items-center rounded-xl border border-border bg-surface px-5 py-12 text-center">
+                        <span className="flex size-12 items-center justify-center rounded-lg border border-border bg-card text-steel">
+                            <Package className="size-5" />
+                        </span>
+                        <p className="mt-4 text-sm text-muted-foreground">{t('noOrders')}</p>
+                        <Link href="/shop" className="group mt-5 inline-flex h-10 items-center gap-2 rounded-lg bg-brand px-4 text-sm font-bold text-brand-foreground hover:bg-brand/90">
                             {t('startShopping')}
+                            <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
                         </Link>
                     </div>
                 ) : (
-                    <ul className="divide-y divide-border">
-                        {orders.map((order) => (
-                            <li key={order.id}>
-                                <Link href={`/account/orders?code=${order.code}`} className="flex flex-wrap items-center gap-x-4 gap-y-1 px-5 py-4 transition-colors hover:bg-muted/40">
-                                    <span className="font-mono text-sm font-semibold">{order.code}</span>
-                                    <span className="text-sm text-muted-foreground">{formatDate(order.createdAt, 'short', locale)}</span>
-                                    <OrderStatusBadge state={order.state} />
-                                    <span className="ml-auto text-sm font-bold">
-                                        <Price value={order.totalWithTax} currencyCode={order.currencyCode} />
-                                    </span>
-                                </Link>
-                            </li>
-                        ))}
+                    <ul className="space-y-3">
+                        {orders.map((order) => <RecentOrderCard key={order.id} order={order} locale={locale} />)}
                     </ul>
                 )}
             </section>

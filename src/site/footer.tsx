@@ -1,18 +1,23 @@
 import Image from 'next/image';
 import {getTranslations} from 'next-intl/server';
-import {ArrowUpRight, ChevronRight, Mail, MapPin, Phone} from 'lucide-react';
+import {ArrowUpRight, ChevronDown, Mail, MapPin, Phone} from 'lucide-react';
 import {getRouteLocale} from '@/platform/i18n/server';
 import {getShopCategories} from '@/features/collections/data';
+import {QuoteButton} from '@/features/enquiry/quote-dialog';
 import {CONTACT_CONFIG, getSocialProfiles, isPlaceholder} from '@/config/contact';
 import {NavigationLink} from '@/site/navigation/navigation-link';
 import {BRAND_LOGO} from '@/site/content/media';
 import {FOOTER_COPY} from '@/site/content/home';
-import {externalLinkProps, resolveContactLinks} from '@/site/ui/contact-links';
+import {siteButton} from '@/site/ui/button-styles';
+import {externalLinkProps, resolveContactLinks, type ContactLink} from '@/site/ui/contact-links';
 import {WhatsAppIcon} from '@/site/ui/whatsapp-icon';
+import {IsoBadge} from '@/site/ui/iso-badge';
+import {cn} from '@/lib/utils';
 
 const COPYRIGHT_YEAR = 2026;
 
 // lucide-react ships no brand icons, so profiles render as labelled links.
+// Only profiles configured in CONTACT_CONFIG.social (i.e. that really exist) render.
 const SOCIAL_LABELS = {
     facebook: 'Facebook',
     instagram: 'Instagram',
@@ -20,210 +25,228 @@ const SOCIAL_LABELS = {
     linkedin: 'LinkedIn',
 } as const;
 
-function FooterHeading({children}: {children: React.ReactNode}) {
+type FooterLinks = Array<{href: string; label: string}>;
+
+function FooterLinkList({links, className}: {links: FooterLinks; className?: string}) {
     return (
-        <p className="mb-5 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-white">
-            <span aria-hidden="true" className="h-0.5 w-5 rounded-full bg-logo-orange" />
-            {children}
-        </p>
+        <ul className={cn('space-y-3', className)}>
+            {links.map((link) => (
+                <li key={`${link.href}-${link.label}`}>
+                    <NavigationLink
+                        href={link.href}
+                        className="group/link inline-flex items-center gap-1.5 text-[15px] text-foreground transition-colors hover:text-brand"
+                    >
+                        <span className="relative">
+                            {link.label}
+                            <span aria-hidden="true" className="absolute inset-x-0 -bottom-0.5 h-px origin-left scale-x-0 bg-brand transition-transform duration-300 group-hover/link:scale-x-100" />
+                        </span>
+                    </NavigationLink>
+                </li>
+            ))}
+        </ul>
     );
 }
 
-/**
- * A footer link column: heading above divided rows. The frosted panel is the
- * single sheet behind the whole footer, so columns carry no background of their own.
- */
-function FooterLinkPanel({title, links}: {title: string; links: Array<{href: string; label: string}>}) {
+/** md+: a plain titled column. */
+function FooterColumn({title, links}: {title: string; links: FooterLinks}) {
     return (
-        <div className="flex flex-col lg:h-full">
-            <FooterHeading>{title}</FooterHeading>
-            <ul className="divide-y divide-white/10">
-                {links.map((link) => (
-                    <li key={link.href}>
-                        <NavigationLink
-                            href={link.href}
-                            className="group/link flex items-center gap-2 py-2.5 text-sm font-medium text-white/90 transition-colors hover:text-white"
-                        >
-                            <ChevronRight aria-hidden="true" className="size-3.5 shrink-0 text-logo-orange transition-transform group-hover/link:translate-x-0.5" />
-                            <span className="min-w-0">{link.label}</span>
-                        </NavigationLink>
-                    </li>
-                ))}
-            </ul>
+        <div>
+            <p className="spec-label mb-5 text-muted-foreground">{title}</p>
+            <FooterLinkList links={links} />
         </div>
     );
 }
 
+/**
+ * < md: the same links as a native disclosure (no JS), so three link groups
+ * don't stack into one long column on phones.
+ */
+function FooterAccordionItem({title, links, open}: {title: string; links: FooterLinks; open?: boolean}) {
+    return (
+        <details open={open} className="group/acc border-b border-border">
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-4 text-[15px] font-semibold [&::-webkit-details-marker]:hidden">
+                {title}
+                <ChevronDown aria-hidden="true" className="size-4 shrink-0 text-muted-foreground transition-transform duration-200 group-open/acc:rotate-180" />
+            </summary>
+            <FooterLinkList links={links} className="pb-5" />
+        </details>
+    );
+}
+
+function ContactRow({icon, label, value, link, whatsapp}: {icon: React.ReactNode; label: string; value: string; link?: ContactLink; whatsapp?: boolean}) {
+    const body = (
+        <>
+            <span className={cn('flex size-10 shrink-0 items-center justify-center rounded-lg border', whatsapp ? 'border-[#1c9e52]/20 bg-[#effaf3] text-[#1c9e52]' : 'border-border bg-card text-brand')}>{icon}</span>
+            <span className="min-w-0">
+                <span className="spec-label block text-muted-foreground">{label}</span>
+                <span className="mt-0.5 block text-sm font-semibold text-foreground [overflow-wrap:anywhere] sm:whitespace-nowrap lg:whitespace-normal xl:whitespace-nowrap">{value}</span>
+            </span>
+            {link?.configured && <ArrowUpRight aria-hidden="true" className="ml-auto size-4 shrink-0 text-muted-foreground transition-transform group-hover/row:-translate-y-0.5 group-hover/row:translate-x-0.5 group-hover/row:text-brand" />}
+        </>
+    );
+    return link?.configured ? (
+        <a href={link.href} {...externalLinkProps(link)} className="group/row flex items-center gap-3">{body}</a>
+    ) : (
+        <div className="flex items-center gap-3">{body}</div>
+    );
+}
+
+/**
+ * Graphite site footer: a closing CTA band (quote modal + WhatsApp), brand
+ * column, Shop (real Vendure categories) / Company / Customer link columns,
+ * contact rows from CONTACT_CONFIG, and the credit bar.
+ */
 export async function Footer() {
     const locale = await getRouteLocale();
     const t = await getTranslations({locale, namespace: 'Footer'});
     const tNav = await getTranslations({locale, namespace: 'Navigation'});
     const contact = resolveContactLinks(locale, tNav('whatsappGreeting'));
     const socials = getSocialProfiles();
-    const categories = (await getShopCategories(locale)).slice(0, 6);
+    const categories = (await getShopCategories(locale)).slice(0, 5);
 
-    // Address and WhatsApp get their own treatment in the contact panel.
-    const directRows = [
-        {icon: Phone, label: t('phone'), value: CONTACT_CONFIG.phone, link: contact.phone},
-        {icon: Mail, label: t('email'), value: CONTACT_CONFIG.email, link: contact.email},
+    const linkGroups: Array<{key: string; title: string; links: FooterLinks}> = [
+        {
+            key: 'shop',
+            title: t('shop'),
+            links: [
+                {href: '/shop/', label: t('allProducts')},
+                ...categories.map((category) => ({href: `/collection/${category.slug}/`, label: category.name.trim()})),
+                {href: '/compare/', label: tNav('compare')},
+            ],
+        },
+        {
+            key: 'company',
+            title: t('company'),
+            links: [
+                {href: '/about/', label: tNav('about')},
+                {href: '/manufacturing/', label: tNav('manufacturing')},
+                {href: '/insights/', label: tNav('insights')},
+                {href: '/faq/', label: tNav('faq')},
+                {href: '/contact/', label: tNav('contact')},
+            ],
+        },
+        {
+            key: 'customer',
+            title: t('customer'),
+            links: [
+                {href: '/account/', label: t('myAccount')},
+                {href: '/account/orders/', label: t('myOrders')},
+                {href: '/wishlist/', label: tNav('wishlist')},
+                {href: '/cart/', label: t('cart')},
+                {href: '/contact/', label: t('support')},
+            ],
+        },
     ];
 
+    const marketedBy = !isPlaceholder(CONTACT_CONFIG.marketedBy) && (
+        <p className="mt-6 text-sm text-muted-foreground md:mt-10 md:border-t md:border-border md:pt-5">
+            {t('marketedBy')} <span className="font-semibold text-foreground">{CONTACT_CONFIG.marketedBy}</span>
+        </p>
+    );
+
     return (
-        <footer className="relative isolate mt-auto overflow-hidden footer-gradient text-white">
-            <div aria-hidden="true" className="pointer-events-none absolute -left-40 top-10 -z-10 size-[28rem] rounded-full bg-logo-blue/40 blur-[140px]" />
-            <div aria-hidden="true" className="pointer-events-none absolute -bottom-32 -right-24 -z-10 size-[36rem] rounded-full bg-logo-orange/50 blur-[150px]" />
+        <footer className="relative isolate mt-auto overflow-hidden border-t border-border bg-tint-sheen text-foreground">
+            <div aria-hidden="true" className="absolute -right-40 -top-40 -z-10 size-[36rem] rounded-full bg-logo-blue/10 blur-[160px]" />
 
-            {/* One full-width frosted-glass sheet over the whole footer gradient. */}
-            <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 bg-black/20 backdrop-blur-sm" />
-
-            <div className="site-container relative pt-8 pb-10 lg:pt-10">
-                <div className="grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-3 lg:grid-cols-12 lg:gap-6">
-                    <div className="col-span-2 flex flex-col md:col-span-3 lg:col-span-3 lg:row-span-2">
-                        <div className="flex flex-1 flex-col">
-                            <NavigationLink href="/" className="block w-fit">
-                                <Image src={BRAND_LOGO.src} alt={tNav('logoAlt')} width={BRAND_LOGO.width} height={BRAND_LOGO.height} className="h-20 w-auto drop-shadow-[0_12px_24px_rgb(0_0_0/0.35)] lg:h-24" />
-                            </NavigationLink>
-                            <p className="mt-4 text-sm leading-relaxed text-white/90">{FOOTER_COPY.description}</p>
-                            <p className="mt-4 border-l-2 border-logo-orange pl-3 text-sm font-bold leading-snug text-white sm:text-base">{FOOTER_COPY.tagline}</p>
-                            {socials.length > 0 && (
-                                <ul className="mt-4 flex flex-wrap gap-2">
-                                    {socials.map(({network, url}) => (
-                                        <li key={network}>
-                                            <a href={url} target="_blank" rel="noopener noreferrer" className="inline-flex h-9 items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3.5 text-xs font-semibold text-white transition-colors hover:bg-white/20">
-                                                {SOCIAL_LABELS[network]}
-                                                <ArrowUpRight className="size-3.5" />
-                                            </a>
-                                        </li>
-                                    ))}
-                                </ul>
-                            )}
-                        </div>
+            {/* Closing CTA band */}
+            <div className="site-container">
+                <div className="flex flex-col gap-8 border-b border-border py-14 lg:flex-row lg:items-end lg:justify-between lg:py-16">
+                    <div className="max-w-2xl">
+                        <p className="font-display-wide text-3xl font-bold leading-[1.05] sm:text-4xl lg:text-5xl">{t('ctaTitle')}</p>
+                        <p className="mt-4 max-w-xl text-base leading-relaxed text-muted-foreground">{t('ctaBody')}</p>
                     </div>
-
-                    <div className="lg:col-span-2">
-                        <FooterLinkPanel
-                            title={t('shop')}
-                            links={[
-                                {href: '/shop/', label: t('allProducts')},
-                                ...categories.map((category) => ({href: `/collection/${category.slug}/`, label: category.name.trim()})),
-                            ]}
-                        />
+                    <div className="flex flex-col gap-3 sm:flex-row">
+                        <QuoteButton className={siteButton({variant: 'brand', size: 'lg'})} />
+                        {contact.whatsapp.configured && (
+                            <a href={contact.whatsapp.href} {...externalLinkProps(contact.whatsapp)} className={siteButton({variant: 'whatsapp', size: 'lg'})}>
+                                <WhatsAppIcon aria-hidden="true" className="text-[#25D366]" />
+                                {t('whatsapp')}
+                            </a>
+                        )}
                     </div>
-
-                    <div className="lg:col-span-2">
-                        <FooterLinkPanel
-                            title={t('customer')}
-                            links={[
-                                {href: '/account/', label: t('myAccount')},
-                                {href: '/account/orders/', label: t('myOrders')},
-                                {href: '/wishlist/', label: tNav('wishlist')},
-                                {href: '/cart/', label: t('cart')},
-                                {href: '/sign-in/', label: t('signIn')},
-                            ]}
-                        />
-                    </div>
-
-                    <div className="col-span-2 md:col-span-1 lg:col-span-2">
-                        <FooterLinkPanel
-                            title={t('company')}
-                            links={[
-                                {href: '/about/', label: tNav('about')},
-                                {href: '/insights/', label: tNav('insights')},
-                                {href: '/faq/', label: tNav('faq')},
-                                {href: '/contact/', label: tNav('contact')},
-                            ]}
-                        />
-                    </div>
-
-                    <div className="col-span-2 flex flex-col md:col-span-3 lg:col-span-3 lg:row-span-2">
-                        <FooterHeading>{t('contact')}</FooterHeading>
-                        <div className="flex flex-1 flex-col">
-                            <div className="flex gap-3 pb-3">
-                                <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-logo-orange/90">
-                                    <MapPin aria-hidden="true" className="size-4 text-white" />
-                                </span>
-                                <div className="min-w-0">
-                                    <p className="text-[11px] font-bold uppercase tracking-wider text-white/75">{t('address')}</p>
-                                    <address className="mt-0.5 text-sm leading-relaxed not-italic text-white">{CONTACT_CONFIG.address}</address>
-                                </div>
-                            </div>
-                            <ul className="divide-y divide-white/10 border-t border-white/10">
-                                {directRows.map(({icon: Icon, label, value, link}) => {
-                                    const body = (
-                                        <>
-                                            <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-white/15 transition-colors group-hover/row:bg-white/25">
-                                                <Icon aria-hidden="true" className="size-4 text-white" />
-                                            </span>
-                                            <span className="min-w-0">
-                                                <span className="block text-[11px] font-bold uppercase tracking-wider text-white/75">{label}</span>
-                                                <span className="block text-sm font-semibold break-words text-white">{value}</span>
-                                            </span>
-                                            {link?.configured && <ArrowUpRight aria-hidden="true" className="ml-auto size-4 shrink-0 text-white/60 transition-transform group-hover/row:-translate-y-0.5 group-hover/row:translate-x-0.5 group-hover/row:text-white" />}
-                                        </>
-                                    );
-                                    return (
-                                        <li key={label}>
-                                            {link?.configured ? (
-                                                <a href={link.href} {...externalLinkProps(link)} className="group/row flex items-center gap-3 py-3">{body}</a>
-                                            ) : (
-                                                <div className="flex items-center gap-3 py-3">{body}</div>
-                                            )}
-                                        </li>
-                                    );
-                                })}
-                            </ul>
-                            {/* WhatsApp as the primary action. #128C4B keeps white text above 4.5:1. */}
-                            <div className="mt-auto border-t border-white/10 pt-3">
-                                {contact.whatsapp.configured ? (
-                                    <a
-                                        href={contact.whatsapp.href}
-                                        {...externalLinkProps(contact.whatsapp)}
-                                        className="flex items-center gap-3 rounded-xl bg-[#128C4B] px-4 py-3 text-white shadow-[0_12px_28px_-16px_rgb(0_0_0/0.7)] transition-colors hover:bg-[#0f7a41]"
-                                    >
-                                        <WhatsAppIcon aria-hidden="true" className="size-5 shrink-0" />
-                                        {/* No visible label (the icon says WhatsApp); kept for screen readers. */}
-                                        <span className="min-w-0 text-sm font-bold sm:text-base">
-                                            <span className="sr-only">WhatsApp </span>
-                                            {CONTACT_CONFIG.whatsapp}
-                                        </span>
-                                        <ArrowUpRight aria-hidden="true" className="ml-auto size-4 shrink-0" />
-                                    </a>
-                                ) : (
-                                    <p className="flex items-center gap-3 rounded-xl bg-white/10 px-4 py-3 text-sm text-white">
-                                        <WhatsAppIcon aria-hidden="true" className="size-5 shrink-0" />
-                                        {CONTACT_CONFIG.whatsapp}
-                                    </p>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Marketing credit: directly under the link panels, spanning their full width, from lg up; last on smaller screens. */}
-                    {!isPlaceholder(CONTACT_CONFIG.marketedBy) && (
-                        <p className="col-span-2 md:col-span-3 lg:col-span-6 lg:col-start-4 lg:row-start-2 lg:self-start">
-                            <span className="flex w-full flex-wrap items-center justify-center gap-x-2 gap-y-1 border-t border-white/10 pt-4 text-center text-sm font-bold text-white sm:text-base">
-                                {t('marketedBy')}
-                                <span className="font-extrabold">{CONTACT_CONFIG.marketedBy}</span>
-                            </span>
-                        </p>
-                    )}
                 </div>
             </div>
 
-            {/* Bottom bar: copyright, marketing credit, agency credit. */}
-            <div className="relative border-t border-white/15 bg-black/30">
-                <div className="site-container flex flex-col items-center gap-3 py-4 text-center text-xs text-white/90 sm:flex-row sm:justify-between sm:text-left sm:text-[13px]">
-                    <p>&copy; {COPYRIGHT_YEAR} {t('copyright')}</p>
-                    <a
-                        href="https://dripfunnel.com/"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        aria-label={t('poweredByDripFunnel')}
-                        className="flex items-center gap-2.5 font-semibold text-white transition-opacity hover:opacity-80 sm:border-l sm:border-white/20 sm:pl-4"
-                    >
-                        <span aria-hidden="true">{t('poweredBy')}</span>
-                        <Image src="/logo/dripfunnel-logo-white.png" alt="" width={2077} height={369} className="h-5 w-auto" />
-                    </a>
+            <div className="site-container pb-6 pt-14 lg:pb-8 lg:pt-16">
+                <div className="grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-3 md:gap-y-12 lg:grid-cols-12 lg:gap-8">
+                    <div className="col-span-2 md:col-span-3 lg:col-span-3">
+                        <NavigationLink href="/" className="inline-block rounded-md">
+                            <Image src={BRAND_LOGO.src} alt={tNav('logoAlt')} width={BRAND_LOGO.width} height={BRAND_LOGO.height} className="h-16 w-auto lg:h-20" />
+                        </NavigationLink>
+                        <IsoBadge className="mt-4" />
+                        <p className="mt-6 font-display-wide text-lg font-bold leading-snug">{FOOTER_COPY.tagline}</p>
+                        <p className="mt-3 max-w-sm text-sm leading-relaxed text-muted-foreground">{FOOTER_COPY.description}</p>
+                        {socials.length > 0 && (
+                            <ul className="mt-6 flex flex-wrap gap-2">
+                                {socials.map(({network, url}) => (
+                                    <li key={network}>
+                                        <a href={url} target="_blank" rel="noopener noreferrer" className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-border bg-card px-3.5 text-xs font-semibold transition-colors hover:border-foreground/30">
+                                            {SOCIAL_LABELS[network]}
+                                            <ArrowUpRight aria-hidden="true" className="size-3.5" />
+                                        </a>
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                    </div>
+
+                    {/* Phones: one disclosure per link group (Shop open). */}
+                    <div className="col-span-2 md:hidden">
+                        <div className="border-t border-border">
+                            {linkGroups.map((group, index) => (
+                                <FooterAccordionItem key={group.key} title={group.title} links={group.links} open={index === 0} />
+                            ))}
+                        </div>
+                        {marketedBy}
+                    </div>
+                    {/* md+: titled columns, with the marketing credit under them. */}
+                    <div className="hidden md:col-span-3 md:block lg:col-span-6">
+                        <div className="grid grid-cols-3 gap-x-6 lg:gap-x-8">
+                            {linkGroups.map((group) => (
+                                <FooterColumn key={group.key} title={group.title} links={group.links} />
+                            ))}
+                        </div>
+                        {marketedBy}
+                    </div>
+
+                    <div className="col-span-2 md:col-span-3 lg:col-span-3">
+                        <p className="spec-label mb-5 text-muted-foreground">{t('contact')}</p>
+                        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-1">
+                            <ContactRow icon={<Phone aria-hidden="true" className="size-4" />} label={t('phone')} value={CONTACT_CONFIG.phone} link={contact.phone} />
+                            <ContactRow icon={<WhatsAppIcon aria-hidden="true" className="size-4" />} label={t('whatsapp')} value={CONTACT_CONFIG.whatsapp} link={contact.whatsapp} whatsapp />
+                            <ContactRow icon={<Mail aria-hidden="true" className="size-4" />} label={t('email')} value={CONTACT_CONFIG.email} link={contact.email} />
+                            <div className="flex gap-3">
+                                <span className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-border bg-card text-brand">
+                                    <MapPin aria-hidden="true" className="size-4" />
+                                </span>
+                                <span className="min-w-0">
+                                    <span className="spec-label block text-muted-foreground">{t('address')}</span>
+                                    <address className="mt-0.5 text-sm leading-relaxed not-italic text-foreground">{CONTACT_CONFIG.address}</address>
+                                </span>
+                            </div>
+                            <QuoteButton className={cn(siteButton({variant: 'brand', size: 'md'}), 'w-full sm:col-span-2 sm:w-auto sm:justify-self-start lg:col-span-1 lg:w-full')} />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="border-t border-border">
+                <div className="site-container flex flex-col gap-4 pb-24 pt-6 text-[13px] text-muted-foreground lg:flex-row lg:items-center lg:justify-between lg:gap-8 lg:py-6">
+                    <div className="flex flex-col gap-1.5 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-5">
+                        <p>&copy; {COPYRIGHT_YEAR} {t('copyright')}</p>
+                    </div>
+                    <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-3 lg:mr-16 lg:shrink-0 lg:flex-nowrap lg:justify-start">
+                        <a
+                            href="https://dripfunnel.com/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label={t('poweredByDripFunnel')}
+                            className="flex items-center gap-2.5 font-semibold text-foreground transition-opacity hover:opacity-80"
+                        >
+                            <span aria-hidden="true">{t('poweredBy')}</span>
+                            <Image src="/logo/dripfunnel-logo.png" alt="" width={845} height={143} className="h-5 w-auto" />
+                        </a>
+                    </div>
                 </div>
             </div>
         </footer>

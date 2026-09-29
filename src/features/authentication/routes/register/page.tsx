@@ -61,35 +61,36 @@ export default async function RegisterPage() {
     return (
         <div className="flex min-h-dvh">
             {/* Branded panel - desktop only */}
-            <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary to-primary/70 items-center justify-center p-12 rounded-br-3xl">
-                <div className="max-w-md text-primary-foreground space-y-6">
-                    <h2 className="text-4xl font-bold tracking-tight">{SITE_NAME}</h2>
-                    <p className="text-xl text-primary-foreground/80 leading-relaxed">
+            <div className="hidden border-r border-border bg-surface p-12 lg:flex lg:w-1/2 lg:items-center lg:justify-center">
+                <div className="max-w-md space-y-6 text-foreground">
+                    <span aria-hidden="true" className="block h-1 w-12 rounded-full bg-brand" />
+                    <h2 className="font-display-wide text-5xl font-extrabold tracking-tight">{SITE_NAME}</h2>
+                    <p className="text-xl leading-relaxed text-muted-foreground">
                         {t('joinUs')}
                     </p>
-                    <div className="flex gap-8 pt-4">
+                    <div className="grid grid-cols-3 gap-6 border-t border-border pt-6">
                         <div>
-                            <p className="text-3xl font-bold">{t('featureFast')}</p>
-                            <p className="text-sm text-primary-foreground/70">{t('featureCheckout')}</p>
+                            <p className="font-display-wide text-2xl font-extrabold text-brand">{t('featureFast')}</p>
+                            <p className="spec-label mt-1 text-steel">{t('featureCheckout')}</p>
                         </div>
                         <div>
-                            <p className="text-3xl font-bold">{t('featureSecure')}</p>
-                            <p className="text-sm text-primary-foreground/70">{t('featurePayments')}</p>
+                            <p className="font-display-wide text-2xl font-extrabold text-brand">{t('featureSecure')}</p>
+                            <p className="spec-label mt-1 text-steel">{t('featurePayments')}</p>
                         </div>
                         <div>
-                            <p className="text-3xl font-bold">{t('featureEasy')}</p>
-                            <p className="text-sm text-primary-foreground/70">{t('featureReturns')}</p>
+                            <p className="font-display-wide text-2xl font-extrabold text-brand">{t('featureEasy')}</p>
+                            <p className="spec-label mt-1 text-steel">{t('featureReturns')}</p>
                         </div>
                     </div>
                 </div>
             </div>
 
             {/* Form panel */}
-            <div className="flex w-full lg:w-1/2 items-center justify-center px-4 py-12">
+            <div className="flex w-full items-center justify-center px-4 pb-12 pt-24 sm:pt-28 lg:w-1/2 lg:py-12">
                 <div className="w-full max-w-md space-y-6">
                     <div className="space-y-2 text-center">
-                        <p className="text-sm font-medium text-primary tracking-wider uppercase lg:hidden">{SITE_NAME}</p>
-                        <h1 className="text-3xl font-bold">{t('createAccount')}</h1>
+                        <p className="spec-label text-brand lg:hidden">{SITE_NAME}</p>
+                        <h1 className="font-display-wide text-3xl font-extrabold tracking-tight sm:text-4xl">{t('createAccount')}</h1>
                         <p className="text-muted-foreground">
                             {t('signUpMessage')}
                         </p>

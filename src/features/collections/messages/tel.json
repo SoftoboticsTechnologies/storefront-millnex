@@ -5,7 +5,10 @@
         "browseCollectionAt": "{siteName} వద్ద మా {name} సేకరణను బ్రౌజ్ చేయండి",
         "shop": "షాప్",
         "category": "వర్గం",
-        "productCount": "{count, plural, =0 {ఇంకా ఉత్పత్తులు లేవు} one {# ఉత్పత్తి} other {# ఉత్పత్తులు}}",
-        "browseProducts": "ఉత్పత్తులను చూడండి"
+        "productCount": "{count, plural, =0 {ఇంకా యంత్రాలు లేవు} one {# యంత్రం} other {# యంత్రాలు}}",
+        "browseProducts": "ఉత్పత్తులను చూడండి",
+        "fallbackDescription": "Millnex కేటలాగ్‌లోని ప్రతి {name} యంత్రం, ప్రత్యక్ష ధరలు మరియు లభ్యతతో. స్పెసిఫికేషన్లు లేదా కొటేషన్ కోసం మా బృందాన్ని అడగండి.",
+        "allTab": "అన్నీ",
+        "categoryTabs": "యంత్ర వర్గాలు"
     }
 }

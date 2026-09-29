@@ -3,7 +3,6 @@
 import {useState} from 'react';
 import {Button} from '@/components/ui/button';
 import {Input} from '@/components/ui/input';
-import {Card, CardContent, CardDescription, CardHeader, CardTitle} from '@/components/ui/card';
 import {Tag, Loader2} from 'lucide-react';
 import {applyPromotionCode, removePromotionCode} from './actions';
 import {useTranslations} from 'next-intl';
@@ -41,31 +40,28 @@ export function PromotionCode({activeOrder}: { activeOrder: ActiveOrder }) {
     };
 
     return (
-        <Card className="mt-4">
-            <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
-                    <Tag className="h-5 w-5"/>
-                    {t('promotionCode')}
-                </CardTitle>
-                <CardDescription>
-                    {t('enterDiscountCode')}
-                </CardDescription>
-            </CardHeader>
-            <CardContent>
+        <section aria-labelledby="promo-code-heading" className="rounded-xl border border-border bg-card p-5 sm:p-6">
+            <h2 id="promo-code-heading" className="flex items-center gap-2 font-display text-base font-bold">
+                <Tag className="size-4 text-steel"/>
+                {t('promotionCode')}
+            </h2>
+            <p className="mt-1 text-sm text-muted-foreground">{t('enterDiscountCode')}</p>
+
+            <div className="mt-4">
                 {activeOrder.couponCodes && activeOrder.couponCodes.length > 0 ? (
                     <div className="space-y-2">
                         {activeOrder.couponCodes.map((couponCode) => (
                             <div key={couponCode}
-                                 className="flex items-center justify-between p-3 border rounded-md bg-green-50 dark:bg-green-950/20">
-                                <div className="flex items-center gap-2">
-                                    <Tag className="h-4 w-4 text-green-600"/>
-                                    <span className="font-medium text-sm">{couponCode}</span>
+                                 className="flex items-center justify-between gap-2 rounded-lg border border-success/25 bg-success/10 px-3 py-2">
+                                <div className="flex min-w-0 items-center gap-2">
+                                    <Tag className="size-4 shrink-0 text-success"/>
+                                    <span className="spec-label truncate text-foreground">{couponCode}</span>
                                 </div>
                                 <Button
                                     type="button"
                                     variant="ghost"
                                     size="sm"
-                                    className="h-8 text-destructive hover:text-destructive hover:bg-destructive/10"
+                                    className="h-8 rounded-lg text-stock-out hover:bg-stock-out/10 hover:text-stock-out"
                                     disabled={removingCode === couponCode}
                                     onClick={() => handleRemove(couponCode)}
                                 >
@@ -83,16 +79,17 @@ export function PromotionCode({activeOrder}: { activeOrder: ActiveOrder }) {
                             value={code}
                             onChange={(e) => setCode(e.target.value)}
                             placeholder={t('enterCode')}
-                            className="flex-1"
+                            aria-label={t('promotionCode')}
+                            className="h-10 min-w-0 flex-1 rounded-lg"
                             required
                         />
-                        <Button type="submit" disabled={submitting}>
+                        <Button type="submit" variant="outline" className="h-10 rounded-lg px-4 font-semibold" disabled={submitting}>
                             {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             {t('apply')}
                         </Button>
                     </form>
                 )}
-            </CardContent>
-        </Card>
+            </div>
+        </section>
     );
 }

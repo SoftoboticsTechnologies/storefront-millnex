@@ -1,11 +1,22 @@
 'use client';
 
-import {Suspense, useCallback, useEffect, useState} from 'react';
-import {useLocale} from 'next-intl';
+import {Suspense, use, useCallback, useEffect, useState, useTransition} from 'react';
+import {useLocale, useTranslations} from 'next-intl';
 import {query} from '@/platform/vendure/client-api';
 import {getActiveCurrencyCode} from '@/features/currency/currency-client';
 import {ResultOf} from '@/platform/vendure/graphql';
-import {FacetFilters, type FilterCategory} from '@/features/search/facet-filters';
+import {
+    ActiveFilterChips,
+    FacetFilterSheet,
+    FacetFilterSidebar,
+    indexFacetValues,
+    type FacetValueIndex,
+    type FilterCategory,
+} from '@/features/search/facet-filters';
+import {SortDropdown} from '@/features/search/sort-dropdown';
+import {FilterSidebarSkeleton, ListingToolbarSkeleton, SearchResultsSkeleton} from '@/features/search/search-results-skeleton';
+import {LISTING_LAYOUT_CLASS} from '@/features/search/listing-layout';
+import {ListingEmptyState} from '@/features/search/listing-empty-state';
 import {ProductGridSkeleton} from '@/features/products/product-grid-skeleton';
 import {ProductGrid} from '@/features/products/product-grid';
 import {SearchParamsSync} from '@/features/search/search-params-sync';
@@ -42,13 +53,56 @@ function fetchCatalog(searchParamsString: string, locale: string, collectionSlug
     );
 }
 
-function ResultsSkeleton() {
+const PAGE_SIZE = 12;
+
+/**
+ * Result count + sort, with the mobile "Filters" drawer trigger alongside
+ * sort (both side-by-side on phones; the drawer trigger is hidden from lg,
+ * where the sidebar takes over).
+ */
+function ListingToolbar({
+    productDataPromise,
+    searchParamsString,
+    categories,
+    facetIndex,
+    pending,
+}: {
+    productDataPromise: Promise<SearchProductsResult>;
+    searchParamsString: string;
+    categories?: FilterCategory[];
+    facetIndex: FacetValueIndex;
+    pending: boolean;
+}) {
+    const t = useTranslations('Listing');
+    // Suspends with the grid until the result is in, so the toolbar never
+    // shows the "updating" note for a result that isn't rendered yet.
+    use(productDataPromise);
+
+    const count = (
+        <p className="flex min-w-0 flex-wrap items-baseline gap-x-3 gap-y-1 text-sm" aria-live="polite">
+            {pending && <span className="spec-label animate-pulse text-brand">{t('updating')}</span>}
+        </p>
+    );
+
     return (
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-[16rem_1fr]">
-            <aside>
-                <div className="h-11 animate-pulse rounded-xl bg-muted lg:h-72" />
-            </aside>
-            <ProductGridSkeleton />
+        <div className="space-y-3 border-b border-border pb-4">
+            <div className="flex items-center gap-2 sm:gap-3">
+                <div className="flex min-w-0 flex-1 sm:flex-none lg:hidden">
+                    <FacetFilterSheet
+                        className="w-full"
+                        productDataPromise={productDataPromise}
+                        searchParamsString={searchParamsString}
+                        categories={categories}
+                        facetIndex={facetIndex}
+                        pending={pending}
+                    />
+                </div>
+                <div className="hidden min-w-0 sm:block">{count}</div>
+                <div className="flex min-w-0 flex-1 sm:ml-auto sm:flex-none">
+                    <SortDropdown className="w-full" searchParamsString={searchParamsString} />
+                </div>
+            </div>
+            <div className="sm:hidden">{count}</div>
         </div>
     );
 }
@@ -73,8 +127,20 @@ export interface CatalogResultsProps {
     categories?: FilterCategory[];
 }
 
+/**
+ * A promise React's `use()` reads synchronously: React checks a thenable's
+ * `status`/`value` before suspending. A plain `Promise.resolve()` would
+ * still suspend once, and under static export a suspended boundary is
+ * written out as its fallback — so the build-time listing would never reach
+ * the exported HTML (no crawlable product cards).
+ */
+function fulfilled<T>(value: T): Promise<T> {
+    return Object.assign(Promise.resolve(value), {status: 'fulfilled' as const, value});
+}
+
 export function CatalogResults({collectionSlug, collectionId, initialProducts, collectionNames, categories}: CatalogResultsProps) {
     const locale = useLocale();
+    const t = useTranslations('Listing');
     // Defaults to '' (no filters/sort/page) so the first render — including
     // the statically-exported HTML — matches the build-time `initialProducts`
     // default listing. SearchParamsSync reports the real value post-hydration
@@ -82,15 +148,44 @@ export function CatalogResults({collectionSlug, collectionId, initialProducts, c
     // search-params-sync.tsx for why that matters under static export).
     const [searchParamsString, setSearchParamsString] = useState('');
     const [resultPromise, setResultPromise] = useState<Promise<SearchProductsResult> | null>(
-        () => (initialProducts ? Promise.resolve({data: initialProducts}) : null)
+        () => (initialProducts ? fulfilled({data: initialProducts}) : null)
     );
     const [hasSyncedParams, setHasSyncedParams] = useState(false);
     const [attempt, setAttempt] = useState(0);
+    // Refetches run in a transition so the current grid (and an open filter
+    // drawer) stay on screen, dimmed, until the new result resolves — no
+    // skeleton flash on every filter/sort change.
+    const [isTransitionPending, startTransition] = useTransition();
+    // URL params the displayed result was fetched for ('' = the build-time
+    // default listing). Only dim/flag "updating" when the pending fetch is for
+    // different params — not for the silent post-hydration refresh or a retry.
+    const [resultParams, setResultParams] = useState<string | null>(initialProducts ? '' : null);
+    const pending = isTransitionPending && resultParams !== searchParamsString;
+    const [facetIndex, setFacetIndex] = useState<FacetValueIndex>(() => indexFacetValues({}, initialProducts?.search.facetValues ?? []));
 
     useEffect(() => {
         if (!hasSyncedParams) return;
-        setResultPromise(fetchCatalog(searchParamsString, locale, collectionSlug));
+        startTransition(() => {
+            setResultPromise(fetchCatalog(searchParamsString, locale, collectionSlug));
+            setResultParams(searchParamsString);
+        });
     }, [collectionSlug, searchParamsString, locale, hasSyncedParams, attempt]);
+
+    // Remember every facet value seen so far (labels for chips / selected values
+    // that drop out of the current result — see FacetValueIndex).
+    useEffect(() => {
+        if (!resultPromise) return;
+        let active = true;
+        resultPromise.then(
+            (result) => {
+                if (active) setFacetIndex((prev) => indexFacetValues(prev, result.data.search.facetValues));
+            },
+            () => {},
+        );
+        return () => {
+            active = false;
+        };
+    }, [resultPromise]);
 
     const handleParamsChange = useCallback((value: string) => {
         setSearchParamsString(value);
@@ -98,31 +193,53 @@ export function CatalogResults({collectionSlug, collectionId, initialProducts, c
     }, []);
 
     const page = getCurrentPage(toSearchParamsRecord(new URLSearchParams(searchParamsString)));
+    // A collection page is already scoped to one collection — no category filter there.
+    const filterCategories = collectionSlug ? undefined : categories;
+    const paginationLabels = {
+        nav: t('pagination'),
+        previous: t('previous'),
+        next: t('next'),
+        page: (n: number) => t('pageN', {page: n}),
+        pageOf: (n: number, total: number) => t('pageOf', {page: n, total}),
+    };
 
     return (
         <>
             <SearchParamsSync onChange={handleParamsChange} />
             {!resultPromise ? (
-                <ResultsSkeleton />
+                <SearchResultsSkeleton />
             ) : (
                 <ResultsErrorBoundary key={attempt} onRetry={() => setAttempt((n) => n + 1)}>
-                    <div className="grid grid-cols-1 gap-6 lg:grid-cols-[16rem_1fr] lg:gap-8">
-                        {/* Filters: sidebar on desktop, sheet trigger on mobile */}
-                        <aside className="lg:sticky lg:top-24 lg:self-start">
-                            <Suspense fallback={<div className="h-11 animate-pulse rounded-xl bg-muted lg:h-72"/>}>
-                                <FacetFilters productDataPromise={resultPromise} searchParamsString={searchParamsString} categories={collectionSlug ? undefined : categories}/>
+                    <div className={LISTING_LAYOUT_CLASS}>
+                        {/* Desktop sticky sidebar; below lg the same filters open in a drawer from the toolbar. */}
+                        <aside className="hidden lg:sticky lg:top-24 lg:block lg:max-h-[calc(100dvh-7rem)] lg:self-start lg:overflow-y-auto lg:overscroll-contain lg:[scrollbar-width:thin]">
+                            <Suspense fallback={<FilterSidebarSkeleton />}>
+                                <FacetFilterSidebar productDataPromise={resultPromise} searchParamsString={searchParamsString} categories={filterCategories} facetIndex={facetIndex} />
                             </Suspense>
                         </aside>
 
-                        <div className="min-w-0">
+                        <div className="min-w-0 space-y-5">
+                            <Suspense fallback={<ListingToolbarSkeleton />}>
+                                <ListingToolbar
+                                    productDataPromise={resultPromise}
+                                    searchParamsString={searchParamsString}
+                                    categories={filterCategories}
+                                    facetIndex={facetIndex}
+                                    pending={pending}
+                                />
+                            </Suspense>
+                            <ActiveFilterChips searchParamsString={searchParamsString} categories={filterCategories} facetIndex={facetIndex} />
                             <Suspense fallback={<ProductGridSkeleton/>}>
                                 <ProductGrid
                                     productDataPromise={resultPromise}
                                     currentPage={page}
-                                    take={12}
+                                    take={PAGE_SIZE}
                                     searchParamsString={searchParamsString}
                                     collectionNames={collectionNames}
                                     currentCollectionId={collectionId}
+                                    pending={pending}
+                                    emptyState={<ListingEmptyState searchParamsString={searchParamsString} />}
+                                    paginationLabels={paginationLabels}
                                 />
                             </Suspense>
                         </div>

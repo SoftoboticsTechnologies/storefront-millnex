@@ -28,6 +28,17 @@
     "itemCount": "{count, plural, one {# item} other {# items}}",
     "loadError": "We couldn’t load your cart.",
     "retry": "Retry",
-    "viewCart": "View cart"
+    "viewCart": "View cart",
+    "home": "Home",
+    "lineTotal": "Line total",
+    "quantity": "Quantity",
+    "saveToWishlist": "Save to wishlist",
+    "savedInWishlist": "Saved",
+    "savedToWishlist": "Saved to your wishlist",
+    "removedFromWishlist": "Removed from your wishlist",
+    "exploreMachines": "Explore machines",
+    "estimatedTotal": "Estimated total",
+    "secureCheckoutNote": "Secure checkout. Shipping and final total are confirmed before you pay.",
+    "itemsInCart": "Items in your cart"
   }
 }

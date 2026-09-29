@@ -86,9 +86,34 @@ export async function getProductVariantParams(locale: string): Promise<Array<{sl
     return params;
 }
 
+export interface CatalogFacet {
+    id: string;
+    name: string;
+    values: Array<{id: string; name: string; count: number}>;
+}
+
 export interface CatalogListing {
     totalItems: number;
     products: ProductCardData[];
+    /** Vendure facet values present in this listing, grouped by facet (e.g. "Type"). */
+    facets: CatalogFacet[];
+}
+
+function groupFacetValues(
+    facetValues: Array<{count: number; facetValue: {id: string; name: string; facet: {id: string; name: string}}}>,
+): CatalogFacet[] {
+    const facets = new Map<string, CatalogFacet>();
+    for (const {count, facetValue} of facetValues) {
+        const {facet} = facetValue;
+        let group = facets.get(facet.id);
+        if (!group) {
+            group = {id: facet.id, name: facet.name.trim(), values: []};
+            facets.set(facet.id, group);
+        }
+        // Vendure admin data sometimes carries a trailing comma ("Vegetable Cutter,").
+        group.values.push({id: facetValue.id, name: facetValue.name.trim().replace(/,\s*$/, ''), count});
+    }
+    return [...facets.values()];
 }
 
 /**
@@ -116,6 +141,7 @@ export async function getCatalogListing(
     return {
         totalItems: result.data.search.totalItems,
         products: result.data.search.items.map(cardFromSearchResult),
+        facets: groupFacetValues(result.data.search.facetValues),
     };
 }
 
@@ -155,4 +181,55 @@ export async function getProductOptions(locale: string): Promise<Array<{value: s
     }
 
     return options;
+}
+
+export interface ProductSpecSheet {
+    productId: string;
+    slug: string;
+    name: string;
+    imageUrl: string | null;
+    /** Distinct variant SKUs, whitespace-trimmed. */
+    skus: string[];
+    /** Variant names when the product has more than one variant. */
+    variantNames: string[];
+    /** priceWithTax range across variants, in minor units, in the build currency. */
+    price: {min: number; max: number; currencyCode: string} | null;
+    inStock: boolean;
+    /** Vendure facet values grouped by facet — the only structured specs the schema has. */
+    specs: Array<{facet: string; values: string[]}>;
+}
+
+/**
+ * Build-time detail for a set of products (comparison table, spotlight):
+ * everything is read from `GetProductDetailQuery` — nothing derived beyond
+ * grouping facet values by facet. Prices are in the channel's default
+ * currency, like every other build-time price; callers render them through
+ * the live `ProductCardPrice` so a different viewer currency still wins.
+ */
+export async function getProductSpecSheets(locale: string, slugs: string[]): Promise<ProductSpecSheet[]> {
+    const currencyCode = await getActiveCurrencyCode();
+    const results = await Promise.all(slugs.map((slug) => query(GetProductDetailQuery, {slug}, {languageCode: locale, currencyCode})));
+
+    return results.flatMap(({data}) => {
+        const product = data.product;
+        if (!product) return [];
+        const prices = product.variants.map((variant) => variant.priceWithTax);
+        const specs = new Map<string, {facet: string; values: string[]}>();
+        for (const value of product.facetValues ?? []) {
+            const group = specs.get(value.facet.id) ?? {facet: value.facet.name.trim(), values: []};
+            group.values.push(value.name.trim().replace(/,\s*$/, ''));
+            specs.set(value.facet.id, group);
+        }
+        return [{
+            productId: product.id,
+            slug: product.slug,
+            name: product.name.trim(),
+            imageUrl: product.assets[0]?.preview ?? null,
+            skus: [...new Set(product.variants.map((variant) => variant.sku.trim()).filter(Boolean))],
+            variantNames: product.variants.length > 1 ? product.variants.map((variant) => variant.name.trim()) : [],
+            price: prices.length > 0 ? {min: Math.min(...prices), max: Math.max(...prices), currencyCode} : null,
+            inStock: product.variants.some((variant) => variant.stockLevel !== 'OUT_OF_STOCK'),
+            specs: [...specs.values()],
+        }];
+    });
 }

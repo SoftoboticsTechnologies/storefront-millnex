@@ -65,7 +65,7 @@ export function QuickAddButton({slug, name, inStock, className}: QuickAddButtonP
             type="button"
             onClick={handleClick}
             disabled={!inStock || isPending}
-            className={cn('h-10 flex-1 rounded-xl bg-brand font-semibold text-brand-foreground hover:bg-brand/90', className)}
+            className={cn('h-10 min-w-0 flex-1 rounded-lg bg-brand font-semibold text-brand-foreground hover:bg-brand/90', className)}
         >
             {isPending ? (
                 <Loader2 className="size-4 animate-spin" />

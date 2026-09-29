@@ -126,6 +126,17 @@
     "recentOrders": "ఇటీవలి ఆర్డర్లు",
     "viewAllOrders": "అన్నీ చూడండి",
     "ordersLoadError": "మీ ఆర్డర్లను లోడ్ చేయలేకపోయాం. దయచేసి తర్వాత మళ్లీ ప్రయత్నించండి.",
-    "startShopping": "షాపింగ్ ప్రారంభించండి"
+    "startShopping": "షాపింగ్ ప్రారంభించండి",
+    "accountNavigation": "ఖాతా నావిగేషన్",
+    "wishlist": "విష్‌లిస్ట్",
+    "ordersCount": "{count, plural, =0 {ఇంకా ఆర్డర్లు లేవు} one {# ఆర్డర్} other {# ఆర్డర్లు}}",
+    "wishlistCount": "{count, plural, =0 {ఇంకా ఏమీ సేవ్ చేయలేదు} one {# సేవ్ చేసిన ఉత్పత్తి} other {# సేవ్ చేసిన ఉత్పత్తులు}}",
+    "wishlistShortcut": "ఈ పరికరంలో మీరు సేవ్ చేసిన యంత్రాలు",
+    "accountDetails": "ఖాతా వివరాలు",
+    "dashboardIntro": "ఆర్డర్‌లను ట్రాక్ చేయండి, చిరునామాలను నిర్వహించండి మరియు మీ వివరాలను నవీకరించండి.",
+    "andMore": "+ మరో {count}",
+    "viewOrder": "ఆర్డర్ చూడండి",
+    "savedAddressCount": "{count, plural, =0 {సేవ్ చేసిన చిరునామాలు లేవు} one {# సేవ్ చేసిన చిరునామా} other {# సేవ్ చేసిన చిరునామాలు}}",
+    "addressActions": "చిరునామా చర్యలు"
   }
 }

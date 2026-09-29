@@ -6,6 +6,7 @@ import { ProductImageCarousel } from '@/features/products/components/product-ima
 import { ProductInfo } from '@/features/products/components/product-info';
 import {getDisplayOptionGroups} from '@/features/products/product-options';
 import { RelatedProducts } from '@/features/products/components/related-products';
+import {SpecialOfferPrice} from '@/features/products/components/special-offer-price';
 import {
     Breadcrumb,
     BreadcrumbList,
@@ -15,7 +16,10 @@ import {
     BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 import { notFound } from 'next/navigation';
-import {MessageSquareText, PackageSearch, ShieldCheck, Truck} from 'lucide-react';
+import {ArrowRight, FileText, HelpCircle, MessageSquareText, PackageSearch, ShieldCheck, Truck} from 'lucide-react';
+import {Tabs, TabsContent, TabsList, TabsTrigger} from '@/components/ui/tabs';
+import {QuoteButton} from '@/features/enquiry/quote-dialog';
+import {cn} from '@/lib/utils';
 import {stripHtml} from '@/features/products/product-card-data';
 import { routing } from '@/platform/i18n/routing';
 import {
@@ -171,11 +175,29 @@ export default async function ProductDetailPage({
     );
     const hasDescription = stripHtml(product.description).length > 0;
 
+    const enquiryHref = `/contact?product=${encodeURIComponent(product.slug)}#enquiry`;
+    // Specifications = only real Vendure data: collection, facet values,
+    // SKU(s) and variant names. Nothing is typed in by hand.
+    const specRows: Array<{label: string; value: string}> = [
+        ...(primaryCollection ? [{label: t('categoryLabel'), value: primaryCollection.name}] : []),
+        ...productInformation.map((row) => ({label: row.facet, value: row.values.join(', ')})),
+        {label: t('skuLabel'), value: initialVariant.sku},
+        ...(product.variants.length > 1
+            ? [{label: t('variantsLabel'), value: product.variants.map((v) => v.name).join(' · ')}]
+            : []),
+    ];
+    const tabs = [
+        {value: 'overview', label: t('tabOverview')},
+        {value: 'specifications', label: t('tabSpecifications')},
+        {value: 'delivery', label: t('tabDelivery')},
+        {value: 'questions', label: t('tabQuestions')},
+    ];
+
     return (
         <>
-            <div className="site-container pb-12 pt-24 sm:pt-28">
+            <div className="site-container pb-16 pt-24 sm:pt-28 lg:pb-24">
                 {/* Breadcrumb Navigation */}
-                <Breadcrumb className="mb-6">
+                <Breadcrumb className="mb-6 sm:mb-8">
                     <BreadcrumbList>
                         <BreadcrumbItem>
                             <BreadcrumbLink render={<Link href="/" />}>{t('home')}</BreadcrumbLink>
@@ -195,20 +217,20 @@ export default async function ProductDetailPage({
                             </>
                         )}
                         <BreadcrumbSeparator />
-                        <BreadcrumbItem>
+                        <BreadcrumbItem className="min-w-0">
                             <BreadcrumbPage className="line-clamp-1">{product.name}</BreadcrumbPage>
                         </BreadcrumbItem>
                     </BreadcrumbList>
                 </Breadcrumb>
 
-                <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-14">
-                    {/* Left Column: Image Gallery */}
-                    <div className="lg:sticky lg:top-24 lg:self-start">
-                        <ProductImageCarousel images={product.assets} />
+                <div className="grid grid-cols-1 gap-8 sm:gap-10 lg:grid-cols-[minmax(0,1.08fr)_minmax(0,1fr)] lg:gap-14 xl:gap-20">
+                    {/* Left Column: Image Gallery (sticky from lg only) */}
+                    <div className="min-w-0 lg:sticky lg:top-28 lg:self-start">
+                        <ProductImageCarousel images={product.assets} name={product.name} />
                     </div>
 
                     {/* Right Column: Product Info */}
-                    <div>
+                    <div className="min-w-0">
                         <ProductInfo
                             product={productForDisplay}
                             buildCurrencyCode={buildCurrencyCode}
@@ -219,61 +241,134 @@ export default async function ProductDetailPage({
                 </div>
             </div>
 
-            {(hasDescription || productInformation.length > 0) && (
-                <section className="border-t border-border py-12 sm:py-16">
-                    <div className="site-container grid gap-10 lg:grid-cols-12 lg:gap-14">
-                        {hasDescription && (
-                            <div className={productInformation.length > 0 ? 'lg:col-span-7' : 'lg:col-span-12 lg:max-w-3xl'}>
-                                <h2 className="text-xl font-extrabold tracking-tight sm:text-2xl">{t('description')}</h2>
-                                <div
-                                    className="prose prose-sm mt-4 max-w-none text-muted-foreground sm:prose-base"
-                                    dangerouslySetInnerHTML={{__html: product.description}}
-                                />
-                            </div>
-                        )}
-                        {productInformation.length > 0 && (
-                            <div className={hasDescription ? 'lg:col-span-5' : 'lg:col-span-12 lg:max-w-xl'}>
-                                <h2 className="text-xl font-extrabold tracking-tight sm:text-2xl">{t('productInformation')}</h2>
-                                <dl className="mt-4 divide-y divide-border overflow-hidden rounded-2xl border border-border bg-card">
-                                    {productInformation.map((row) => (
-                                        <div key={row.facet} className="grid grid-cols-5 gap-4 px-4 py-3 text-sm">
-                                            <dt className="col-span-2 font-semibold">{row.facet}</dt>
-                                            <dd className="col-span-3 text-muted-foreground">{row.values.join(', ')}</dd>
+            {/* Product information tabs. Every panel stays mounted (hidden
+                when inactive) so the full description/specs/support copy is
+                in the static HTML for crawlers, not only the first tab. There
+                are no Applications/Features tabs: Vendure holds no such data. */}
+            <section aria-labelledby="product-details" className="border-t border-border bg-background py-16 sm:py-20 lg:py-24">
+                <div className="site-container">
+                    <h2 id="product-details" className="sr-only">{t('detailsEyebrow')}</h2>
+
+                    <Tabs defaultValue="overview" className="gap-0">
+                        <div className="-mx-4 overflow-x-auto px-4 [scrollbar-width:none] sm:mx-0 sm:px-0 [&::-webkit-scrollbar]:hidden">
+                            <TabsList variant="line" className="h-auto w-full min-w-max justify-start gap-0 rounded-none border-b border-border p-0 group-data-horizontal/tabs:h-auto">
+                                {tabs.map((tab) => (
+                                    <TabsTrigger
+                                        key={tab.value}
+                                        value={tab.value}
+                                        className="h-12 flex-none gap-2.5 rounded-none px-4 text-sm font-semibold text-muted-foreground after:bg-brand group-data-horizontal/tabs:after:-bottom-px data-active:text-foreground sm:h-14 sm:px-6 sm:text-[15px]"
+                                    >
+                                        {tab.label}
+                                    </TabsTrigger>
+                                ))}
+                            </TabsList>
+                        </div>
+
+                        {/* Overview */}
+                        <TabsContent value="overview" keepMounted className={tabPanel}>
+                            {hasDescription ? (
+                                <div className="grid gap-10 lg:grid-cols-12 lg:gap-14">
+                                    <div
+                                        className="max-w-3xl text-[15px] leading-relaxed text-muted-foreground sm:text-base lg:col-span-8 [&_a]:text-brand [&_a]:underline [&_h2]:mb-3 [&_h2]:mt-8 [&_h2]:text-xl [&_h2]:font-bold [&_h2]:text-foreground [&_h3]:mb-2 [&_h3]:mt-6 [&_h3]:text-lg [&_h3]:font-bold [&_h3]:text-foreground [&_li]:mb-1.5 [&_ol]:mb-4 [&_ol]:list-decimal [&_ol]:pl-5 [&_p]:mb-4 [&_strong]:text-foreground [&_table]:w-full [&_td]:border-b [&_td]:border-border [&_td]:py-2 [&_ul]:mb-4 [&_ul]:list-disc [&_ul]:pl-5 [&>*:first-child]:mt-0"
+                                        dangerouslySetInnerHTML={{__html: product.description}}
+                                    />
+                                    <SpecSheetCard slug={product.slug} className="lg:col-span-4 lg:self-start" t={{title: t('specSheetTitle'), body: t('specSheetBody'), cta: t('requestSpecSheet')}} />
+                                </div>
+                            ) : (
+                                <div className="relative isolate overflow-hidden rounded-2xl border border-border bg-surface p-6 sm:p-10">
+                                    <span className="flex size-12 items-center justify-center rounded-xl bg-card text-brand shadow-sm">
+                                        <FileText aria-hidden="true" className="size-6" />
+                                    </span>
+                                    <h3 className="mt-5 font-display-wide text-2xl font-bold sm:text-3xl">{t('specsContactTitle')}</h3>
+                                    <p className="mt-3 max-w-xl text-base leading-relaxed text-muted-foreground">{t('noDescription')}</p>
+                                    <div className="mt-6 flex flex-col gap-3 min-[420px]:flex-row min-[420px]:flex-wrap">
+                                        <QuoteButton product={product.slug} className={brandButton} />
+                                        <Link href={enquiryHref} className={outlineButton}>
+                                            <MessageSquareText aria-hidden="true" />
+                                            {t('productEnquiry')}
+                                        </Link>
+                                    </div>
+                                </div>
+                            )}
+                            {/* Special offer summary at the end of the product content — only when the variant has a Vendure MRP. */}
+                            <SpecialOfferPrice
+                                slug={product.slug}
+                                variantId={initialVariant.id}
+                                price={initialVariant.priceWithTax}
+                                currencyCode={buildCurrencyCode}
+                                className="mt-10 max-w-3xl"
+                            />
+                        </TabsContent>
+
+                        {/* Specifications */}
+                        <TabsContent value="specifications" keepMounted className={tabPanel}>
+                            <div className="grid gap-10 lg:grid-cols-12 lg:gap-14">
+                                <dl className="divide-y divide-border overflow-hidden rounded-xl border border-border bg-card lg:col-span-8">
+                                    {specRows.map((row) => (
+                                        <div key={row.label} className="grid gap-1 px-4 py-4 sm:grid-cols-[minmax(0,14rem)_minmax(0,1fr)] sm:gap-6 sm:px-6">
+                                            <dt className="spec-label pt-0.5 text-steel">{row.label}</dt>
+                                            <dd className="break-words text-sm font-medium text-foreground sm:text-[15px]">{row.value}</dd>
                                         </div>
                                     ))}
                                 </dl>
+                                <SpecSheetCard slug={product.slug} className="lg:col-span-4 lg:self-start" t={{title: t('specSheetTitle'), body: t('specSheetBody'), cta: t('requestSpecSheet')}} />
                             </div>
-                        )}
-                    </div>
-                </section>
-            )}
+                        </TabsContent>
 
-            {/* Only what the store actually does: Vendure prices shipping per
-                address at checkout, payment runs through the secure checkout,
-                orders are tracked in the account, and enquiries reach the team. */}
-            <section aria-labelledby="shipping-support" className="border-t border-border bg-surface/60 py-12 sm:py-16">
-                <div className="site-container">
-                    <h2 id="shipping-support" className="text-xl font-extrabold tracking-tight sm:text-2xl">{t('shippingSupport')}</h2>
-                    <ul className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                        {[
-                            {icon: Truck, title: t('shippingTitle'), body: t('shippingBody')},
-                            {icon: ShieldCheck, title: t('paymentTitle'), body: t('paymentBody')},
-                            {icon: PackageSearch, title: t('ordersTitle'), body: t('ordersBody'), href: '/account/orders'},
-                            {icon: MessageSquareText, title: t('helpTitle'), body: t('helpBody'), href: `/contact?product=${encodeURIComponent(product.slug)}#enquiry`},
-                        ].map(({icon: Icon, title, body, href}) => (
-                            <li key={title} className="relative rounded-2xl border border-border bg-card p-5 transition-colors hover:border-foreground/20">
-                                <span className="flex size-10 items-center justify-center rounded-xl bg-brand/10 text-brand">
-                                    <Icon className="size-5" />
-                                </span>
-                                <h3 className="mt-4 text-sm font-bold">
-                                    {href ? (
-                                        <Link href={href} className="after:absolute after:inset-0 hover:text-brand">{title}</Link>
-                                    ) : title}
-                                </h3>
-                                <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{body}</p>
-                            </li>
-                        ))}
-                    </ul>
+                        {/* Delivery & Support — only what the store actually does:
+                            Vendure prices shipping per address at checkout,
+                            payment runs through the secure checkout, orders are
+                            tracked in the account, and enquiries reach the team. */}
+                        <TabsContent value="delivery" keepMounted className={tabPanel}>
+                            <ul className="grid gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-2">
+                                {[
+                                    {icon: Truck, title: t('shippingTitle'), body: t('shippingBody')},
+                                    {icon: ShieldCheck, title: t('paymentTitle'), body: t('paymentBody')},
+                                    {icon: PackageSearch, title: t('ordersTitle'), body: t('ordersBody'), href: '/account/orders', cta: t('viewOrders')},
+                                    {icon: MessageSquareText, title: t('helpTitle'), body: t('helpBody'), href: enquiryHref, cta: t('productEnquiry')},
+                                ].map(({icon: Icon, title, body, href, cta}) => (
+                                    <li key={title} className="flex gap-4 bg-card p-5 sm:p-7">
+                                        <span className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-steel-soft text-foreground">
+                                            <Icon aria-hidden="true" className="size-5" />
+                                        </span>
+                                        <div className="min-w-0">
+                                            <h3 className="text-base font-bold">{title}</h3>
+                                            <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{body}</p>
+                                            {href && cta && (
+                                                <Link href={href} className="group/btn mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-brand underline-offset-4 hover:underline">
+                                                    {cta}
+                                                    <ArrowRight aria-hidden="true" className="size-4 transition-transform group-hover/btn:translate-x-0.5" />
+                                                </Link>
+                                            )}
+                                        </div>
+                                    </li>
+                                ))}
+                            </ul>
+                        </TabsContent>
+
+                        {/* Questions — a hand-off, never invented Q&A. */}
+                        <TabsContent value="questions" keepMounted className={tabPanel}>
+                            <div className="relative isolate overflow-hidden rounded-2xl bg-tint-sheen p-6 text-foreground sm:p-10 lg:p-12">
+                                <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
+                                    <div className="max-w-2xl">
+                                        <HelpCircle aria-hidden="true" className="size-8 text-brand" />
+                                        <h3 className="mt-5 font-display-wide text-2xl font-bold text-foreground sm:text-3xl">{t('questionsTitle')}</h3>
+                                        <p className="mt-3 text-base leading-relaxed text-muted-foreground">{t('questionsBody')}</p>
+                                    </div>
+                                    <div className="flex flex-col gap-3 min-[420px]:flex-row min-[420px]:flex-wrap">
+                                        <Link href={enquiryHref} className={cn(brandButton, 'group/btn')}>
+                                            {t('productEnquiry')}
+                                            <ArrowRight aria-hidden="true" className="transition-transform group-hover/btn:translate-x-0.5" />
+                                        </Link>
+                                        <Link href="/faq" className={outlineLightButton}>
+                                            <HelpCircle aria-hidden="true" />
+                                            {t('readFaq')}
+                                        </Link>
+                                    </div>
+                                </div>
+                            </div>
+                        </TabsContent>
+                    </Tabs>
                 </div>
             </section>
 
@@ -286,3 +381,26 @@ export default async function ProductDetailPage({
         </>
     );
 }
+
+/** "Request full specification sheet" — opens the quote modal with this product pre-selected. */
+function SpecSheetCard({slug, className, t}: {slug: string; className?: string; t: {title: string; body: string; cta: string}}) {
+    return (
+        <aside className={cn('rounded-xl border border-border bg-surface p-6', className)}>
+            <FileText aria-hidden="true" className="size-6 text-brand" />
+            <h3 className="mt-4 text-lg font-bold">{t.title}</h3>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{t.body}</p>
+            <QuoteButton product={slug} className={cn(inkButton, 'mt-5 w-full whitespace-normal text-center')}>
+                <FileText aria-hidden="true" />
+                {t.cta}
+            </QuoteButton>
+        </aside>
+    );
+}
+
+const tabPanel = 'pt-8 outline-none sm:pt-10';
+// Local copies of the site button shapes (features can't import `site/`).
+const buttonBase = 'inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold transition-[transform,background-color,border-color,box-shadow,color] duration-200 ease-out outline-none focus-visible:ring-3 focus-visible:ring-brand/40 active:translate-y-px [&_svg]:size-4 [&_svg]:shrink-0';
+const brandButton = cn(buttonBase, 'bg-brand text-brand-foreground shadow-[0_1px_0_0_oklch(1_0_0/0.18)_inset,0_10px_26px_-14px_var(--brand)] hover:-translate-y-0.5 hover:bg-[oklch(0.52_0.17_37)]');
+const inkButton = cn(buttonBase, 'bg-logo-blue text-white hover:-translate-y-0.5 hover:bg-logo-blue-deep');
+const outlineButton = cn(buttonBase, 'border border-foreground/15 bg-card text-foreground hover:-translate-y-0.5 hover:border-foreground/35 hover:shadow-[0_10px_24px_-18px_rgb(0_0_0/0.4)]');
+const outlineLightButton = cn(buttonBase, 'border border-foreground/15 bg-card text-foreground hover:-translate-y-0.5 hover:border-foreground/35');

@@ -63,7 +63,7 @@ export function VerifyContent() {
                         <XCircle className="h-16 w-16 text-destructive"/>
                     </div>
                     <div className="space-y-2 text-center">
-                        <h1 className="text-2xl font-bold">{t('invalidLink')}</h1>
+                        <h1 className="font-display-wide text-2xl font-extrabold tracking-tight">{t('invalidLink')}</h1>
                         <p className="text-muted-foreground">
                             {t('invalidLinkMessage')}
                         </p>

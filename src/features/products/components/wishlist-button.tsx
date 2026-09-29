@@ -30,8 +30,9 @@ export function WishlistButton({productId, name, variant = 'icon', className}: W
                 'inline-flex items-center justify-center transition-[color,background-color,border-color,transform] duration-200 outline-none focus-visible:ring-3 focus-visible:ring-brand/40 active:scale-95',
                 variant === 'icon'
                     ? 'size-9 rounded-full bg-background/90 shadow-sm backdrop-blur hover:bg-background'
-                    : 'h-11 gap-2 rounded-xl border border-border bg-card px-4 text-sm font-semibold hover:border-foreground/30 hover:bg-muted',
-                saved ? 'text-brand' : 'text-foreground/70 hover:text-foreground',
+                    : 'h-11 gap-2 rounded-lg border bg-card px-4 text-sm font-semibold hover:border-foreground/35 hover:shadow-[0_10px_24px_-18px_rgb(0_0_0/0.4)]',
+                variant === 'full' && (saved ? 'border-brand/40 bg-brand/[0.06]' : 'border-foreground/15'),
+                saved ? 'text-brand' : variant === 'full' ? 'text-foreground' : 'text-foreground/70 hover:text-foreground',
                 className,
             )}
         >

@@ -5,7 +5,7 @@ import {useTranslations} from 'next-intl';
 import {query} from '@/platform/vendure/client-api';
 import {getActiveCurrencyCode} from '@/features/currency/currency-client';
 import {GetProductDetailQuery} from '@/features/products/graphql';
-import {Price} from '@/features/pricing/price';
+import {DiscountedPrice} from '@/features/products/discounted-price';
 
 export interface LiveVariantPricing {
     id: string;
@@ -35,13 +35,19 @@ interface LiveProductPricing {
  * matches it, the build-time data is already correct and the
  * `GetProductDetailQuery` re-fetch is skipped entirely — only the (cached,
  * shared) active-currency check runs. This is the common case (most viewers
- * browse in the channel's default currency), so it cuts a PDP's live
- * price-fetch traffic to zero for it (see docs/decisions.md, 2026-09-03).
+ * browse in the channel's default currency), so it cuts a product card's
+ * live price-fetch traffic to zero for it (see docs/decisions.md, 2026-09-03).
+ *
+ * `refreshStock` disables that skip: the product page passes it because
+ * stock changes in Vendure admin between builds, and a baked-in
+ * OUT_OF_STOCK would otherwise hide Add to cart until the next deploy
+ * (docs/decisions.md, 2026-09-29).
  */
 export function useLiveProductPricing(
     slug: string,
     initialData: LiveProductPricing | null = null,
-    buildCurrencyCode?: string
+    buildCurrencyCode?: string,
+    {refreshStock = false}: {refreshStock?: boolean} = {}
 ): {data: LiveProductPricing | null; loading: boolean} {
     const [data, setData] = useState<LiveProductPricing | null>(initialData);
     const [loading, setLoading] = useState(!initialData);
@@ -54,7 +60,7 @@ export function useLiveProductPricing(
                 const currencyCode = await getActiveCurrencyCode();
                 if (cancelled) return;
 
-                if (buildCurrencyCode && currencyCode === buildCurrencyCode && initialData) {
+                if (!refreshStock && buildCurrencyCode && currencyCode === buildCurrencyCode && initialData) {
                     // Build-time price is already in the viewer's currency —
                     // nothing to re-fetch.
                     return;
@@ -82,7 +88,7 @@ export function useLiveProductPricing(
         return () => {
             cancelled = true;
         };
-        // initialData/buildCurrencyCode are stable per mount for a given slug.
+        // initialData/buildCurrencyCode/refreshStock are stable per mount for a given slug.
     }, [slug]);
 
     return {data, loading};
@@ -130,16 +136,15 @@ export function ProductCardPrice({slug, initial}: ProductCardPriceProps) {
     const min = Math.min(...prices);
     const max = Math.max(...prices);
 
-    if (min !== max) {
-        return (
-            <>
-                <span className="text-xs font-normal text-muted-foreground mr-1">{t('from')}</span>
-                <Price value={min} currencyCode={data.currencyCode} />
-            </>
-        );
-    }
-
-    return <Price value={min} currencyCode={data.currencyCode} />;
+    return (
+        <DiscountedPrice
+            value={min}
+            currencyCode={data.currencyCode}
+            mrpFor={{slug}}
+            prefix={min !== max ? <span className="mr-1 text-xs font-normal text-muted-foreground">{t('from')}</span> : undefined}
+            fallback={<span className="text-sm font-medium text-muted-foreground">{t('priceUnavailable')}</span>}
+        />
+    );
 }
 
 export {PriceSkeleton};

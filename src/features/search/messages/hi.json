@@ -12,7 +12,15 @@
         "clearAll": "सभी साफ़ करें",
         "filtersButton": "फ़िल्टर",
         "inStockOnly": "केवल स्टॉक में उपलब्ध",
-        "categories": "श्रेणियाँ"
+        "categories": "श्रेणियाँ",
+        "availability": "उपलब्धता",
+        "inStockHint": "केवल तुरंत भेजने योग्य मशीनें",
+        "inStockChip": "स्टॉक में",
+        "activeFilters": "सक्रिय फ़िल्टर",
+        "removeFilter": "फ़िल्टर हटाएँ: {label}",
+        "showResults": "{count, plural, =0 {कोई परिणाम नहीं} one {# परिणाम दिखाएँ} other {# परिणाम दिखाएँ}}",
+        "refine": "रेंज सीमित करें",
+        "viewResults": "परिणाम दिखाएं"
     },
     "Search": {
         "title": "खोजें",
@@ -23,16 +31,43 @@
         "metaCatalogDescription": "{siteName} पर हमारा उत्पाद कैटलॉग खोजें",
         "loadErrorTitle": "उत्पाद लोड नहीं हो सके।",
         "loadErrorHint": "कृपया अपना कनेक्शन जाँचें और फिर से प्रयास करें।",
-        "retry": "फिर से प्रयास करें"
+        "retry": "फिर से प्रयास करें",
+        "heading": "कैटलॉग में खोजें",
+        "headingFor": "“{query}” के परिणाम",
+        "intro": "हर Millnex मशीन, नाम, प्रकार या SKU से खोजें। नीचे दिए फ़िल्टर से परिणाम सीमित करें।",
+        "home": "होम",
+        "shop": "शॉप"
     },
     "Shop": {
-        "title": "सभी उत्पाद खरीदें",
-        "subtitle": "पूरी रेंज देखें, श्रेणी और उपलब्धता के अनुसार फ़िल्टर करें, और मशीनें कार्ट में जोड़ें।",
+        "title": "Millnex मशीनें देखें",
+        "subtitle": "पूरी Millnex रेंज एक ही जगह। श्रेणी, प्रकार और उपलब्धता से फ़िल्टर करें, लाइव कीमतें देखें और किसी भी मशीन के लिए हमारी टीम से कोटेशन माँगें।",
         "metaDescription": "{siteName} पर ऑनलाइन उपलब्ध सभी उत्पाद खरीदें।",
         "home": "होम",
         "categories": "श्रेणियाँ",
         "allProducts": "सभी उत्पाद",
-        "eyebrow": "मिलनेक्स स्टोर",
-        "browseProducts": "उत्पाद देखें"
+        "browseProducts": "उत्पाद देखें",
+        "breadcrumb": "शॉप",
+        "allTab": "सभी",
+        "machineCount": "{count, plural, =0 {अभी कोई मशीन सूचीबद्ध नहीं} one {कैटलॉग में # मशीन} other {कैटलॉग में # मशीनें}}"
+    },
+    "Listing": {
+        "resultCount": "{count, plural, =0 {कोई मशीन नहीं} one {# मशीन} other {# मशीनें}}",
+        "resultCountFor": "“{term}” के लिए {count, plural, one {# परिणाम} other {# परिणाम}}",
+        "range": "{total} में से {from}–{to}",
+        "updating": "परिणाम अपडेट हो रहे हैं…",
+        "sortLabel": "क्रम",
+        "emptyTitleTerm": "“{term}” के लिए कुछ नहीं मिला",
+        "emptyTitleFiltered": "इन फ़िल्टर से कोई मशीन मेल नहीं खाती",
+        "emptyTitleCatalog": "मशीनें स्टोर में जोड़ी जा रही हैं",
+        "emptyHintFiltered": "कोई फ़िल्टर या खोज शब्द हटाकर देखें — या हमें अपनी ज़रूरत बताएँ, हमारी टीम सही मशीन सुझाएगी।",
+        "emptyHintCatalog": "हमारी टीम आपको मौजूदा रेंज, विनिर्देश और कीमतें सीधे बता सकती है।",
+        "clearFilters": "फ़िल्टर साफ़ करें",
+        "clearSearchAndFilters": "खोज और फ़िल्टर साफ़ करें",
+        "pagination": "पृष्ठ नेविगेशन",
+        "previous": "पिछला",
+        "next": "अगला",
+        "pageN": "पृष्ठ {page}",
+        "pageOf": "पृष्ठ {page} / {total}",
+        "categoryTabs": "मशीन श्रेणियाँ"
     }
 }

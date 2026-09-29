@@ -58,7 +58,7 @@ export function OrderConfirmation() {
 
     if (isLoading) {
         return (
-            <div className="container mx-auto px-4 py-16 text-center">
+            <div className="site-container pb-20 pt-24 sm:pt-28 lg:pt-36 text-center">
                 <Loader2 className="h-6 w-6 animate-spin mx-auto text-muted-foreground" />
             </div>
         );
@@ -66,7 +66,7 @@ export function OrderConfirmation() {
 
     if (!order) {
         return (
-            <div className="container mx-auto px-4 py-16">
+            <div className="site-container pb-20 pt-24 sm:pt-28 lg:pt-36">
                 <div className="max-w-3xl mx-auto">
                     <PaymentProcessingBanner code={code} onOrderUpdate={setOrder} />
                 </div>
@@ -75,7 +75,7 @@ export function OrderConfirmation() {
     }
 
     return (
-        <div className="container mx-auto px-4 py-16">
+        <div className="site-container pb-20 pt-24 sm:pt-28 lg:pt-36">
             <div className="max-w-3xl mx-auto">
                 {order.state === 'ArrangingPayment' && (
                     <PaymentProcessingBanner code={code} onOrderUpdate={setOrder} />
@@ -83,14 +83,14 @@ export function OrderConfirmation() {
 
                 <div className="text-center mb-10">
                     <div className="flex justify-center mb-6">
-                        <div className="rounded-full bg-primary p-5 shadow-lg shadow-primary/25">
-                            <Check className="h-10 w-10 text-primary-foreground" strokeWidth={3} />
+                        <div className="rounded-2xl bg-brand p-5 shadow-[0_28px_50px_-30px_rgb(15_20_30/0.6)]">
+                            <Check className="h-10 w-10 text-brand-foreground" strokeWidth={3} />
                         </div>
                     </div>
-                    <h1 className="text-3xl font-bold mb-2">{t('orderConfirmed')}</h1>
+                    <h1 className="mb-3 font-display-wide text-3xl font-extrabold tracking-tight sm:text-5xl">{t('orderConfirmed')}</h1>
                     <p className="text-muted-foreground">
                         {t('thankYou')}{' '}
-                        <span className="font-semibold text-foreground">{order.code}</span>
+                        <span className="font-mono font-semibold text-foreground">{order.code}</span>
                     </p>
                     <p className="text-sm text-muted-foreground mt-1">
                         {t('emailConfirmation')}
@@ -99,24 +99,24 @@ export function OrderConfirmation() {
 
                 <Card className="mb-6">
                     <CardHeader>
-                        <CardTitle>{t('orderSummary')}</CardTitle>
+                        <CardTitle className="font-display text-base font-bold">{t('orderSummary')}</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         {order.lines.map((line) => (
                             <div key={line.id} className="flex gap-4 items-center">
                                 {line.productVariant.product.featuredAsset && (
-                                    <div className="flex-shrink-0">
+                                    <div className="flex-shrink-0 rounded-lg border border-border bg-stage">
                                         <Image
                                             src={line.productVariant.product.featuredAsset.preview}
                                             alt={line.productVariant.name}
                                             width={80}
                                             height={80}
-                                            className="rounded-lg object-cover h-20 w-20 object-center"
+                                            className="h-20 w-20 rounded-lg object-contain p-1 mix-blend-multiply"
                                         />
                                     </div>
                                 )}
                                 <div className="flex-1 min-w-0">
-                                    <p className="font-medium">{line.productVariant.product.name}</p>
+                                    <p className="font-display font-bold">{line.productVariant.product.name}</p>
                                     {line.productVariant.name !== line.productVariant.product.name && (
                                         <p className="text-sm text-muted-foreground">
                                             {line.productVariant.name}
@@ -134,7 +134,7 @@ export function OrderConfirmation() {
 
                         <Separator/>
 
-                        <div className="flex justify-between items-baseline font-bold text-lg">
+                        <div className="flex justify-between items-baseline font-display font-extrabold text-lg">
                             <span>{t('total')}</span>
                             <span className="text-xl">
                                 <Price value={order.totalWithTax} currencyCode={order.currencyCode}/>
@@ -146,7 +146,7 @@ export function OrderConfirmation() {
                 {order.shippingAddress && (
                     <Card className="mb-8">
                         <CardHeader>
-                            <CardTitle>{t('shippingAddress')}</CardTitle>
+                            <CardTitle className="font-display text-base font-bold">{t('shippingAddress')}</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <p className="font-medium">{order.shippingAddress.fullName}</p>
@@ -164,11 +164,11 @@ export function OrderConfirmation() {
                 )}
 
                 <div className="flex flex-col sm:flex-row gap-3">
-                    <Button nativeButton={false} render={<Link href="/" />} className="flex-1" size="lg">
+                    <Button nativeButton={false} render={<Link href="/" />} className="h-12 flex-1 rounded-lg bg-brand font-semibold text-brand-foreground hover:bg-brand/90" size="lg">
                         <ShoppingBag className="mr-2 h-4 w-4" />
                         {t('continueShopping')}
                     </Button>
-                    <Button nativeButton={false} render={<Link href="/account/orders" />} variant="outline" className="flex-1" size="lg">
+                    <Button nativeButton={false} render={<Link href="/account/orders" />} variant="outline" className="h-12 flex-1 rounded-lg font-semibold" size="lg">
                         <ClipboardList className="mr-2 h-4 w-4" />
                         {t('viewOrders')}
                     </Button>

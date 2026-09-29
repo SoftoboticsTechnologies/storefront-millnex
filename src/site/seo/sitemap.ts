@@ -15,6 +15,8 @@ const STATIC_PAGES: SitemapPage[] = [
     {path: '/', priority: 1, changeFrequency: 'daily'},
     {path: '/shop/', priority: 0.9, changeFrequency: 'daily'},
     {path: '/about/', priority: 0.5, changeFrequency: 'monthly'},
+    {path: '/manufacturing/', priority: 0.5, changeFrequency: 'monthly'},
+    {path: '/compare/', priority: 0.4, changeFrequency: 'weekly'},
     {path: '/contact/', priority: 0.6, changeFrequency: 'monthly'},
     {path: '/faq/', priority: 0.5, changeFrequency: 'monthly'},
     {path: '/insights/', priority: 0.4, changeFrequency: 'weekly'},

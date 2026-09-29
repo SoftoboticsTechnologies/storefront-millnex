@@ -42,6 +42,27 @@
     "seeAllResults": "\"{term}\" కోసం అన్ని ఫలితాలు చూడండి",
     "wishlist": "విష్‌లిస్ట్",
     "faq": "తరచుగా అడిగే ప్రశ్నలు",
-    "backToTop": "పైకి వెళ్ళండి"
+    "backToTop": "పైకి వెళ్ళండి",
+    "manufacturing": "తయారీ",
+    "compare": "యంత్రాలను పోల్చండి",
+    "utilityDomestic": "గృహ & వాణిజ్య మిల్లింగ్ పరిష్కారాలు",
+    "utilitySupport": "నిపుణుల సహాయం",
+    "utilitySecure": "సురక్షిత షాపింగ్",
+    "megaCategories": "వర్గం ప్రకారం కొనండి",
+    "megaByType": "{facet} ప్రకారం కొనండి",
+    "megaViewCategory": "అన్నీ చూడండి",
+    "megaMachineCount": "{count} యంత్రాలు",
+    "megaHelpTitle": "ఏ యంత్రమో తెలియదా?",
+    "megaHelpBody": "మీరు ఏమి, ఎంత రుబ్బుతారో చెప్పండి. మా బృందం మోడల్‌ను సూచించి కొటేషన్ పంపుతుంది.",
+    "browseAllMachines": "అన్ని యంత్రాలు చూడండి",
+    "recentSearches": "ఇటీవలి శోధనలు",
+    "clearRecent": "తొలగించు",
+    "popularCategories": "ప్రముఖ వర్గాలు",
+    "searchHint": "యంత్రం పేరు, వర్గం, రకం లేదా SKUతో శోధించండి",
+    "matchingProducts": "సరిపోలే యంత్రాలు",
+    "closeSearch": "శోధన మూసివేయి",
+    "chatWithMillnex": "Millnexతో చాట్ చేయండి",
+    "company": "సంస్థ",
+    "callUs": "కాల్ చేయండి {phone}"
   }
 }

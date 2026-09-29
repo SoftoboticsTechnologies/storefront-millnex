@@ -27,12 +27,12 @@ export async function RelatedProducts({collectionSlug, currentProductId}: Relate
 
     return (
         <ProductRail
-            title={t('relatedProducts')}
+            title={t('youMayAlsoLike')}
             products={products}
             collectionNames={collectionNames}
             layout="carousel"
             viewAll={{href: `/collection/${collectionSlug}`, label: t('viewAllProducts')}}
-            className="border-t border-border bg-surface/50 py-12 sm:py-16"
+            className="border-t border-border bg-surface py-16 sm:py-20 lg:py-24"
         />
     );
 }

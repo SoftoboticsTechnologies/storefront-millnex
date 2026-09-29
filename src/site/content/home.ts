@@ -1,4 +1,4 @@
-import {MILL_GALLERY, SITE_MEDIA} from '@/site/content/media';
+import {MACHINE_PHOTOS, MILL_GALLERY, SITE_MEDIA, type CatalogImage} from '@/site/content/media';
 
 /**
  * Marketing copy for the Millnex homepage and company pages.
@@ -7,39 +7,14 @@ import {MILL_GALLERY, SITE_MEDIA} from '@/site/content/media';
  * - Company claims are restated from millnex.in (About / Why Millnex).
  * - Figures are restated from the machine specifications Millnex publishes.
  * - No statistics, customer counts, certifications or awards are stated
- *   unless Millnex publishes them. Add verified numbers to `COMPANY_STATS`
- *   (currently empty) and the About section will render them.
+ *   unless Millnex publishes them. Sections render only real entries.
  *
  * This copy is English-only brand content, like catalog data; UI chrome
  * (buttons, navigation, form labels) is translated through next-intl messages.
  */
 
-export const HERO_COPY = {
-    eyebrow: 'Precision engineered • Performance driven',
-    titleLines: ['Advanced Milling Solutions', 'Built for Everyday Performance.'],
-    body: 'From domestic atta chakki to commercial grinding and food-processing machinery, Millnex delivers dependable machines engineered for efficiency, durability and consistent performance.',
-    segments: ['Domestic', 'Commercial', 'Industrial'],
-    floatingCards: [
-        {title: 'High Performance', detail: 'Motor options from 1 HP to 5 HP'},
-        {title: 'Low Maintenance', detail: 'Stoneless grinding design'},
-        {title: 'Built for Reliability', detail: 'Heavy-duty steel construction'},
-    ],
-} as const;
-
-/**
- * Four-up feature strip under the homepage hero. Restated from millnex.in's
- * "Why Choose Millnex?" cards and list — no new figures or claims.
- */
-export const FEATURES_COPY = [
-    {icon: 'thumbsUp', title: 'Year-round supply', body: 'Quality products, competitive pricing & global suppliers'},
-    {icon: 'award', title: 'Rich in experience', body: 'Qualified & dedicated promoters'},
-    {icon: 'factory', title: 'Certified facility', body: 'Certified manufacturing facility'},
-    {icon: 'headset', title: 'Dedicated support', body: 'Strong customer support and service'},
-] as const;
-
 /** "Who we are" — paragraphs are Millnex's own About Us text from millnex.in. */
 export const ABOUT_COPY = {
-    eyebrow: 'Our company',
     title: 'Who we are',
     paragraphs: [
         'At Millnex, we are committed to delivering high-performance milling solutions that combine durability, efficiency, and precision. As a leading manufacturer of domestic flour mills, commercial flour mills, masala machinery, and pulverizer machines, we cater to a wide spectrum of customers ranging from households to large-scale industrial operations.',
@@ -56,38 +31,7 @@ export const ABOUT_COPY = {
     image: SITE_MEDIA.aboutBanner,
 } as const;
 
-/**
- * Editorial "About us" band (home + about page): two-tone headline, wheat
- * illustration, story paragraphs. Restates ABOUT_COPY / WHY_COPY claims — no
- * rankings, health claims or figures Millnex hasn't published.
- * `title` lines: plain strings render light, `{accent}` bold brand red,
- * `{strong}` bold in the text colour.
- */
-export const STORY_COPY = {
-    eyebrow: 'About us',
-    title: [
-        ['Your ', {accent: 'fresh'}, ' flour,'],
-        [{strong: 'ground'}, ' your way,'],
-        ['every day.'],
-    ],
-    image: {src: '/assets/millnex/site/wheat-ear.svg', width: 640, height: 560},
-    paragraphs: [
-        'Millnex builds milling machines for homes, shops and commercial operations — from compact domestic atta chakkis to robust pulverizers and grinding systems for high-capacity production.',
-        'With your own mill you grind the grains you choose, when you need them, and you know exactly what goes into your flour. The same machines handle masala and spices too.',
-        'Stoneless grinding and durable blade systems keep upkeep to a minimum, and heavy-duty steel construction is built for everyday use.',
-        'Whether the machine is for your kitchen or your business, our team helps you choose the right model for your volume.',
-    ],
-} as const;
-
-/**
- * Verified company figures (years in business, machines delivered, etc.).
- * Intentionally empty — Millnex hasn't published any. Add real numbers here
- * and they render in the About section with an animated counter.
- */
-export const COMPANY_STATS: Array<{value: number; suffix?: string; label: string}> = [];
-
 export const WHY_COPY = {
-    eyebrow: 'Why Millnex',
     title: 'Why Businesses Choose Millnex',
     body: 'Dependable machines, honest specifications and a team that helps you choose the right model for your volume.',
     items: [
@@ -101,7 +45,6 @@ export const WHY_COPY = {
 } as const;
 
 export const MANUFACTURING_COPY = {
-    eyebrow: 'Manufacturing',
     title: 'Built With Engineering Discipline',
     body: 'Performance on the shop floor starts long before a machine reaches it. Millnex machines are made with a focus on the fundamentals that decide how a mill performs over years of use.',
     pillars: [
@@ -112,25 +55,6 @@ export const MANUFACTURING_COPY = {
     ],
     images: MILL_GALLERY,
     imageCaption: 'Engineered, fabricated and quality-checked.',
-} as const;
-
-export const PROCESS_COPY = {
-    eyebrow: 'How ordering works',
-    title: 'From Browsing to Running Machine',
-    steps: [
-        {title: 'Browse the Range', body: 'Explore every machine online with its details and current price.'},
-        {title: 'Choose Your Options', body: 'Pick the model and variant that fits your requirement.'},
-        {title: 'Add to Cart', body: 'Review quantities and totals before you check out.'},
-        {title: 'Check Out Securely', body: 'Enter delivery details and pay online.'},
-        {title: 'Track Your Order', body: 'Follow your order status from your account.'},
-        {title: 'After-Sales Support', body: 'Reach our team for support and service once you are running.'},
-    ],
-} as const;
-
-export const FAQ_COPY = {
-    eyebrow: 'FAQ',
-    title: 'Questions, Answered',
-    body: 'Can’t find what you’re looking for? Our team will help you choose the right machine.',
 } as const;
 
 export const FOOTER_COPY = {
@@ -144,48 +68,239 @@ export const CTA_COPY = {
     image: SITE_MEDIA.grainProcessing,
 } as const;
 
-export const CONTACT_COPY = {
-    eyebrow: 'Contact',
-    title: 'Talk to the Millnex Team',
-    body: 'Questions about a product, an order or delivery? Send us a message and our team will get back to you.',
+/* ---------- Homepage (2026-09-29 industrial redesign) ----------
+ * Every claim below restates millnex.in (About, Why Millnex, product pages)
+ * or describes what the store itself does. No figures, certifications or
+ * testimonials that Millnex hasn't published. Live numbers (machine and
+ * category counts) are read from Vendure at build time, never typed here. */
+
+/**
+ * How a marketing card finds real catalog data at build time, in order: a
+ * Vendure collection whose name matches `collection`; else shop filters for
+ * the main facet's values matching `facetValues`; else a live search for
+ * `search`; else /shop. So a card always lands on what the store lists.
+ */
+export interface CatalogMatch {
+    collection?: RegExp;
+    facetValues?: RegExp;
+    search?: string;
+}
+
+export const HOME_HERO = {
+    titleLines: ['Powering Better Milling.', 'Built for Performance.'],
+    body: 'Domestic flour mills, pulverizers and food-processing machinery engineered for reliable performance, efficiency and everyday use.',
+    trust: ['Precision Engineered', 'Built for Durability', 'Domestic & Commercial', 'Reliable Support'],
+    image: MACHINE_PHOTOS.pulverizer,
+    stageLabel: 'Millnex · Rajkot, Gujarat',
+} as const;
+
+/** Numbered trust strip under the hero — qualities, not statistics. */
+export const TRUST_STRIP = [
+    {icon: 'ruler', title: 'Precision Engineering', body: 'Multi-blade cutter systems for smooth, even grinding.'},
+    {icon: 'zap', title: 'Energy Efficient', body: 'Designs with published power consumption per model.'},
+    {icon: 'wrench', title: 'Low Maintenance', body: 'Stoneless grinding and durable blade systems.'},
+    {icon: 'scale', title: 'Domestic & Commercial', body: 'From household mills to commercial machinery.'},
+    {icon: 'headset', title: 'Dedicated Support', body: 'A Millnex team to help you choose and run your machine.'},
+] as const;
+
+export const SHOWCASE_COPY: {
+    title: string;
+    body: string;
+    cards: Array<{title: string; body: string; image: CatalogImage; match: CatalogMatch}>;
+} = {
+    title: 'Machines Built for Every Need',
+    body: 'From a compact atta chakki for the family kitchen to grinding systems built for production volumes.',
+    cards: [
+        {
+            title: 'Domestic Flour Mills',
+            body: 'Fresh flour, ground your way.',
+            image: MACHINE_PHOTOS.flourMill2in1,
+            match: {collection: /flour/i, facetValues: /flour/i, search: 'flour mill'},
+        },
+        {
+            title: 'Commercial Milling',
+            body: 'Built for higher production volumes.',
+            image: MACHINE_PHOTOS.pulverizer,
+            match: {facetValues: /pulveri/i, search: 'pulverizer'},
+        },
+        {
+            title: 'Pulverizers & Grinding',
+            body: 'Powerful grinding for spices and dry materials.',
+            image: MACHINE_PHOTOS.pulverizerSpices,
+            match: {collection: /grind/i, facetValues: /pulveri|grind/i, search: 'grinding'},
+        },
+        {
+            title: 'Food Processing',
+            body: 'Efficient machines for modern kitchens and food businesses.',
+            image: MACHINE_PHOTOS.gravy,
+            match: {facetValues: /gravy|vegetable|fafda|cutter/i, search: 'machine'},
+        },
+    ],
+};
+
+export const FEATURED_COPY = {
+    title: 'Featured Machines',
+    body: 'Explore Millnex machines engineered for everyday reliability and professional performance.',
 } as const;
 
 /**
- * Where Millnex machines are used — restated from millnex.in ("from
- * households to large-scale industrial operations"; domestic and commercial
- * flour mills, masala machinery, pulverizers, gravy/vegetable-cutting/fafda
- * machines). Each card opens a live Vendure search for `searchTerm`, so the
- * products shown are whatever the store currently lists — nothing here is a
- * product entry.
+ * "Not sure which machine you need?" guided finder. The recommendation is a
+ * live Vendure search for the chosen material's `searchTerm` — the same
+ * mapping the FAQ states (grains → flour mills; spices/masala → pulverizer).
+ * Usage and volume are not product data in the store, so they are passed on
+ * to the quote request instead of pretending to filter by them.
  */
-export const APPLICATIONS_COPY = {
-    eyebrow: 'Industrial applications',
-    title: 'Machines for every scale of production',
-    body: 'From a compact flour mill for everyday home use to robust systems for high-capacity production — find the right machine for the job.',
-    items: [
-        {
-            icon: 'home',
-            title: 'Home kitchens',
-            body: 'Compact domestic flour mills for fresh atta at home, every day.',
-            searchTerm: 'flour mill',
+export const FINDER_COPY = {
+    title: 'Not Sure Which Machine You Need?',
+    body: 'Answer three quick questions and we’ll show the machines in our range that match — then our team can confirm the right model.',
+    steps: {
+        use: {
+            question: 'What do you need it for?',
+            options: [
+                {value: 'home', label: 'Home use', hint: 'Fresh atta for the family'},
+                {value: 'smallBusiness', label: 'Small business', hint: 'Shop, chakki or retail'},
+                {value: 'commercial', label: 'Commercial production', hint: 'Higher daily volumes'},
+                {value: 'foodBusiness', label: 'Food processing', hint: 'Kitchens & food businesses'},
+            ],
         },
-        {
-            icon: 'factory',
-            title: 'Commercial milling',
-            body: 'Robust commercial systems built for high-capacity production.',
-            searchTerm: 'commercial',
+        material: {
+            question: 'What do you want to process?',
+            options: [
+                {value: 'grains', label: 'Wheat / Grains', searchTerm: 'flour mill'},
+                {value: 'spices', label: 'Spices', searchTerm: 'pulverizer'},
+                {value: 'masala', label: 'Masala', searchTerm: 'pulverizer'},
+                {value: 'vegetables', label: 'Vegetables', searchTerm: 'vegetable'},
+                {value: 'gravy', label: 'Gravy', searchTerm: 'gravy'},
+                {value: 'fafda', label: 'Fafda', searchTerm: 'fafda'},
+            ],
         },
-        {
-            icon: 'wheat',
-            title: 'Spices & pulverizing',
-            body: 'Masala machinery and pulverizers for grinding spices and dry materials.',
-            searchTerm: 'pulverizer',
+        volume: {
+            question: 'How much will you process?',
+            options: [
+                {value: 'light', label: 'A few kilos a day', hint: 'Household use'},
+                {value: 'regular', label: 'Regular daily batches', hint: 'Shop or large household'},
+                {value: 'high', label: 'Continuous production', hint: 'Commercial volumes'},
+            ],
         },
-        {
-            icon: 'cooking',
-            title: 'Food preparation',
-            body: 'Gravy, vegetable-cutting and fafda machines for kitchens and food businesses.',
-            searchTerm: 'gravy',
-        },
+    },
+    resultNote: 'Capacity and usage aren’t listed for every model online, so send them with a quote request and our team will confirm the right machine and motor.',
+} as const;
+
+export const SPOTLIGHT_COPY = {
+    title: 'Precision Where It Matters',
+} as const;
+
+export const WHY_SECTION = {
+    /** Screen-reader heading for the trust strip. */
+    label: 'Why Millnex',
+    title: 'Why Businesses Choose Millnex',
+    body: WHY_COPY.body,
+    image: MACHINE_PHOTOS.flourMillStandard,
+} as const;
+
+/** Five-step manufacturing journey (homepage). Restates MANUFACTURING_COPY / ABOUT_COPY. */
+export const MANUFACTURING_STEPS = {
+    title: 'Built With Engineering Discipline',
+    body: 'Millnex is a manufacturer, not a reseller — the fundamentals that decide how a mill performs over years of use are built in, step by step.',
+    steps: [
+        {title: 'Material Selection', body: 'Premium-grade materials, with stainless-steel blades and bodies on the models that need them.'},
+        {title: 'Fabrication & Assembly', body: 'Modern manufacturing techniques for robust cabinets, grinding chambers and cutter assemblies.'},
+        {title: 'Quality Checks', body: 'Vigilant quality control and safety standards applied across the range.'},
+        {title: 'Performance Testing', body: 'Grinding systems built for consistent output and minimal maintenance.'},
+        {title: 'Final Inspection', body: 'Stringent quality control before a machine is ready for your home or business.'},
     ],
+    images: [MACHINE_PHOTOS.pulverizer, MACHINE_PHOTOS.fafda, MACHINE_PHOTOS.flourMill2in1],
+} as const;
+
+export const COMPARE_COPY = {
+    title: 'Which Machine Is Right for You?',
+    body: 'Side-by-side details for every machine in a category, straight from our catalogue.',
+} as const;
+
+export const SPLIT_COPY: Record<'home' | 'business', {
+    title: string;
+    body: string;
+    cta: string;
+    image: CatalogImage;
+    match: CatalogMatch;
+}> = {
+    home: {
+        title: 'Fresh flour whenever you need it.',
+        body: 'Compact stoneless flour mills for daily household grinding — you choose the grain, and you know exactly what goes into your flour.',
+        cta: 'Explore Domestic Mills',
+        image: MACHINE_PHOTOS.flourMillRegular,
+        match: {collection: /flour/i, facetValues: /flour/i, search: 'flour mill'},
+    },
+    business: {
+        title: 'Reliable machinery for higher-volume operations.',
+        body: 'Pulverizers, grinding machines and food-processing equipment built for shops, kitchens and commercial production.',
+        cta: 'Explore Commercial Machines',
+        image: MACHINE_PHOTOS.pulverizer,
+        match: {collection: /grind/i, facetValues: /pulveri|grind/i, search: 'pulverizer'},
+    },
+};
+
+/**
+ * Caption band under each hero banner, in HERO_SLIDES order (media.ts).
+ * Claims restate millnex.in. Each action links to real catalog data resolved
+ * at build time (`match`, see CatalogMatch) or to a fixed site page (`href`);
+ * `quote: true` adds a "Request a Quote" button that opens the quote modal.
+ */
+export interface HeroSlideCopy {
+    title: string;
+    body: string;
+    actions: Array<{label: string; href?: string; match?: CatalogMatch}>;
+    quote?: boolean;
+}
+
+export const HERO_SLIDE_COPY: HeroSlideCopy[] = [
+    {
+        title: 'Millnex Atta Chakki',
+        body: 'Domestic flour mills, pulverizers and food-processing machinery engineered for reliable performance, efficiency and everyday use.',
+        actions: [{label: 'Explore Machines', href: '/shop'}],
+        quote: true,
+    },
+    {
+        title: 'Leading Manufacturer of Domestic Aata Chakki',
+        body: 'Compact stoneless flour mills for fresh atta at home — built with premium-grade materials for long-lasting performance.',
+        actions: [{label: 'Explore Domestic Mills', match: {collection: /flour/i, facetValues: /flour/i, search: 'flour mill'}}],
+    },
+    {
+        title: 'Grinding Machines & Cutters',
+        body: 'Pulverizers, gravy machines and cutters for spices, masala and vegetables — for shops, kitchens and commercial production.',
+        actions: [{label: 'Shop Grinding Machines', match: {collection: /grind/i, facetValues: /pulveri|grind/i, search: 'grinding'}}],
+    },
+    {
+        title: 'We Are Manufacturer',
+        body: 'Millnex builds its own machines — from household flour mills to pulverizers and food-processing equipment.',
+        actions: [{label: 'How We Manufacture', href: '/manufacturing'}],
+    },
+];
+
+/**
+ * Machine features — Millnex's own feature list from its product artwork
+ * (spelling corrected). Shown on the homepage and the About page
+ * (site/ui/machine-features.tsx). `icon` keys map to lucide icons there.
+ */
+export const MACHINE_FEATURES_COPY = {
+    title: 'Smart Features in Every Millnex Mill',
+    body: 'Technology built into Millnex machines for safer, cleaner and easier everyday grinding.',
+    items: [
+        {icon: 'sensor', title: 'Smart Sensor Technology'},
+        {icon: 'shield', title: 'Overload Protection'},
+        {icon: 'thermometer', title: 'Low Temperature Grinding Technology'},
+        {icon: 'chamber', title: 'Stainless Steel Grinding Chamber'},
+        {icon: 'motor', title: '100% Copper Winding Power Saver Motor'},
+        {icon: 'auto', title: 'Auto Start, Auto Stop, Auto Cleaning'},
+    ],
+} as const;
+
+/**
+ * Quality certification — Millnex's own claim (its logo reads "AN ISO
+ * 9001 : 2015"; confirmed by the client 2026-09-29). Shown as a badge on
+ * the homepage trust strip, under the footer logo and on the About page.
+ */
+export const CERTIFICATION = {
+    label: 'ISO 9001:2015 Certified',
+    body: 'Quality management system certified to ISO 9001:2015.',
 } as const;

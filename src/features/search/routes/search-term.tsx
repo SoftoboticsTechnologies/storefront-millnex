@@ -1,26 +1,25 @@
 'use client';
 
-import {useSearchParams} from 'next/navigation';
+import {useCallback, useState} from 'react';
 import {useTranslations} from 'next-intl';
+import {SearchParamsSync} from '@/features/search/search-params-sync';
 
+/**
+ * The search page's headline text ("Results for “term”"). Reads `?q=` via the
+ * invisible SearchParamsSync (not useSearchParams() here), so the exported
+ * HTML still carries the generic heading instead of a client-only bailout.
+ */
 export function SearchTerm() {
-    const searchParams = useSearchParams();
-    const searchTerm = searchParams.get('q') ?? '';
     const t = useTranslations('Search');
+    const [term, setTerm] = useState('');
+    const handleChange = useCallback((value: string) => {
+        setTerm(new URLSearchParams(value).get('q')?.trim() ?? '');
+    }, []);
 
     return (
-        <div className="mb-6">
-            <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
-                {searchTerm ? t('resultsFor', {query: searchTerm}) : t('title')}
-            </h1>
-        </div>
-    )
-}
-
-export function SearchTermSkeleton() {
-    return (
-        <div className="mb-6">
-            <div className="h-9 w-64 rounded bg-muted animate-pulse" />
-        </div>
-    )
+        <>
+            <SearchParamsSync onChange={handleChange} />
+            {term ? t('headingFor', {query: term}) : t('heading')}
+        </>
+    );
 }

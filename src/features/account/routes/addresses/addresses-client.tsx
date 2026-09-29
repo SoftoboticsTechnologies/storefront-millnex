@@ -22,7 +22,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Plus, MoreVertical, Home, CreditCard, Edit2, Trash2 } from 'lucide-react';
+import { Plus, MoreVertical, Home, CreditCard, Edit2, MapPin, Trash2 } from 'lucide-react';
 import { AddressForm } from './address-form';
 import { createAddress, updateAddress, deleteAddress, setDefaultShippingAddress, setDefaultBillingAddress } from './actions';
 import {useTranslations} from 'next-intl';
@@ -144,45 +144,55 @@ export function AddressesClient({ addresses, countries, onRefresh }: AddressesCl
 
     return (
         <>
-            <div className="flex justify-between items-center">
-                <div></div>
-                <Button onClick={handleAddNew}>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+                <p className="spec-label text-steel">{t('savedAddressCount', {count: addresses.length})}</p>
+                <Button onClick={handleAddNew} className="h-10 rounded-lg bg-brand px-4 font-semibold text-brand-foreground hover:bg-brand/90">
                     <Plus className="mr-2 h-4 w-4" />
                     {t('addNewAddress')}
                 </Button>
             </div>
 
             {addresses.length === 0 ? (
-                <Card>
-                    <CardContent className="py-12 text-center">
-                        <p className="text-muted-foreground mb-4">{t('noAddressesSaved')}</p>
-                        <Button onClick={handleAddNew}>
-                            <Plus className="mr-2 h-4 w-4" />
-                            {t('addFirstAddress')}
-                        </Button>
-                    </CardContent>
-                </Card>
+                <div className="flex flex-col items-center rounded-xl border border-border bg-surface px-5 py-14 text-center">
+                    <span className="flex size-12 items-center justify-center rounded-lg border border-border bg-card text-steel">
+                        <MapPin className="size-5" />
+                    </span>
+                    <p className="mt-4 mb-5 text-sm text-muted-foreground">{t('noAddressesSaved')}</p>
+                    <Button onClick={handleAddNew} className="h-10 rounded-lg bg-brand px-4 font-semibold text-brand-foreground hover:bg-brand/90">
+                        <Plus className="mr-2 h-4 w-4" />
+                        {t('addFirstAddress')}
+                    </Button>
+                </div>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
                     {addresses.map((address) => (
-                        <Card key={address.id}>
+                        <Card
+                            key={address.id}
+                            className={address.defaultShippingAddress ? 'shadow-none ring-brand/40' : 'shadow-none'}
+                        >
                             <CardHeader>
-                                <div className="flex items-start justify-between">
-                                    <div className="space-y-1 flex-1">
-                                        <CardTitle className="text-lg">{address.fullName}</CardTitle>
+                                <div className="flex items-start justify-between gap-3">
+                                    <div className="min-w-0 flex-1 space-y-2">
+                                        <CardTitle className="break-words font-display text-lg font-bold">{address.fullName}</CardTitle>
                                         {(address.defaultShippingAddress || address.defaultBillingAddress) && (
-                                            <div className="flex gap-2">
+                                            <div className="flex flex-wrap gap-2">
                                                 {address.defaultShippingAddress && (
-                                                    <Badge variant="secondary">{t('defaultShipping')}</Badge>
+                                                    <Badge variant="secondary" className="rounded-md bg-brand/10 text-brand">
+                                                        <Home className="mr-1 size-3" />
+                                                        {t('defaultShipping')}
+                                                    </Badge>
                                                 )}
                                                 {address.defaultBillingAddress && (
-                                                    <Badge variant="secondary">{t('defaultBilling')}</Badge>
+                                                    <Badge variant="secondary" className="rounded-md bg-steel-soft text-foreground">
+                                                        <CreditCard className="mr-1 size-3" />
+                                                        {t('defaultBilling')}
+                                                    </Badge>
                                                 )}
                                             </div>
                                         )}
                                     </div>
                                     <DropdownMenu>
-                                        <DropdownMenuTrigger render={<Button variant="ghost" size="icon" aria-label="Address actions" />}>
+                                        <DropdownMenuTrigger render={<Button variant="ghost" size="icon" className="rounded-lg" aria-label={t('addressActions')} />}>
                                                 <MoreVertical className="h-4 w-4" />
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent align="end">
@@ -224,7 +234,7 @@ export function AddressesClient({ addresses, countries, onRefresh }: AddressesCl
                                 </div>
                             </CardHeader>
                             <CardContent>
-                                <div className="text-sm text-muted-foreground space-y-1">
+                                <div className="space-y-1 break-words text-sm text-muted-foreground">
                                     {address.company && <p>{address.company}</p>}
                                     <p>
                                         {address.streetLine1}
@@ -243,9 +253,9 @@ export function AddressesClient({ addresses, countries, onRefresh }: AddressesCl
             )}
 
             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
                     <DialogHeader>
-                        <DialogTitle>{editingAddress ? t('editAddress') : t('addNewAddressDialog')}</DialogTitle>
+                        <DialogTitle className="font-display-wide text-xl font-extrabold">{editingAddress ? t('editAddress') : t('addNewAddressDialog')}</DialogTitle>
                         <DialogDescription>
                             {editingAddress
                                 ? t('updateAddressDetails')

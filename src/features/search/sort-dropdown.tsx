@@ -10,6 +10,8 @@ import {
 } from '@/components/ui/select';
 import {usePathname, useRouter} from '@/platform/i18n/navigation';
 import {useTranslations} from 'next-intl';
+import {ArrowDownUp} from 'lucide-react';
+import {cn} from '@/lib/utils';
 import {DEFAULT_SORT} from '@/features/search/search-helpers';
 
 interface SortDropdownProps {
@@ -20,10 +22,17 @@ interface SortDropdownProps {
      * rendering under static export. See search-params-sync.tsx.
      */
     searchParamsString: string;
+    className?: string;
 }
 
-export function SortDropdown({searchParamsString}: SortDropdownProps) {
+/**
+ * Sort options are exactly what Vendure's SearchResultSortParameter supports
+ * (name, price) plus "Featured" (no sort sent). There is no "Newest" or
+ * "Availability" sort in the Shop API — see docs/decisions.md.
+ */
+export function SortDropdown({searchParamsString, className}: SortDropdownProps) {
     const t = useTranslations('Sort');
+    const tListing = useTranslations('Listing');
     const pathname = usePathname();
     const router = useRouter();
 
@@ -44,13 +53,18 @@ export function SortDropdown({searchParamsString}: SortDropdownProps) {
         const params = new URLSearchParams(window.location.search);
         params.set('sort', value);
         params.delete('page'); // Reset to page 1 when sort changes
-        router.push(`${pathname}?${params.toString()}`);
+        router.push(`${pathname}?${params.toString()}`, {scroll: false});
     };
 
     return (
         <Select value={currentSort} onValueChange={handleSortChange} items={sortOptions}>
-            <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder={t('placeholder')}/>
+            <SelectTrigger
+                aria-label={t('placeholder')}
+                className={cn('h-11! min-w-0 gap-2 rounded-lg border-foreground/15 bg-card px-3.5 text-sm font-semibold shadow-none hover:border-foreground/35 sm:w-60', className)}
+            >
+                <ArrowDownUp aria-hidden="true" className="size-4 text-steel" />
+                <span className="spec-label hidden text-steel sm:inline">{tListing('sortLabel')}</span>
+                <SelectValue placeholder={t('placeholder')} className="min-w-0 flex-1 truncate text-left"/>
             </SelectTrigger>
             <SelectContent>
                 {sortOptions.map((option) => (

@@ -21,9 +21,9 @@ export function ProfileContent() {
 
     return (
         <div className="space-y-6">
-            <div>
-                <h1 className="text-3xl font-bold">{t('profile')}</h1>
-                <p className="text-muted-foreground mt-2">
+            <div className="border-b border-border pb-6">
+                <h1 className="font-display-wide text-3xl font-extrabold tracking-tight sm:text-4xl">{t('accountDetails')}</h1>
+                <p className="mt-2 text-muted-foreground">
                     {t('manageAccountInfo')}
                 </p>
             </div>

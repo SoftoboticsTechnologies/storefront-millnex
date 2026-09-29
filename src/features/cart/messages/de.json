@@ -28,6 +28,17 @@
     "itemCount": "{count, plural, one {# Artikel} other {# Artikel}}",
     "loadError": "Ihr Warenkorb konnte nicht geladen werden.",
     "retry": "Erneut versuchen",
-    "viewCart": "Warenkorb ansehen"
+    "viewCart": "Warenkorb ansehen",
+    "home": "Startseite",
+    "lineTotal": "Summe",
+    "quantity": "Menge",
+    "saveToWishlist": "Auf die Wunschliste",
+    "savedInWishlist": "Gemerkt",
+    "savedToWishlist": "Zur Wunschliste hinzugefügt",
+    "removedFromWishlist": "Von der Wunschliste entfernt",
+    "exploreMachines": "Maschinen entdecken",
+    "estimatedTotal": "Geschätzte Summe",
+    "secureCheckoutNote": "Sicherer Checkout. Versand und Endsumme werden vor der Zahlung bestätigt.",
+    "itemsInCart": "Artikel im Warenkorb"
   }
 }

@@ -7,7 +7,6 @@ import type {ProductCardData} from '@/features/products/product-card-data';
 
 interface ProductRailProps {
     id?: string;
-    eyebrow?: string;
     title: string;
     description?: string;
     products: ProductCardData[];
@@ -26,7 +25,6 @@ interface ProductRailProps {
  */
 export function ProductRail({
     id,
-    eyebrow,
     title,
     description,
     products,
@@ -43,21 +41,20 @@ export function ProductRail({
     return (
         <section id={id} className={className ?? 'py-12 sm:py-16'}>
             <div className="site-container">
-                <div className="mb-6 flex items-end justify-between gap-4 sm:mb-8">
-                    <div className="min-w-0">
-                        {eyebrow && (
-                            <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-brand">{eyebrow}</p>
-                        )}
-                        <h2 className="text-2xl font-extrabold tracking-tight sm:text-3xl">{title}</h2>
-                        {description && <p className="mt-2 max-w-xl text-sm text-muted-foreground sm:text-base">{description}</p>}
+                {/* Same heading pattern as site/ui/section-heading.tsx
+                    (features can't import site/): a wide display h2. */}
+                <div className="mb-8 flex flex-col gap-5 sm:mb-10 md:flex-row md:items-end md:justify-between md:gap-8">
+                    <div data-reveal className="flex min-w-0 max-w-3xl flex-col gap-5">
+                        <h2 className="font-display-wide text-[2rem] font-bold leading-[1.02] text-foreground sm:text-[2.5rem] lg:text-[3.25rem]">{title}</h2>
+                        {description && <p className="max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">{description}</p>}
                     </div>
                     {viewAll && (
                         <Link
                             href={viewAll.href}
-                            className="group inline-flex shrink-0 items-center gap-1.5 text-sm font-bold text-brand underline-offset-4 hover:underline"
+                            className="group/btn inline-flex h-11 shrink-0 items-center gap-2 self-start rounded-lg border border-foreground/15 bg-card px-5 text-sm font-semibold text-foreground transition-[transform,border-color,box-shadow] duration-200 hover:-translate-y-0.5 hover:border-foreground/35 hover:shadow-[0_10px_24px_-18px_rgb(0_0_0/0.4)] focus-visible:ring-3 focus-visible:ring-brand/40 outline-none md:self-auto"
                         >
                             {viewAll.label}
-                            <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+                            <ArrowRight aria-hidden="true" className="size-4 transition-transform duration-200 group-hover/btn:translate-x-0.5" />
                         </Link>
                     )}
                 </div>
@@ -66,12 +63,12 @@ export function ProductRail({
                     <ProductCarousel products={products} collectionNames={collectionNames} preloadFirstProduct={preloadFirstProduct} />
                 ) : (
                     <ul className={PRODUCT_RAIL_GRID_CLASS}>
-                        {products.map((product, index) => (
+                        {products.map((product, position) => (
                             <li key={product.productId}>
                                 <ProductCard
                                     product={product}
                                     category={product.collectionIds.map((collectionId) => collectionNames?.[collectionId]).find(Boolean)}
-                                    preload={preloadFirstProduct && index === 0}
+                                    preload={preloadFirstProduct && position === 0}
                                 />
                             </li>
                         ))}

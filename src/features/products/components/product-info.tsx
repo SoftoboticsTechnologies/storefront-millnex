@@ -5,14 +5,16 @@ import {useRouter} from '@/platform/i18n/navigation';
 import {Button} from '@/components/ui/button';
 import {Label} from '@/components/ui/label';
 import {RadioGroup, RadioGroupItem} from '@/components/ui/radio-group';
-import {Separator} from '@/components/ui/separator';
-import {ShoppingCart, CheckCircle2, Minus, Plus, Zap, Lock, MessageSquareText} from 'lucide-react';
+import {ShoppingCart, CheckCircle2, Minus, Plus, Zap, Lock, MessageSquareText, Check, PackageX} from 'lucide-react';
+import {cn} from '@/lib/utils';
+import {QuoteButton} from '@/features/enquiry/quote-dialog';
 import {WishlistButton} from './wishlist-button';
+import {StockBadge} from './stock-badge';
 import {Link} from '@/platform/i18n/navigation';
 import {stripHtml} from '@/features/products/product-card-data';
 import {addToCart} from '@/features/products/add-to-cart';
 import {toast} from 'sonner';
-import {Price} from '@/features/pricing/price';
+import {DiscountedPrice} from '@/features/products/discounted-price';
 import {useTranslations} from 'next-intl';
 import {useLiveProductPricing, type LiveVariantPricing} from '@/features/products/product-price-client';
 
@@ -72,9 +74,9 @@ const MAX_QUANTITY = 99;
 export function ProductInfo({product, buildCurrencyCode, initialVariantId, category}: ProductInfoProps) {
     const t = useTranslations('Product');
     // Build-time price/stock for every variant, in the channel default
-    // currency — passed as initialData so useLiveProductPricing can skip its
-    // re-fetch entirely when the viewer's currency matches (the common
-    // case), instead of always refetching on every PDP mount.
+    // currency — the first paint and static HTML. `refreshStock` always
+    // re-fetches live from Vendure on mount, so stock added in admin after
+    // the build switches the enquiry view to quantity + Add to cart.
     const buildPricing = useMemo<{currencyCode: string; variants: LiveVariantPricing[]}>(() => ({
         currencyCode: buildCurrencyCode,
         variants: product.variants.map((variant) => ({
@@ -86,7 +88,8 @@ export function ProductInfo({product, buildCurrencyCode, initialVariantId, categ
     const {data: livePricing, loading: pricingLoading} = useLiveProductPricing(
         product.slug,
         buildPricing,
-        buildCurrencyCode
+        buildCurrencyCode,
+        {refreshStock: true}
     );
     const router = useRouter();
     const [isPending, startTransition] = useTransition();
@@ -216,63 +219,67 @@ export function ProductInfo({product, buildCurrencyCode, initialVariantId, categ
                     ? t('outOfStock')
                     : t('addToCart');
 
+    // Presentation only: an out-of-stock variant (Vendure's own answer —
+    // build-time until the live fetch resolves) swaps the purchase buttons
+    // for an availability enquiry as the primary action. The add-to-cart
+    // logic above is untouched; its button stays visible but disabled.
+    const showEnquiryInstead = !!displayVariant && !isInStock;
+    const enquiryHref = `/contact?product=${encodeURIComponent(product.slug)}#enquiry`;
+
     return (
-        <div className="space-y-6">
-            {/* Category, Title, Price & Availability */}
-            <div className="space-y-3">
+        <div className="space-y-7">
+            {/* Category, Title, SKU, value proposition */}
+            <div className="space-y-4">
                 {category && (
-                    <Link href={`/collection/${category.slug}`} className="text-xs font-bold uppercase tracking-[0.16em] text-brand hover:underline">
+                    <Link
+                        href={`/collection/${category.slug}`}
+                        className="spec-label inline-flex items-center gap-2 rounded-md border border-brand/20 bg-brand/[0.06] px-2.5 py-1.5 text-brand transition-colors hover:border-brand/40 hover:bg-brand/10"
+                    >
                         {category.name}
                     </Link>
                 )}
-                <h1 className="text-3xl font-extrabold tracking-tight md:text-4xl">{product.name}</h1>
-                {displayVariant && (
-                    <p className="text-2xl font-extrabold tracking-tight md:text-3xl">
-                        <Price value={displayVariant.priceWithTax} currencyCode={displayCurrencyCode}/>
-                        <span className="ml-2 align-middle text-xs font-medium text-muted-foreground">{t('inclusiveOfTaxes')}</span>
+                <h1 className="font-display-wide text-[2rem] font-bold leading-[1.04] sm:text-[2.5rem] lg:text-[2.75rem]">{product.name}</h1>
+                {selectedVariant && (
+                    <p className="spec-label text-steel">
+                        {t('skuLabel')} <span className="text-foreground">{selectedVariant.sku}</span>
                     </p>
                 )}
-                {displayVariant && (
-                    <p className="text-sm">
-                        {!isInStock ? (
-                            <span className="inline-flex items-center gap-1.5 font-semibold text-destructive">
-                                <span className="size-2 rounded-full bg-destructive" />
-                                {t('outOfStock')}
-                            </span>
-                        ) : isLowStock ? (
-                            <span className="inline-flex items-center gap-1.5 font-semibold text-amber-700">
-                                <span className="size-2 rounded-full bg-amber-500" />
-                                {t('lowStock')}
-                            </span>
-                        ) : (
-                            <span className="inline-flex items-center gap-1.5 font-semibold text-emerald-700">
-                                <span className="size-2 rounded-full bg-emerald-600" />
-                                {t('inStock')}
-                            </span>
-                        )}
-                    </p>
+                {/* Excerpt of the real Vendure description — omitted when empty, never invented. */}
+                {summary && (
+                    <p className="line-clamp-3 max-w-xl text-base leading-relaxed text-muted-foreground">{summary}</p>
                 )}
             </div>
 
-            {summary && (
-                <p className="line-clamp-4 text-[15px] leading-relaxed text-muted-foreground">{summary}</p>
+            {/* Price & availability */}
+            {displayVariant && (
+                <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3 border-y border-border py-5">
+                    <p className="flex flex-wrap items-baseline gap-x-2 gap-y-1 font-display text-[1.75rem] font-bold leading-none tracking-tight tabular-nums sm:text-3xl">
+                        <DiscountedPrice
+                            value={displayVariant.priceWithTax}
+                            currencyCode={displayCurrencyCode}
+                            mrpFor={selectedVariant ? {slug: product.slug, variantId: selectedVariant.id} : undefined}
+                            fallback={<span className="font-sans text-base font-medium text-muted-foreground">{t('priceUnavailable')}</span>}
+                        />
+                        <span className="font-sans text-xs font-medium tracking-normal text-muted-foreground">{t('inclusiveOfTaxes')}</span>
+                    </p>
+                    <StockBadge inStock={isInStock} lowStock={isLowStock} className="h-7 px-3" />
+                </div>
             )}
-
-            <Separator />
 
             {/* Option Groups */}
             {product.optionGroups.length > 0 && (
                 <div className="space-y-5">
                     {product.optionGroups.map((group) => (
                         <div key={group.id} className="space-y-3">
-                            <Label className="text-sm font-bold">
+                            <p id={`option-group-${group.id}`} className="spec-label text-steel">
                                 {group.name}
-                            </Label>
+                            </p>
                             <RadioGroup
+                                aria-labelledby={`option-group-${group.id}`}
                                 value={selectedOptions[group.id] || ''}
                                 onValueChange={(value) => handleOptionChange(group.id, value)}
                             >
-                                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                                <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
                                     {group.options.map((option) => (
                                         <div key={option.id}>
                                             <RadioGroupItem
@@ -282,7 +289,7 @@ export function ProductInfo({product, buildCurrencyCode, initialVariantId, categ
                                             />
                                             <Label
                                                 htmlFor={option.id}
-                                                className="flex cursor-pointer items-center justify-center rounded-xl border-2 border-border bg-card px-4 py-3 text-sm font-semibold transition-all hover:border-foreground/30 peer-data-[checked]:border-brand peer-data-[checked]:bg-brand/5 peer-data-[checked]:ring-2 peer-data-[checked]:ring-brand/20"
+                                                className="flex min-h-11 cursor-pointer items-center justify-center rounded-lg border border-foreground/15 bg-card px-3 py-2.5 text-center text-sm font-semibold transition-[border-color,background-color,box-shadow] hover:border-foreground/35 peer-focus-visible:ring-3 peer-focus-visible:ring-brand/40 peer-data-[checked]:border-brand peer-data-[checked]:bg-brand/[0.06] peer-data-[checked]:text-brand peer-data-[checked]:shadow-[0_0_0_1px_var(--brand)]"
                                             >
                                                 {option.name}
                                             </Label>
@@ -295,90 +302,134 @@ export function ProductInfo({product, buildCurrencyCode, initialVariantId, categ
                 </div>
             )}
 
-            {/* Quantity + Add to Cart / Buy Now */}
+            {/* Purchase / enquiry actions */}
             <div className="space-y-3">
-                <div className="flex items-center gap-3">
-                    <span className="text-sm font-bold">{t('quantity')}</span>
-                    <div className="flex items-center rounded-xl border border-border bg-card">
-                        <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            className="size-10 rounded-l-xl rounded-r-none"
-                            disabled={quantity <= 1}
-                            onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                            aria-label={t('decreaseQuantity')}
-                        >
-                            <Minus className="size-4"/>
-                        </Button>
-                        <span className="w-10 text-center font-bold tabular-nums" aria-live="polite">{quantity}</span>
-                        <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            className="size-10 rounded-l-none rounded-r-xl"
-                            disabled={quantity >= MAX_QUANTITY || !isInStock}
-                            onClick={() => setQuantity((q) => Math.min(MAX_QUANTITY, q + 1))}
-                            aria-label={t('increaseQuantity')}
-                        >
-                            <Plus className="size-4"/>
-                        </Button>
-                    </div>
-                </div>
-
-                <div className="grid gap-3 sm:grid-cols-2">
-                    <Button
-                        size="lg"
-                        className="h-12 rounded-xl bg-brand text-base font-bold text-brand-foreground hover:bg-brand/90"
-                        disabled={!canAddToCart || isPending}
-                        onClick={() => handleAddToCart(false)}
-                    >
-                        {isAdded ? (
-                            <>
-                                <CheckCircle2 className="mr-2 size-5"/>
-                                {t('addedToCart')}
-                            </>
-                        ) : (
-                            <>
+                {showEnquiryInstead ? (
+                    <>
+                        <p className="flex items-start gap-2.5 rounded-lg border border-stock-out/20 bg-stock-out/[0.06] px-4 py-3 text-sm leading-relaxed text-foreground">
+                            <PackageX aria-hidden="true" className="mt-0.5 size-[18px] shrink-0 text-stock-out" />
+                            {t('outOfStockNotice')}
+                        </p>
+                        <div className="grid gap-3 sm:grid-cols-2">
+                            <QuoteButton product={product.slug} className={cn(primaryAction, 'sm:col-span-1')}>
+                                <MessageSquareText aria-hidden="true" className="size-5" />
+                                {t('askAvailability')}
+                            </QuoteButton>
+                            <Button
+                                size="lg"
+                                variant="outline"
+                                className="h-12 rounded-lg border-foreground/15 text-base font-semibold text-muted-foreground"
+                                disabled
+                            >
                                 <ShoppingCart className="mr-2 size-5"/>
                                 {addToCartLabel}
-                            </>
-                        )}
-                    </Button>
-                    <Button
-                        size="lg"
-                        variant="outline"
-                        className="h-12 rounded-xl border-foreground/20 text-base font-bold"
-                        disabled={!canAddToCart || isPending}
-                        onClick={() => handleAddToCart(true)}
-                    >
-                        <Zap className="mr-2 size-5"/>
-                        {isPending && isBuyingNow ? t('adding') : t('buyNow')}
-                    </Button>
-                </div>
-                <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                    <Lock className="size-3.5" />
-                    {t('secureCheckoutNote')}
-                </p>
-                <div className="flex flex-wrap gap-2 pt-1">
-                    <WishlistButton productId={product.id} name={product.name} variant="full" />
-                    {/* The enquiry form pre-selects the product from `?product=<slug>`. */}
-                    <Link
-                        href={`/contact?product=${encodeURIComponent(product.slug)}#enquiry`}
-                        className="inline-flex h-11 items-center gap-2 rounded-xl border border-border bg-card px-4 text-sm font-semibold transition-colors hover:border-foreground/30 hover:bg-muted"
-                    >
-                        <MessageSquareText className="size-[18px]" />
+                            </Button>
+                        </div>
+                    </>
+                ) : (
+                    <>
+                        <div className="flex items-center gap-3">
+                            <span className="spec-label text-steel">{t('quantity')}</span>
+                            <div className="flex items-center rounded-lg border border-foreground/15 bg-card">
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon"
+                                    className="size-11 rounded-l-lg rounded-r-none"
+                                    disabled={quantity <= 1}
+                                    onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                                    aria-label={t('decreaseQuantity')}
+                                >
+                                    <Minus className="size-4"/>
+                                </Button>
+                                <span className="w-10 text-center font-bold tabular-nums" aria-live="polite">{quantity}</span>
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon"
+                                    className="size-11 rounded-l-none rounded-r-lg"
+                                    disabled={quantity >= MAX_QUANTITY || !isInStock}
+                                    onClick={() => setQuantity((q) => Math.min(MAX_QUANTITY, q + 1))}
+                                    aria-label={t('increaseQuantity')}
+                                >
+                                    <Plus className="size-4"/>
+                                </Button>
+                            </div>
+                        </div>
+
+                        <div className="grid gap-3 sm:grid-cols-2">
+                            <Button
+                                size="lg"
+                                className={cn(primaryAction, 'disabled:opacity-60')}
+                                disabled={!canAddToCart || isPending}
+                                onClick={() => handleAddToCart(false)}
+                            >
+                                {isAdded ? (
+                                    <>
+                                        <CheckCircle2 className="size-5"/>
+                                        {t('addedToCart')}
+                                    </>
+                                ) : (
+                                    <>
+                                        <ShoppingCart className="size-5"/>
+                                        {addToCartLabel}
+                                    </>
+                                )}
+                            </Button>
+                            <Button
+                                size="lg"
+                                variant="outline"
+                                className="h-12 rounded-lg border-logo-blue bg-logo-blue text-base font-semibold text-white hover:bg-logo-blue-deep hover:text-white"
+                                disabled={!canAddToCart || isPending}
+                                onClick={() => handleAddToCart(true)}
+                            >
+                                <Zap className="mr-2 size-5"/>
+                                {isPending && isBuyingNow ? t('adding') : t('buyNow')}
+                            </Button>
+                        </div>
+                        <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                            <Lock className="size-3.5 shrink-0" />
+                            {t('secureCheckoutNote')}
+                        </p>
+                    </>
+                )}
+
+                {/* Secondary actions. The enquiry form pre-selects the product from `?product=<slug>`. */}
+                <div className="grid gap-2.5 pt-1 min-[420px]:grid-cols-2 xl:grid-cols-3">
+                    <WishlistButton productId={product.id} name={product.name} variant="full" className="w-full" />
+                    <Link href={enquiryHref} className={secondaryAction}>
+                        <MessageSquareText aria-hidden="true" className="size-[18px]" />
                         {t('productEnquiry')}
                     </Link>
+                    <QuoteButton product={product.slug} className={cn(secondaryAction, '[&_svg]:size-[18px] min-[420px]:col-span-2 xl:col-span-1')} />
                 </div>
             </div>
 
-            {/* SKU */}
-            {selectedVariant && (
-                <p className="text-xs text-muted-foreground">
-                    {t('sku', {sku: selectedVariant.sku})}
-                </p>
-            )}
+            {/* Trust list — only what the store actually does (see the
+                Delivery & Support tab for the full statements). */}
+            <ul className="grid gap-x-6 gap-y-3 border-t border-border pt-6 text-sm sm:grid-cols-2">
+                {[
+                    {label: t('trustSecure')},
+                    {label: t('trustDelivery')},
+                    {label: t('trustSupport'), href: enquiryHref},
+                    {label: t('trustAfterSales'), href: enquiryHref},
+                ].map(({label, href}) => (
+                    <li key={label} className="flex items-start gap-2.5">
+                        <span aria-hidden="true" className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-md bg-success/10 text-success">
+                            <Check className="size-3.5" strokeWidth={3} />
+                        </span>
+                        {href ? (
+                            <Link href={href} className="font-medium text-foreground underline-offset-4 hover:text-brand hover:underline">{label}</Link>
+                        ) : (
+                            <span className="font-medium text-foreground">{label}</span>
+                        )}
+                    </li>
+                ))}
+            </ul>
         </div>
     );
 }
+
+// Local copies of the site button shapes (features can't import `site/`).
+const primaryAction = 'inline-flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-brand px-5 text-base font-semibold text-brand-foreground shadow-[0_1px_0_0_oklch(1_0_0/0.18)_inset,0_10px_26px_-14px_var(--brand)] transition-[transform,background-color,box-shadow] duration-200 outline-none hover:-translate-y-0.5 hover:bg-[oklch(0.52_0.17_37)] focus-visible:ring-3 focus-visible:ring-brand/40 active:translate-y-px [&_svg]:shrink-0';
+const secondaryAction = 'inline-flex h-11 w-full items-center justify-center gap-2 rounded-lg border border-foreground/15 bg-card px-4 text-sm font-semibold text-foreground transition-[border-color,box-shadow,color] duration-200 outline-none hover:border-foreground/35 hover:shadow-[0_10px_24px_-18px_rgb(0_0_0/0.4)] focus-visible:ring-3 focus-visible:ring-brand/40 [&_svg]:shrink-0';

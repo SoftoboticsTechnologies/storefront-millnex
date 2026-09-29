@@ -108,8 +108,8 @@ export default function CheckoutClient({countries}: CheckoutClientProps) {
     }
 
     return (
-        <div className="container mx-auto px-4 py-8">
-            <h1 className="text-3xl font-bold mb-8">{t('pageTitle')}</h1>
+        <div className="site-container pb-20 pt-24 sm:pt-28 lg:pt-36">
+            <h1 className="mb-8 border-b border-border pb-6 font-display-wide text-3xl font-extrabold tracking-tight sm:mb-10 sm:text-5xl">{t('pageTitle')}</h1>
             <CheckoutProvider
                 order={data.order}
                 addresses={data.addresses}

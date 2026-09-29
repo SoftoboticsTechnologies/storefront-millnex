@@ -12,7 +12,15 @@
         "clearAll": "Alle löschen",
         "filtersButton": "Filter",
         "inStockOnly": "Nur verfügbare Artikel",
-        "categories": "Kategorien"
+        "categories": "Kategorien",
+        "availability": "Verfügbarkeit",
+        "inStockHint": "Nur sofort lieferbare Maschinen",
+        "inStockChip": "Auf Lager",
+        "activeFilters": "Aktive Filter",
+        "removeFilter": "Filter entfernen: {label}",
+        "showResults": "{count, plural, =0 {Keine Ergebnisse} one {# Ergebnis anzeigen} other {# Ergebnisse anzeigen}}",
+        "refine": "Auswahl eingrenzen",
+        "viewResults": "Ergebnisse anzeigen"
     },
     "Search": {
         "title": "Suche",
@@ -23,16 +31,43 @@
         "metaCatalogDescription": "Durchsuchen Sie unseren Produktkatalog bei {siteName}",
         "loadErrorTitle": "Produkte konnten nicht geladen werden.",
         "loadErrorHint": "Bitte prüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
-        "retry": "Erneut versuchen"
+        "retry": "Erneut versuchen",
+        "heading": "Den Katalog durchsuchen",
+        "headingFor": "Ergebnisse für „{query}“",
+        "intro": "Alle Millnex-Maschinen, durchsuchbar nach Name, Typ oder Artikelnummer. Grenzen Sie die Ergebnisse mit den Filtern ein.",
+        "home": "Startseite",
+        "shop": "Shop"
     },
     "Shop": {
-        "title": "Alle Produkte",
-        "subtitle": "Stöbern Sie im gesamten Sortiment, filtern Sie nach Kategorie und Verfügbarkeit und legen Sie Maschinen in den Warenkorb.",
+        "title": "Millnex-Maschinen entdecken",
+        "subtitle": "Das gesamte Millnex-Sortiment an einem Ort. Nach Kategorie, Typ und Verfügbarkeit filtern, aktuelle Preise sehen und für jede Maschine ein Angebot anfragen.",
         "metaDescription": "Alle online verfügbaren Produkte bei {siteName} kaufen.",
         "home": "Startseite",
         "categories": "Kategorien",
         "allProducts": "Alle Produkte",
-        "eyebrow": "Millnex Shop",
-        "browseProducts": "Produkte ansehen"
+        "browseProducts": "Produkte ansehen",
+        "breadcrumb": "Shop",
+        "allTab": "Alle",
+        "machineCount": "{count, plural, =0 {Noch keine Maschinen gelistet} one {# Maschine im Katalog} other {# Maschinen im Katalog}}"
+    },
+    "Listing": {
+        "resultCount": "{count, plural, =0 {Keine Maschinen} one {# Maschine} other {# Maschinen}}",
+        "resultCountFor": "{count, plural, one {# Ergebnis} other {# Ergebnisse}} für „{term}“",
+        "range": "{from}–{to} von {total}",
+        "updating": "Ergebnisse werden aktualisiert…",
+        "sortLabel": "Sortieren",
+        "emptyTitleTerm": "Keine Treffer für „{term}“",
+        "emptyTitleFiltered": "Keine Maschine passt zu diesen Filtern",
+        "emptyTitleCatalog": "Maschinen werden gerade in den Shop aufgenommen",
+        "emptyHintFiltered": "Entfernen Sie einen Filter oder Suchbegriff – oder sagen Sie uns, was Sie brauchen, und unser Team empfiehlt die passende Maschine.",
+        "emptyHintCatalog": "Unser Team nennt Ihnen das aktuelle Sortiment, technische Daten und Preise direkt.",
+        "clearFilters": "Filter zurücksetzen",
+        "clearSearchAndFilters": "Suche und Filter zurücksetzen",
+        "pagination": "Seitennavigation",
+        "previous": "Zurück",
+        "next": "Weiter",
+        "pageN": "Seite {page}",
+        "pageOf": "Seite {page} von {total}",
+        "categoryTabs": "Maschinenkategorien"
     }
 }

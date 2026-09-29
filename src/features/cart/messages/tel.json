@@ -28,6 +28,17 @@
     "itemCount": "{count, plural, one {# వస్తువు} other {# వస్తువులు}}",
     "loadError": "మీ కార్ట్‌ను లోడ్ చేయలేకపోయాం.",
     "retry": "మళ్లీ ప్రయత్నించండి",
-    "viewCart": "కార్ట్ చూడండి"
+    "viewCart": "కార్ట్ చూడండి",
+    "home": "హోమ్",
+    "lineTotal": "మొత్తం",
+    "quantity": "పరిమాణం",
+    "saveToWishlist": "విష్‌లిస్ట్‌లో సేవ్ చేయండి",
+    "savedInWishlist": "సేవ్ చేయబడింది",
+    "savedToWishlist": "మీ విష్‌లిస్ట్‌లో సేవ్ చేయబడింది",
+    "removedFromWishlist": "మీ విష్‌లిస్ట్ నుండి తీసివేయబడింది",
+    "exploreMachines": "యంత్రాలను చూడండి",
+    "estimatedTotal": "అంచనా మొత్తం",
+    "secureCheckoutNote": "సురక్షిత చెక్అవుట్. చెల్లించే ముందు షిప్పింగ్ మరియు తుది మొత్తం నిర్ధారించబడతాయి.",
+    "itemsInCart": "మీ కార్ట్‌లోని వస్తువులు"
   }
 }

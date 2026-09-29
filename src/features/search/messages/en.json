@@ -12,7 +12,15 @@
         "clearAll": "Clear all",
         "filtersButton": "Filters",
         "inStockOnly": "In stock only",
-        "categories": "Categories"
+        "categories": "Categories",
+        "availability": "Availability",
+        "inStockHint": "Only machines ready to ship",
+        "inStockChip": "In stock",
+        "activeFilters": "Active filters",
+        "removeFilter": "Remove filter: {label}",
+        "showResults": "{count, plural, =0 {No results} one {Show # result} other {Show # results}}",
+        "refine": "Refine the range",
+        "viewResults": "Show results"
     },
     "Search": {
         "title": "Search",
@@ -23,16 +31,43 @@
         "metaCatalogDescription": "Search our product catalog at {siteName}",
         "loadErrorTitle": "Unable to load products.",
         "loadErrorHint": "Please check your connection and try again.",
-        "retry": "Retry"
+        "retry": "Retry",
+        "heading": "Search the catalogue",
+        "headingFor": "Results for “{query}”",
+        "intro": "Every Millnex machine, searchable by name, type or SKU. Narrow the results with the filters below.",
+        "home": "Home",
+        "shop": "Shop"
     },
     "Shop": {
-        "title": "Shop all products",
-        "subtitle": "Browse the full range, filter by category and availability, and add machines to your cart.",
+        "title": "Explore Millnex Machines",
+        "subtitle": "The full Millnex range in one place. Filter by category, type and availability, see live prices, and ask our team for a quote on any machine.",
         "metaDescription": "Shop every product available online at {siteName}.",
         "home": "Home",
         "categories": "Categories",
         "allProducts": "All products",
-        "eyebrow": "Millnex store",
-        "browseProducts": "Browse products"
+        "browseProducts": "Browse products",
+        "breadcrumb": "Shop",
+        "allTab": "All",
+        "machineCount": "{count, plural, =0 {No machines listed yet} one {# machine in the catalogue} other {# machines in the catalogue}}"
+    },
+    "Listing": {
+        "resultCount": "{count, plural, =0 {No machines} one {# machine} other {# machines}}",
+        "resultCountFor": "{count, plural, one {# result} other {# results}} for “{term}”",
+        "range": "Showing {from}–{to} of {total}",
+        "updating": "Updating results…",
+        "sortLabel": "Sort",
+        "emptyTitleTerm": "Nothing found for “{term}”",
+        "emptyTitleFiltered": "No machines match these filters",
+        "emptyTitleCatalog": "Machines are being added to the store",
+        "emptyHintFiltered": "Try removing a filter or a search word — or tell us what you need and our team will point you to the right machine.",
+        "emptyHintCatalog": "Our team can share the current range, specifications and pricing with you directly.",
+        "clearFilters": "Clear filters",
+        "clearSearchAndFilters": "Clear search and filters",
+        "pagination": "Pagination",
+        "previous": "Previous",
+        "next": "Next",
+        "pageN": "Page {page}",
+        "pageOf": "Page {page} of {total}",
+        "categoryTabs": "Machine categories"
     }
 }

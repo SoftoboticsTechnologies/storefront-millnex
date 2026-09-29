@@ -2,7 +2,7 @@ import type {Metadata, Viewport} from "next";
 import Script from "next/script";
 import {locale as rootLocale} from "next/root-params";
 import {hasLocale, NextIntlClientProvider} from "next-intl";
-import {Geist_Mono, Manrope} from "next/font/google";
+import {Archivo, Geist_Mono, Inter} from "next/font/google";
 import {getMessages, getTranslations, setRequestLocale} from "next-intl/server";
 import {notFound} from "next/navigation";
 import {routing} from "@/platform/i18n/routing";
@@ -17,10 +17,23 @@ import {RevealObserver} from "@/site/ui/reveal-observer";
 import {BRAND_LOGO, OG_IMAGE} from "@/site/content/media";
 import {BareRouteHome, SiteChrome} from "@/site/navigation/site-chrome";
 import {AuthProvider} from "@/features/authentication/auth-context";
+import {QuoteProvider} from "@/features/enquiry/quote-dialog";
+import {getProductOptions} from "@/features/products/data";
+import {getMrpCatalog} from "@/features/pricing/mrp";
+import {MrpProvider} from "@/features/pricing/mrp-context";
 import {SITE_NAME, SITE_URL} from "@/config/metadata";
 
-const manrope = Manrope({
-    variable: "--font-manrope",
+// Display: Archivo (variable width axis — headlines run slightly expanded,
+// see `font-display-wide`). Body: Inter.
+const archivo = Archivo({
+    variable: "--font-archivo",
+    subsets: ["latin"],
+    display: "swap",
+    axes: ["wdth"],
+});
+
+const inter = Inter({
+    variable: "--font-inter",
     subsets: ["latin"],
     display: "swap",
 });
@@ -80,7 +93,7 @@ export const viewport: Viewport = {
     width: "device-width",
     initialScale: 1,
     maximumScale: 5,
-    themeColor: "#1b1917",
+    themeColor: "#ffffff",
 };
 
 export default async function LocaleLayout({children}: {children: React.ReactNode}) {
@@ -93,17 +106,19 @@ export default async function LocaleLayout({children}: {children: React.ReactNod
     setRequestLocale(locale);
     const messages = await getMessages({locale});
     const t = await getTranslations({locale, namespace: 'Navigation'});
+    // Real Vendure products for the site-wide quote form's picker.
+    const quoteProducts = await getProductOptions(locale);
+    // Vendure MRPs (display-only strikethrough + saving) for every price component.
+    const mrpCatalog = await getMrpCatalog();
 
-    // The Millnex brand system is light-first (with dedicated dark "ink"
-    // sections), so next-themes' ThemeProvider is no longer mounted — it also
-    // injected the inline <script> React warned about on every client render.
-    // Remount site/providers/theme-provider.tsx to bring theme switching back.
+    // The Millnex site is light-only (no dark mode, no dark sections —
+    // 2026-09-29); `color-scheme: light` is forced in globals.css.
     return (
         <html lang={locale} data-scroll-behavior="smooth">
             <body
                 /* Bottom padding reserves room for the mobile tab bar (navbar/mobile-tab-bar.tsx);
                    dropped on auth routes, which render without it (site-chrome.tsx). */
-                className={`${manrope.variable} ${geistMono.variable} font-sans antialiased flex flex-col min-h-screen pb-[calc(4rem+env(safe-area-inset-bottom))] lg:pb-0 has-[[data-bare-route]]:pb-0`}
+                className={`${archivo.variable} ${inter.variable} ${geistMono.variable} font-sans antialiased flex flex-col min-h-screen pb-[calc(4rem+env(safe-area-inset-bottom))] lg:pb-0 has-[[data-bare-route]]:pb-0`}
             >
                 <a
                     href="#main-content"
@@ -113,6 +128,8 @@ export default async function LocaleLayout({children}: {children: React.ReactNod
                 </a>
                 <NextIntlClientProvider locale={locale} messages={messages}>
                     <AuthProvider>
+                    <MrpProvider catalog={mrpCatalog}>
+                    <QuoteProvider products={quoteProducts}>
                         <SiteChrome><Navbar /></SiteChrome>
                         <BareRouteHome logo={{...BRAND_LOGO, alt: t('logoAlt')}} />
                         <div id="main-content" className="flex flex-1 flex-col">
@@ -123,6 +140,8 @@ export default async function LocaleLayout({children}: {children: React.ReactNod
                         <WhatsAppFloat />
                         <RevealObserver />
                         <Toaster theme="light" />
+                    </QuoteProvider>
+                    </MrpProvider>
                     </AuthProvider>
                 </NextIntlClientProvider>
                 <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="afterInteractive" />

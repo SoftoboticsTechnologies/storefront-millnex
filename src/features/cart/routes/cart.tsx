@@ -19,9 +19,9 @@ export function Cart() {
 
     if (error) {
         return (
-            <div role="alert" className="flex flex-col items-center gap-4 rounded-2xl border border-destructive/25 bg-destructive/5 px-6 py-14 text-center">
+            <div role="alert" className="flex flex-col items-center gap-4 rounded-xl border border-stock-out/25 bg-stock-out/5 px-6 py-14 text-center">
                 <p className="text-sm text-muted-foreground">{t('loadError')}</p>
-                <Button variant="outline" className="rounded-xl" onClick={refresh}>
+                <Button variant="outline" className="rounded-lg" onClick={refresh}>
                     <RotateCcw className="mr-2 size-4" />
                     {t('retry')}
                 </Button>
@@ -33,14 +33,20 @@ export function Cart() {
         return <CartItems activeOrder={null}/>;
     }
 
+    // Items first, summary second: on phones the summary stacks under the
+    // lines; from lg it becomes a sticky right-hand column.
     return (
-        <div className="grid gap-8 lg:grid-cols-3">
-            <CartItems activeOrder={activeOrder}/>
-
-            <div className="space-y-4 lg:col-span-1">
-                <OrderSummary activeOrder={activeOrder}/>
-                <PromotionCode activeOrder={activeOrder}/>
+        <div className="grid gap-6 lg:grid-cols-12 lg:gap-10">
+            <div className="min-w-0 lg:col-span-8">
+                <CartItems activeOrder={activeOrder}/>
             </div>
+
+            <aside className="min-w-0 space-y-4 lg:col-span-4 lg:pt-8">
+                <div className="space-y-4 lg:sticky lg:top-32">
+                    <OrderSummary activeOrder={activeOrder}/>
+                    <PromotionCode activeOrder={activeOrder}/>
+                </div>
+            </aside>
         </div>
     )
 }

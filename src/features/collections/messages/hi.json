@@ -5,7 +5,10 @@
         "browseCollectionAt": "{siteName} पर हमारा {name} संग्रह देखें",
         "shop": "शॉप",
         "category": "श्रेणी",
-        "productCount": "{count, plural, =0 {अभी कोई उत्पाद नहीं} one {# उत्पाद} other {# उत्पाद}}",
-        "browseProducts": "उत्पाद देखें"
+        "productCount": "{count, plural, =0 {अभी कोई मशीन नहीं} one {# मशीन} other {# मशीनें}}",
+        "browseProducts": "उत्पाद देखें",
+        "fallbackDescription": "Millnex कैटलॉग की हर {name} मशीन, लाइव कीमतों और उपलब्धता के साथ। विनिर्देश या कोटेशन के लिए हमारी टीम से पूछें।",
+        "allTab": "सभी",
+        "categoryTabs": "मशीन श्रेणियाँ"
     }
 }

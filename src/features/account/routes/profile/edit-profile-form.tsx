@@ -30,9 +30,9 @@ export function EditProfileForm({ customer }: EditProfileFormProps) {
     }, [state?.success]);
 
     return (
-        <Card>
+        <Card className="shadow-none">
             <CardHeader>
-                <CardTitle>{t('personalInformation')}</CardTitle>
+                <CardTitle className="font-display text-lg font-bold">{t('personalInformation')}</CardTitle>
                 <CardDescription>
                     {t('updatePersonalDetails')}
                 </CardDescription>
@@ -64,16 +64,16 @@ export function EditProfileForm({ customer }: EditProfileFormProps) {
                         />
                     </div>
                     {state?.error && (
-                        <div className="text-sm text-destructive">
+                        <div className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">
                             {state.error}
                         </div>
                     )}
                     {state?.success && (
-                        <div className="text-sm text-green-600">
+                        <div className="rounded-lg bg-success/10 px-3 py-2 text-sm text-success">
                             {t('profileUpdated')}
                         </div>
                     )}
-                    <Button type="submit" disabled={isPending}>
+                    <Button type="submit" className="h-10 rounded-lg bg-brand px-4 font-semibold text-brand-foreground hover:bg-brand/90" disabled={isPending}>
                         {isPending ? t('updating') : t('updateProfile')}
                     </Button>
                 </CardContent>

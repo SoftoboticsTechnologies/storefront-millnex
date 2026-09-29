@@ -28,9 +28,9 @@ export function EditEmailForm({ currentEmail }: EditEmailFormProps) {
     }, [state?.success]);
 
     return (
-        <Card>
+        <Card className="shadow-none">
             <CardHeader>
-                <CardTitle>{t('emailAddress')}</CardTitle>
+                <CardTitle className="font-display text-lg font-bold">{t('emailAddress')}</CardTitle>
                 <CardDescription>
                     {t('updateEmailDescription')}
                 </CardDescription>
@@ -72,16 +72,16 @@ export function EditEmailForm({ currentEmail }: EditEmailFormProps) {
                         </p>
                     </div>
                     {state?.error && (
-                        <div className="text-sm text-destructive">
+                        <div className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">
                             {state.error}
                         </div>
                     )}
                     {state?.success && (
-                        <div className="text-sm text-green-600">
+                        <div className="rounded-lg bg-success/10 px-3 py-2 text-sm text-success">
                             {t('verificationEmailSent')}
                         </div>
                     )}
-                    <Button type="submit" disabled={isPending}>
+                    <Button type="submit" className="h-10 rounded-lg bg-brand px-4 font-semibold text-brand-foreground hover:bg-brand/90" disabled={isPending}>
                         {isPending ? t('updating') : t('updateEmail')}
                     </Button>
                 </CardContent>

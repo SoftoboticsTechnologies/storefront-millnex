@@ -39,6 +39,22 @@ Vendure integration map for `apps/storefront/src`. Treat everything here as prot
 - `pricing/price.tsx` (Client Component, `Intl.NumberFormat`) — **has a silent `currencyCode = 'USD'` default prop**; audit all call sites pass an explicit `order.currencyCode` / variant currency.
 - `currency/currency-server.ts`: `getActiveCurrencyCode` validates the `vendure-currency` cookie against `channel.availableCurrencyCodes`, falling back to `channel.defaultCurrencyCode`. This is what prevents stale USD leaking after a channel is reconfigured to INR-only (fixed 2026-08-29, see `docs/decisions.md`). Safe under `'use cache: private'`, **not** safe under public `'use cache'`.
 
+### MRP custom field (display-only, 2026-09-29)
+- Storefront reads `ProductVariant.customFields.mrp` (Int, **paise**, tax-inclusive — same unit as `priceWithTax`) at build via `features/pricing/mrp.ts` (own hand-written query, error-tolerant: missing field ⇒ no MRPs, nothing breaks) → `MrpProvider` (locale layout) → `DiscountedPrice` / `SpecialOfferPrice`.
+- MRP > Vendure price ⇒ MRP struck through + "Save ₹(MRP − price)" (+ "Special offer price" block at the end of the PDP Overview). Otherwise the ×1.10 display price (no saving). Only shown in the currency the MRPs were entered in.
+- **Never** used for cart/checkout/payment/orders — the Vendure price is what's charged. Set the offer (selling) price as the variant price in Vendure admin.
+- Backend (Vendure server `vendure-config.ts`, not this repo):
+  ```ts
+  customFields: {
+      ProductVariant: [{
+          name: 'mrp', type: 'int', nullable: true, public: true,
+          label: [{languageCode: LanguageCode.en, value: 'MRP (incl. tax)'}],
+          ui: {component: 'currency-form-input'}, // stored in paise, entered as ₹
+      }],
+  },
+  ```
+  Then run a DB migration, restart, enter MRPs in admin, re-run `npm run build`. Optionally regenerate `src/graphql-env.d.ts` (not required — the MRP query is untyped on purpose).
+
 ## Auth / Account — `src/features/authentication/`, `src/features/account/`
 - Mutations: `LoginMutation`, `LogoutMutation`, `RegisterCustomerAccountMutation`, `VerifyCustomerAccountMutation`, `RequestPasswordResetMutation`, `ResetPasswordMutation`, plus customer/address/email mutations in `account/graphql.ts`.
 - All Server Actions (`'use server'`). Reads via `getActiveCustomer` (React `cache()`-wrapped), token from cookie.

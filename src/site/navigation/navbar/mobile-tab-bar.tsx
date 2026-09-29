@@ -24,9 +24,12 @@ export function MobileTabBar() {
     const [searchOpen, setSearchOpen] = useState(false);
 
     const first = pathname.split('/')[1] ?? '';
+    // Active tab: brand colour plus a 2px indicator along the top edge,
+    // echoing the header's underline.
     const itemClass = (active: boolean) => cn(
         'relative flex flex-1 flex-col items-center justify-center gap-0.5 text-[11px] font-semibold transition-colors',
-        active ? 'text-brand' : 'text-muted-foreground hover:text-foreground',
+        'before:absolute before:inset-x-5 before:top-0 before:h-0.5 before:origin-center before:bg-brand before:transition-transform before:duration-300',
+        active ? 'text-brand before:scale-x-100' : 'text-muted-foreground before:scale-x-0 hover:text-foreground',
     );
 
     return (

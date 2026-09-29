@@ -42,6 +42,27 @@
     "seeAllResults": "Alle Ergebnisse für „{term}“ anzeigen",
     "wishlist": "Wunschliste",
     "faq": "FAQ",
-    "backToTop": "Nach oben"
+    "backToTop": "Nach oben",
+    "manufacturing": "Fertigung",
+    "compare": "Maschinen vergleichen",
+    "utilityDomestic": "Mühlenlösungen für Haushalt & Gewerbe",
+    "utilitySupport": "Fachkundige Beratung",
+    "utilitySecure": "Sicher einkaufen",
+    "megaCategories": "Nach Kategorie",
+    "megaByType": "Nach {facet}",
+    "megaViewCategory": "Alle ansehen",
+    "megaMachineCount": "{count, plural, one {# Maschine} other {# Maschinen}}",
+    "megaHelpTitle": "Unsicher, welche Maschine?",
+    "megaHelpBody": "Sagen Sie uns, was und wie viel Sie mahlen. Unser Team empfiehlt ein Modell und sendet ein Angebot.",
+    "browseAllMachines": "Alle Maschinen ansehen",
+    "recentSearches": "Letzte Suchen",
+    "clearRecent": "Löschen",
+    "popularCategories": "Beliebte Kategorien",
+    "searchHint": "Suche nach Maschinenname, Kategorie, Typ oder SKU",
+    "matchingProducts": "Passende Maschinen",
+    "closeSearch": "Suche schließen",
+    "chatWithMillnex": "Mit Millnex chatten",
+    "company": "Unternehmen",
+    "callUs": "Anrufen: {phone}"
   }
 }

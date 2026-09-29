@@ -5,8 +5,12 @@ export interface EnquiryPayload {
     phone: string;
     email?: string;
     company?: string;
+    /** Human-readable business type label (quote requests). */
+    businessType?: string;
     /** Human-readable product name (not the slug). */
     product?: string;
+    /** Free-text quantity / usage (quote requests). */
+    quantity?: string;
     message: string;
 }
 
@@ -39,7 +43,7 @@ export function getEnquiryDeliveryKind(): EnquiryDeliveryKind | null {
     return null;
 }
 
-export function formatEnquiryText(payload: EnquiryPayload, labels: Record<keyof EnquiryPayload, string>, intro: string): string {
+export function formatEnquiryText(payload: EnquiryPayload, labels: Partial<Record<keyof EnquiryPayload, string>>, intro: string): string {
     const lines = (Object.keys(labels) as Array<keyof EnquiryPayload>)
         .filter((key) => payload[key])
         .map((key) => `${labels[key]}: ${payload[key]}`);

@@ -39,7 +39,9 @@ function createEnquirySchema(t: ReturnType<typeof useTranslations<'Enquiry'>>) {
             }, t('validation.phone')),
         email: z.union([z.literal(''), z.email(t('validation.email'))]),
         company: z.string().trim().max(120),
+        businessType: z.string(),
         product: z.string(),
+        quantity: z.string().trim().max(200),
         message: z.string().trim().min(10, t('validation.message')).max(2000, t('validation.messageTooLong')),
     });
 }
@@ -52,7 +54,26 @@ type Status =
     | {state: 'success'; result: EnquiryResult}
     | {state: 'error'; notConfigured: boolean};
 
-const inputClass = 'h-12 rounded-xl border-input bg-card px-4 text-[15px] shadow-none focus-visible:border-brand focus-visible:ring-brand/20';
+const inputClass = 'h-12 rounded-lg border-input bg-card px-4 text-[15px] shadow-none focus-visible:border-brand focus-visible:ring-brand/20';
+
+/** Business-type choices for quote requests (labels in `Enquiry.businessTypes`). */
+const BUSINESS_TYPES = ['home', 'smallBusiness', 'commercial', 'foodBusiness', 'dealer'] as const;
+
+interface EnquiryFormProps {
+    products: EnquiryProductOption[];
+    className?: string;
+    /**
+     * `contact` (default): name, phone, email, company, product, message.
+     * `quote`: adds business type and quantity, and submits as "Request Quote".
+     */
+    variant?: 'contact' | 'quote';
+    /** Product slug to pre-select (e.g. the quote was opened from a product page). */
+    defaultProduct?: string;
+    /** Pre-filled requirement text (e.g. the machine finder's answers). */
+    defaultMessage?: string;
+    /** Overrides the submit button label. */
+    submitLabel?: string;
+}
 
 /**
  * Enquiry / quote request form. Validates client-side, then delivers via
@@ -61,23 +82,34 @@ const inputClass = 'h-12 rounded-xl border-input bg-card px-4 text-[15px] shadow
  * read from window.location after mount — never via useSearchParams, which
  * would de-opt the whole static page to client rendering (docs/decisions.md).
  */
-export function EnquiryForm({products, className}: {products: EnquiryProductOption[]; className?: string}) {
+export function EnquiryForm({products, className, variant = 'contact', defaultProduct, defaultMessage, submitLabel}: EnquiryFormProps) {
     const t = useTranslations('Enquiry');
     const [status, setStatus] = useState<Status>({state: 'idle'});
 
     const form = useForm<EnquiryFormData>({
         resolver: zodResolver(createEnquirySchema(t)),
-        defaultValues: {name: '', phone: '', email: '', company: '', product: '', message: ''},
+        defaultValues: {
+            name: '',
+            phone: '',
+            email: '',
+            company: '',
+            businessType: '',
+            product: defaultProduct && products.some((product) => product.value === defaultProduct) ? defaultProduct : '',
+            quantity: '',
+            message: defaultMessage ?? '',
+        },
     });
+    const isQuote = variant === 'quote';
 
     useEffect(() => {
+        if (defaultProduct) return;
         // `?product=<slug>` (from a product page); `?machine=` kept for old links.
         const params = new URLSearchParams(window.location.search);
         const slug = params.get('product') ?? params.get('machine');
         if (slug && products.some((product) => product.value === slug)) {
             form.setValue('product', slug);
         }
-    }, [form, products]);
+    }, [form, products, defaultProduct]);
 
     const onSubmit = async (data: EnquiryFormData) => {
         setStatus({state: 'submitting'});
@@ -87,7 +119,9 @@ export function EnquiryForm({products, className}: {products: EnquiryProductOpti
             phone: data.phone,
             email: data.email || undefined,
             company: data.company || undefined,
+            businessType: data.businessType ? t(`businessTypes.${data.businessType as (typeof BUSINESS_TYPES)[number]}`) : undefined,
             product: productLabel ?? (data.product ? data.product : undefined),
+            quantity: data.quantity || undefined,
             message: data.message,
         };
         const text = formatEnquiryText(
@@ -97,7 +131,9 @@ export function EnquiryForm({products, className}: {products: EnquiryProductOpti
                 phone: t('fields.phone'),
                 email: t('fields.email'),
                 company: t('fields.company'),
+                businessType: t('fields.businessType'),
                 product: t('fields.product'),
+                quantity: t('fields.quantity'),
                 message: t('fields.message'),
             },
             t('handoffIntro', {company: CONTACT_CONFIG.companyName}),
@@ -138,7 +174,7 @@ export function EnquiryForm({products, className}: {products: EnquiryProductOpti
                             href={result.handoffUrl}
                             target={result.kind === 'whatsapp' ? '_blank' : undefined}
                             rel="noopener noreferrer"
-                            className="inline-flex h-11 items-center gap-2 rounded-xl bg-brand px-5 text-sm font-semibold text-brand-foreground transition-colors hover:bg-brand/90"
+                            className="inline-flex h-11 items-center gap-2 rounded-lg bg-brand px-5 text-sm font-semibold text-brand-foreground transition-colors hover:bg-brand/90"
                         >
                             {result.kind === 'whatsapp' ? t('success.openWhatsApp') : t('success.openEmail')}
                             <ExternalLink className="size-4" />
@@ -147,7 +183,7 @@ export function EnquiryForm({products, className}: {products: EnquiryProductOpti
                     <button
                         type="button"
                         onClick={() => setStatus({state: 'idle'})}
-                        className="inline-flex h-11 items-center rounded-xl border border-border bg-card px-5 text-sm font-semibold transition-colors hover:border-foreground/25"
+                        className="inline-flex h-11 items-center rounded-lg border border-border bg-card px-5 text-sm font-semibold transition-colors hover:border-foreground/25"
                     >
                         {t('success.sendAnother')}
                     </button>
@@ -215,11 +251,35 @@ export function EnquiryForm({products, className}: {products: EnquiryProductOpti
                         </FormItem>
                     )}
                 />
+                {isQuote && <FormField
+                    control={form.control}
+                    name="businessType"
+                    render={({field}) => (
+                        <FormItem>
+                            <FormLabel>{t('fields.businessType')}</FormLabel>
+                            <div className="relative">
+                                <FormControl>
+                                    <select
+                                        {...field}
+                                        className={cn(inputClass, 'w-full appearance-none border pr-10 outline-none focus-visible:ring-3')}
+                                    >
+                                        <option value="">{t('businessTypes.notSpecified')}</option>
+                                        {BUSINESS_TYPES.map((type) => (
+                                            <option key={type} value={type}>{t(`businessTypes.${type}`)}</option>
+                                        ))}
+                                    </select>
+                                </FormControl>
+                                <ChevronDown aria-hidden="true" className="pointer-events-none absolute top-1/2 right-4 size-4 -translate-y-1/2 text-muted-foreground" />
+                            </div>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />}
                 {products.length > 0 && <FormField
                     control={form.control}
                     name="product"
                     render={({field}) => (
-                        <FormItem className="sm:col-span-2">
+                        <FormItem className={isQuote ? undefined : 'sm:col-span-2'}>
                             <FormLabel>{t('fields.product')}</FormLabel>
                             <div className="relative">
                                 <FormControl>
@@ -239,6 +299,19 @@ export function EnquiryForm({products, className}: {products: EnquiryProductOpti
                         </FormItem>
                     )}
                 />}
+                {isQuote && <FormField
+                    control={form.control}
+                    name="quantity"
+                    render={({field}) => (
+                        <FormItem className={products.length > 0 ? 'sm:col-span-2' : undefined}>
+                            <FormLabel>{t('fields.quantity')}</FormLabel>
+                            <FormControl>
+                                <Input placeholder={t('placeholders.quantity')} className={inputClass} {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />}
                 <FormField
                     control={form.control}
                     name="message"
@@ -254,7 +327,7 @@ export function EnquiryForm({products, className}: {products: EnquiryProductOpti
                 />
 
                 {status.state === 'error' && (
-                    <div role="alert" className="flex gap-3 rounded-xl border border-destructive/25 bg-destructive/5 p-4 text-sm sm:col-span-2">
+                    <div role="alert" className="flex gap-3 rounded-lg border border-destructive/25 bg-destructive/5 p-4 text-sm sm:col-span-2">
                         <AlertCircle aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-destructive" />
                         <div>
                             <p className="font-semibold">{status.notConfigured ? t('error.notConfiguredTitle') : t('error.title')}</p>
@@ -273,7 +346,7 @@ export function EnquiryForm({products, className}: {products: EnquiryProductOpti
                     <button
                         type="submit"
                         disabled={submitting}
-                        className="group/btn inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-brand px-7 text-[15px] font-semibold text-brand-foreground shadow-[0_10px_30px_-14px_var(--brand)] transition-[transform,background-color] duration-200 hover:-translate-y-0.5 hover:bg-[oklch(0.52_0.17_37)] focus-visible:ring-3 focus-visible:ring-brand/40 outline-none disabled:pointer-events-none disabled:opacity-70"
+                        className="group/btn inline-flex h-12 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-brand px-7 text-[15px] font-semibold text-brand-foreground shadow-[0_10px_30px_-14px_var(--brand)] transition-[transform,background-color] duration-200 hover:-translate-y-0.5 hover:bg-[oklch(0.52_0.17_37)] focus-visible:ring-3 focus-visible:ring-brand/40 outline-none disabled:pointer-events-none disabled:opacity-70"
                     >
                         {submitting ? (
                             <>
@@ -282,7 +355,7 @@ export function EnquiryForm({products, className}: {products: EnquiryProductOpti
                             </>
                         ) : (
                             <>
-                                {t('submit')}
+                                {submitLabel ?? (isQuote ? t('submitQuote') : t('submit'))}
                                 <ArrowRight aria-hidden="true" className="size-[18px] transition-transform group-hover/btn:translate-x-0.5" />
                             </>
                         )}

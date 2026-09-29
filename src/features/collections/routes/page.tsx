@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import { Link } from '@/platform/i18n/navigation';
 import { query } from '@/platform/vendure/api';
 import {GetCollectionProductsQuery} from '@/features/collections/graphql';
 import {SearchProductsQuery} from '@/features/search/graphql';
@@ -8,14 +7,8 @@ import {cardFromSearchResult} from '@/features/products/product-card-data';
 import {buildSearchInput} from '@/features/search/search-helpers';
 import {getActiveCurrencyCode} from '@/features/currency/currency-server';
 import {CollectionResults} from '@/features/collections/routes/collection-results';
-import {
-    Breadcrumb,
-    BreadcrumbList,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
+import {CategoryTabs} from '@/features/search/category-tabs';
+import {QuoteButton} from '@/features/enquiry/quote-dialog';
 import { routing } from '@/platform/i18n/routing';
 import {
     SITE_NAME,
@@ -26,7 +19,7 @@ import {
 import {toOgLocale} from '@/platform/i18n/locale-utils';
 import {getRouteLocale} from '@/platform/i18n/server';
 import {getTranslations} from 'next-intl/server';
-import {getCollectionNames, getTopCollections} from '@/features/collections/data';
+import {getCollectionNames, getShopCategories, getTopCollections} from '@/features/collections/data';
 import {EMPTY_STATIC_PARAM, withEmptyCatalogFallback} from '@/platform/next/static-export';
 import {notFound} from 'next/navigation';
 
@@ -132,59 +125,59 @@ export default async function CollectionPage({params}: PageProps<'/[locale]/coll
     // product listing, filters, sort, and pagination are resolved live
     // client-side (currency- and query-string-dependent) — see
     // collection-results.tsx.
-    const [collectionResult, initialProducts, collectionNames] = await Promise.all([
+    const [collectionResult, initialProducts, collectionNames, categories] = await Promise.all([
         getCollectionMetadata(slug),
         getDefaultCollectionProducts(slug),
         getCollectionNames(locale),
+        getShopCategories(locale),
     ]);
     const collection = collectionResult.data.collection;
-    const collectionName = collection?.name ?? slug;
+    const collectionName = collection?.name.trim() || slug;
+    // Vendure descriptions are often empty rich text ("<p></p>") — only show real copy.
+    const hasDescription = !!collection?.description?.replace(/<[^>]*>/g, '').trim();
 
-    // Real product images for the banner artwork (first page of results).
-    const bannerTiles = initialProducts.data.search.items.flatMap((item) => {
-        const card = cardFromSearchResult(item);
-        return card.imageUrl ? [{src: card.imageUrl, alt: card.name}] : [];
-    });
+    // Band artwork: the collection's own image (if any), then real product images.
+    const bannerTiles = [
+        ...(collection?.featuredAsset ? [{src: collection.featuredAsset.preview, alt: collectionName}] : []),
+        ...initialProducts.data.search.items.flatMap((item) => {
+            const card = cardFromSearchResult(item);
+            return card.imageUrl ? [{src: card.imageUrl, alt: card.name}] : [];
+        }),
+    ];
 
     return (
-        <div className="pb-16 pt-24 sm:pt-28">
-            {/* Breadcrumbs */}
-            <div className="site-container">
-                <Breadcrumb className="mb-4">
-                    <BreadcrumbList>
-                        <BreadcrumbItem>
-                            <BreadcrumbLink render={<Link href="/" />}>{t('home')}</BreadcrumbLink>
-                        </BreadcrumbItem>
-                        <BreadcrumbSeparator />
-                        <BreadcrumbItem>
-                            <BreadcrumbLink render={<Link href="/shop" />}>{t('shop')}</BreadcrumbLink>
-                        </BreadcrumbItem>
-                        <BreadcrumbSeparator />
-                        <BreadcrumbItem>
-                            <BreadcrumbPage>{collectionName}</BreadcrumbPage>
-                        </BreadcrumbItem>
-                    </BreadcrumbList>
-                </Breadcrumb>
-            </div>
-
+        <div>
             <ListingBanner
-                eyebrow={t('category')}
+                breadcrumbs={[
+                    {label: t('home'), href: '/'},
+                    {label: t('shop'), href: '/shop'},
+                    {label: collectionName},
+                ]}
                 title={collectionName}
-                description={collection?.description ? {html: collection.description} : undefined}
-                ctaLabel={t('browseProducts')}
-                cover={collection?.featuredAsset ? {src: collection.featuredAsset.preview, alt: collectionName} : null}
+                description={
+                    hasDescription && collection?.description
+                        ? {html: collection.description}
+                        : {text: t('fallbackDescription', {name: collectionName})}
+                }
+                actions={
+                    <QuoteButton className="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-brand px-5 text-sm font-semibold text-brand-foreground shadow-[0_10px_26px_-14px_var(--brand)] transition-[transform,background-color] hover:-translate-y-0.5 hover:bg-brand/90 [&_svg]:size-4" />
+                }
                 tiles={bannerTiles}
             />
+            <CategoryTabs
+                categories={categories.map(({name, slug: categorySlug}) => ({name: name.trim(), slug: categorySlug}))}
+                activeSlug={slug}
+                allLabel={t('allTab')}
+                label={t('categoryTabs')}
+            />
 
-            <div className="site-container">
-                <div id="products" className="scroll-mt-28">
-                    <CollectionResults
-                        collectionSlug={slug}
-                        collectionId={collection?.id}
-                        initialProducts={initialProducts.data}
-                        collectionNames={collectionNames}
-                    />
-                </div>
+            <div id="products" className="site-container scroll-mt-24 pb-16 lg:pb-24">
+                <CollectionResults
+                    collectionSlug={slug}
+                    collectionId={collection?.id}
+                    initialProducts={initialProducts.data}
+                    collectionNames={collectionNames}
+                />
             </div>
         </div>
     );

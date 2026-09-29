@@ -74,8 +74,8 @@ export function AddressForm({ countries, address, onSubmit, onCancel, isSubmitti
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)}>
       <FieldGroup className="my-6">
-        <div className="grid grid-cols-2 gap-4">
-          <Field className="col-span-2">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <Field className="sm:col-span-2">
             <FieldLabel htmlFor="fullName">{t('fullName')}</FieldLabel>
             <Input
               id="fullName"
@@ -85,12 +85,12 @@ export function AddressForm({ countries, address, onSubmit, onCancel, isSubmitti
             <FieldError>{errors.fullName?.message}</FieldError>
           </Field>
 
-          <Field className="col-span-2">
+          <Field className="sm:col-span-2">
             <FieldLabel htmlFor="company">{t('company')}</FieldLabel>
             <Input id="company" {...register('company')} disabled={isSubmitting} />
           </Field>
 
-          <Field className="col-span-2">
+          <Field className="sm:col-span-2">
             <FieldLabel htmlFor="streetLine1">{t('streetAddress')}</FieldLabel>
             <Input
               id="streetLine1"
@@ -100,7 +100,7 @@ export function AddressForm({ countries, address, onSubmit, onCancel, isSubmitti
             <FieldError>{errors.streetLine1?.message}</FieldError>
           </Field>
 
-          <Field className="col-span-2">
+          <Field className="sm:col-span-2">
             <FieldLabel htmlFor="streetLine2">{t('apartment')}</FieldLabel>
             <Input id="streetLine2" {...register('streetLine2')} disabled={isSubmitting} />
           </Field>
@@ -153,7 +153,7 @@ export function AddressForm({ countries, address, onSubmit, onCancel, isSubmitti
             <FieldError>{errors.countryCode?.message}</FieldError>
           </Field>
 
-          <Field className="col-span-2">
+          <Field className="sm:col-span-2">
             <FieldLabel htmlFor="phoneNumber">{t('phoneNumberField')}</FieldLabel>
             <Input
               id="phoneNumber"
@@ -166,11 +166,11 @@ export function AddressForm({ countries, address, onSubmit, onCancel, isSubmitti
         </div>
       </FieldGroup>
 
-      <div className="flex gap-3 justify-end">
-        <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
+      <div className="flex flex-wrap justify-end gap-3">
+        <Button type="button" variant="outline" className="h-10 rounded-lg px-4" onClick={onCancel} disabled={isSubmitting}>
           {t('cancel')}
         </Button>
-        <Button type="submit" disabled={isSubmitting}>
+        <Button type="submit" className="h-10 rounded-lg bg-brand px-4 font-semibold text-brand-foreground hover:bg-brand/90" disabled={isSubmitting}>
           {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           {address ? t('updateAddress') : t('saveAddress')}
         </Button>

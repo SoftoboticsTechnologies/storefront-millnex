@@ -15,6 +15,8 @@ export interface ProductCardData {
     /** Plain-text description excerpt (HTML stripped). Empty when Vendure has none. */
     summary: string;
     imageUrl: string | null;
+    /** Vendure SKU (the first variant's, for Product-shaped sources), whitespace-trimmed. */
+    sku: string;
     /** priceWithTax range across variants, in minor units. */
     price: {min: number; max: number; currencyCode: string} | null;
     /** `false` only when Vendure reports every variant out of stock. */
@@ -45,6 +47,7 @@ export function cardFromSearchResult(item: FragmentOf<typeof ProductCardFragment
         name: product.productName,
         summary: stripHtml(product.description),
         imageUrl: product.productAsset?.preview ?? null,
+        sku: product.sku.trim(),
         price: price.__typename === 'PriceRange'
             ? {min: price.min, max: price.max, currencyCode: product.currencyCode}
             : price.__typename === 'SinglePrice'
@@ -64,6 +67,7 @@ export function cardFromProduct(product: NewestProduct): ProductCardData {
         name: product.name,
         summary: stripHtml(product.description),
         imageUrl: product.featuredAsset?.preview ?? null,
+        sku: product.variants[0]?.sku.trim() ?? '',
         price: prices.length > 0 && currencyCode
             ? {min: Math.min(...prices), max: Math.max(...prices), currencyCode}
             : null,

@@ -77,14 +77,14 @@ export function OrderDetail({code}: OrderDetailProps) {
 
     return (
         <div>
-            <div className="mb-6">
-                <Button render={<Link href="/account/orders" />} nativeButton={false} variant="ghost" size="sm" className="mb-4">
+            <div className="mb-8">
+                <Button render={<Link href="/account/orders" />} nativeButton={false} variant="ghost" size="sm" className="-ml-2 mb-4 rounded-lg text-muted-foreground">
                         <ChevronLeft className="h-4 w-4 mr-2"/>
                         {t('backToOrders')}
                 </Button>
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h1 className="text-3xl font-bold">{t('order', {code: order.code})}</h1>
+                <div className="flex flex-wrap items-end justify-between gap-3 border-b border-border pb-6">
+                    <div className="min-w-0">
+                        <h1 className="break-words font-display-wide text-2xl font-extrabold tracking-tight sm:text-4xl">{t('order', {code: order.code})}</h1>
                         <p className="text-muted-foreground mt-1">
                             {t('placedOn', {date: formatDate(order.createdAt, 'long', locale)})}
                         </p>
@@ -97,39 +97,40 @@ export function OrderDetail({code}: OrderDetailProps) {
                 <div className="lg:col-span-2 space-y-6">
                     <Card>
                         <CardHeader>
-                            <CardTitle>{t('orderItems')}</CardTitle>
+                            <CardTitle className="font-display text-base font-bold">{t('orderItems')}</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <div className="space-y-4">
+                            <div className="divide-y divide-border [&>*]:py-4 [&>*:first-child]:pt-0 [&>*:last-child]:pb-0">
                                 {order.lines.map((line: OrderLineItem) => (
                                     <div key={line.id} className="flex gap-4">
-                                        <div className="relative h-20 w-20 rounded-md overflow-hidden bg-gray-100 flex-shrink-0">
+                                        <div className="relative size-20 shrink-0 overflow-hidden rounded-lg border border-border bg-stage">
                                             {line.productVariant.product.featuredAsset && (
                                                 <Image
-                                                    src={line.productVariant.product.featuredAsset.preview}
+                                                    src={`${line.productVariant.product.featuredAsset.preview}?preset=small`}
                                                     alt={line.productVariant.name}
                                                     fill
-                                                    className="object-cover"
+                                                    sizes="80px"
+                                                    className="object-contain p-1 mix-blend-multiply"
                                                 />
                                             )}
                                         </div>
-                                        <div className="flex-1">
+                                        <div className="min-w-0 flex-1">
                                             <Link
                                                 href={`/product/${line.productVariant.product.slug}`}
                                                 prefetch={false}
-                                                className="font-medium hover:underline"
+                                                className="font-display font-bold hover:text-brand"
                                             >
                                                 {line.productVariant.product.name}
                                             </Link>
                                             <p className="text-sm text-muted-foreground">
                                                 {line.productVariant.name}
                                             </p>
-                                            <p className="text-sm text-muted-foreground">
+                                            <p className="spec-label mt-1 text-steel">
                                                 {t('skuLabel', {sku: line.productVariant.sku})}
                                             </p>
                                         </div>
-                                        <div className="text-right">
-                                            <p className="font-medium">
+                                        <div className="shrink-0 text-right">
+                                            <p className="font-display font-extrabold tabular-nums">
                                                 <Price value={line.linePriceWithTax} currencyCode={order.currencyCode}/>
                                             </p>
                                             <p className="text-sm text-muted-foreground">
@@ -144,7 +145,7 @@ export function OrderDetail({code}: OrderDetailProps) {
 
                     <Card>
                         <CardHeader>
-                            <CardTitle>{t('orderSummary')}</CardTitle>
+                            <CardTitle className="font-display text-base font-bold">{t('orderSummary')}</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <div className="space-y-2">
@@ -159,13 +160,13 @@ export function OrderDetail({code}: OrderDetailProps) {
                                 {order.discounts?.length > 0 && order.discounts.map((discount: OrderDiscount, idx: number) => (
                                     <div key={idx} className="flex justify-between text-sm">
                                         <span className="text-muted-foreground">{discount.description}</span>
-                                        <span className="text-green-600">
+                                        <span className="text-success">
                                             -<Price value={discount.amountWithTax} currencyCode={order.currencyCode}/>
                                         </span>
                                     </div>
                                 ))}
                                 <Separator className="my-2"/>
-                                <div className="flex justify-between font-bold text-lg">
+                                <div className="flex justify-between font-display text-lg font-extrabold">
                                     <span>{t('total')}</span>
                                     <span><Price value={order.totalWithTax} currencyCode={order.currencyCode}/></span>
                                 </div>
@@ -176,7 +177,7 @@ export function OrderDetail({code}: OrderDetailProps) {
 
                 <div className="space-y-6">
                     <Card>
-                        <CardHeader><CardTitle>{t('shipmentTracking')}</CardTitle></CardHeader>
+                        <CardHeader><CardTitle className="font-display text-base font-bold">{t('shipmentTracking')}</CardTitle></CardHeader>
                         <CardContent>
                             {order.fulfillments && order.fulfillments.length > 0 ? (
                                 <div className="space-y-4">
@@ -229,7 +230,7 @@ export function OrderDetail({code}: OrderDetailProps) {
 
                     {order.shippingAddress && (
                         <Card>
-                            <CardHeader><CardTitle>{t('shippingAddress')}</CardTitle></CardHeader>
+                            <CardHeader><CardTitle className="font-display text-base font-bold">{t('shippingAddress')}</CardTitle></CardHeader>
                             <CardContent className="text-sm">
                                 <p className="font-medium">{order.shippingAddress.fullName}</p>
                                 {order.shippingAddress.company && <p>{order.shippingAddress.company}</p>}
@@ -244,7 +245,7 @@ export function OrderDetail({code}: OrderDetailProps) {
 
                     {order.billingAddress && (
                         <Card>
-                            <CardHeader><CardTitle>{t('billingAddress')}</CardTitle></CardHeader>
+                            <CardHeader><CardTitle className="font-display text-base font-bold">{t('billingAddress')}</CardTitle></CardHeader>
                             <CardContent className="text-sm">
                                 <p className="font-medium">{order.billingAddress.fullName}</p>
                                 {order.billingAddress.company && <p>{order.billingAddress.company}</p>}
@@ -259,7 +260,7 @@ export function OrderDetail({code}: OrderDetailProps) {
 
                     {order.payments && order.payments.length > 0 && (
                         <Card>
-                            <CardHeader><CardTitle>{t('payment')}</CardTitle></CardHeader>
+                            <CardHeader><CardTitle className="font-display text-base font-bold">{t('payment')}</CardTitle></CardHeader>
                             <CardContent>
                                 {order.payments.map((payment: OrderPayment) => (
                                     <div key={payment.id} className="space-y-1 text-sm">
@@ -320,7 +321,7 @@ export function OrderDetail({code}: OrderDetailProps) {
 
                     {order.shippingLines?.length > 0 && (
                         <Card>
-                            <CardHeader><CardTitle>{t('shippingMethod')}</CardTitle></CardHeader>
+                            <CardHeader><CardTitle className="font-display text-base font-bold">{t('shippingMethod')}</CardTitle></CardHeader>
                             <CardContent>
                                 {order.shippingLines.map((line: OrderShippingLine, idx: number) => (
                                     <div key={idx} className="space-y-1 text-sm">

@@ -6,14 +6,17 @@
       "email": "Email",
       "company": "Company / business name",
       "product": "Product interested in",
-      "message": "Requirement / message"
+      "message": "Requirement / message",
+      "businessType": "Business type",
+      "quantity": "Quantity / requirement"
     },
     "placeholders": {
       "name": "Your full name",
       "phone": "+91 98765 43210",
       "email": "you@business.com",
       "company": "Optional",
-      "message": "What will you grind, roughly how much per day, and where should we deliver?"
+      "message": "What will you grind, roughly how much per day, and where should we deliver?",
+      "quantity": "e.g. 1 machine, ~20 kg per day"
     },
     "productNotSure": "Not sure yet — help me choose",
     "validation": {
@@ -47,6 +50,21 @@
     },
     "requestQuote": "Request a quote",
     "quoteTitle": "Request a quote",
-    "quoteDescription": "Tell us what you need and our team will recommend the right machine and send you a quote."
+    "quoteDescription": "Tell us what you need and our team will recommend the right machine and send you a quote.",
+    "businessTypes": {
+      "notSpecified": "Select (optional)",
+      "home": "Home use",
+      "smallBusiness": "Small business / shop",
+      "commercial": "Commercial production",
+      "foodBusiness": "Food business / kitchen",
+      "dealer": "Dealer / reseller"
+    },
+    "getQuote": "Get a Quote",
+    "submitQuote": "Request Quote",
+    "submitRecommendation": "Get My Recommendation",
+    "quoteAssurance": "Our team replies with a recommendation and price. No obligation.",
+    "preferWhatsApp": "Prefer WhatsApp?",
+    "chatOnWhatsApp": "Chat on WhatsApp",
+    "requestQuoteButton": "Request a Quote"
   }
 }

@@ -5,7 +5,10 @@
         "browseCollectionAt": "Browse our {name} collection at {siteName}",
         "shop": "Shop",
         "category": "Category",
-        "productCount": "{count, plural, =0 {No products yet} one {# product} other {# products}}",
-        "browseProducts": "Browse products"
+        "productCount": "{count, plural, =0 {No machines yet} one {# machine} other {# machines}}",
+        "browseProducts": "Browse products",
+        "fallbackDescription": "Every {name} machine in the Millnex catalogue, with live prices and availability. Ask our team for specifications or a quote.",
+        "allTab": "All",
+        "categoryTabs": "Machine categories"
     }
 }

@@ -1,15 +1,13 @@
 'use client';
 
-import {use} from 'react';
+import {use, type ReactNode} from 'react';
 import {useTranslations} from 'next-intl';
-import {PackageOpen, SearchX} from 'lucide-react';
 import {ResultOf} from '@/platform/vendure/graphql';
-import {Link, usePathname} from '@/platform/i18n/navigation';
+import {cn} from '@/lib/utils';
 import {ProductCard} from './components/product-card';
-import {Pagination} from './components/pagination';
+import {Pagination, type PaginationLabels} from './components/pagination';
 import {cardFromSearchResult} from './product-card-data';
 import {PRODUCT_GRID_CLASS} from './product-grid-layout';
-import {SortDropdown} from '@/features/search/sort-dropdown';
 import {SearchProductsQuery} from '@/features/search/graphql';
 
 interface ProductGridProps {
@@ -20,45 +18,36 @@ interface ProductGridProps {
     currentPage: number;
     take: number;
     /**
-     * Current URL search params, as a string — threaded down to
-     * SortDropdown/Pagination rather than read via useSearchParams() in
-     * this component (see search-params-sync.tsx).
+     * Current URL search params, as a string — threaded down to Pagination
+     * rather than read via useSearchParams() in this component (see
+     * search-params-sync.tsx).
      */
     searchParamsString: string;
     /** Collection id → name (resolved at build time), used to label cards. */
     collectionNames?: Record<string, string>;
     /** Collection the listing is scoped to — not repeated as each card's label. */
     currentCollectionId?: string;
+    /** A newer result is loading (filters/sort/page changed) — dim the current one. */
+    pending?: boolean;
+    /** Shown instead of the grid when the result is empty (owned by the listing). */
+    emptyState?: ReactNode;
+    paginationLabels: PaginationLabels;
 }
 
-export function ProductGrid({productDataPromise, currentPage, take, searchParamsString, collectionNames, currentCollectionId}: ProductGridProps) {
+/**
+ * Listing grid + pagination. The toolbar (count, sort, mobile filters) and
+ * the empty state belong to the listing that renders this (see
+ * search/catalog-results.tsx).
+ */
+export function ProductGrid({productDataPromise, currentPage, take, searchParamsString, collectionNames, currentCollectionId, pending, emptyState, paginationLabels}: ProductGridProps) {
     const t = useTranslations('Product');
-    const pathname = usePathname();
     const result = use(productDataPromise);
 
     const searchResult = result.data.search;
     const totalPages = Math.ceil(searchResult.totalItems / take);
-    const params = new URLSearchParams(searchParamsString);
-    const term = params.get('q')?.trim() ?? '';
-    const isFiltered = !!term || params.has('facets') || params.has('inStock');
 
     if (!searchResult.items.length) {
-        return (
-            <div className="flex flex-col items-center rounded-2xl border border-dashed border-border bg-card px-6 py-16 text-center">
-                {isFiltered ? <SearchX className="size-10 text-muted-foreground" /> : <PackageOpen className="size-10 text-muted-foreground" />}
-                <h2 className="mt-4 text-lg font-bold">
-                    {term ? t('noResultsFor', {term}) : isFiltered ? t('noProductsMatch') : t('noProductsAvailable')}
-                </h2>
-                <p className="mt-2 max-w-sm text-sm text-muted-foreground">
-                    {isFiltered ? t('noResultsHint') : t('noProductsAvailableHint')}
-                </p>
-                {isFiltered && (
-                    <Link href={pathname} className="mt-6 inline-flex h-10 items-center rounded-xl border border-border px-4 text-sm font-semibold transition-colors hover:bg-muted">
-                        {t('clearSearchAndFilters')}
-                    </Link>
-                )}
-            </div>
-        );
+        return emptyState ?? <p className="py-16 text-center text-sm text-muted-foreground">{t('noProductsFound')}</p>;
     }
 
     const labelFor = (collectionIds: string[]) =>
@@ -68,29 +57,20 @@ export function ProductGrid({productDataPromise, currentPage, take, searchParams
             .find(Boolean);
 
     return (
-        <div className="space-y-6">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-                <p className="text-sm text-muted-foreground" aria-live="polite">
-                    {term
-                        ? t('resultCountFor', {count: searchResult.totalItems, term})
-                        : t('productCount', {count: searchResult.totalItems})}
-                </p>
-                <SortDropdown searchParamsString={searchParamsString}/>
-            </div>
-
+        <div className={cn('space-y-10 transition-opacity duration-200', pending && 'pointer-events-none opacity-55')} aria-busy={pending || undefined}>
             <ul className={PRODUCT_GRID_CLASS}>
-                {searchResult.items.map((item) => {
+                {searchResult.items.map((item, index) => {
                     const product = cardFromSearchResult(item);
                     return (
                         <li key={product.productId}>
-                            <ProductCard product={product} category={labelFor(product.collectionIds)} />
+                            <ProductCard product={product} category={labelFor(product.collectionIds)} preload={index < 2} />
                         </li>
                     );
                 })}
             </ul>
 
             {totalPages > 1 && (
-                <Pagination currentPage={currentPage} totalPages={totalPages} searchParamsString={searchParamsString}/>
+                <Pagination currentPage={currentPage} totalPages={totalPages} searchParamsString={searchParamsString} labels={paginationLabels}/>
             )}
         </div>
     );

@@ -16,16 +16,17 @@ Treat as protected infrastructure — preserve behavior exactly, only restyle pr
 - Facet filter OR-within-group / AND-across-group semantics (`src/features/search/search-helpers.ts`)
 - Currency/channel resolution (`src/features/currency/currency-server.ts`) — never assume USD
 
-Never: hardcode product/variant/collection IDs, prices, stock, currency, discounts, ratings, or reviews. Never fake data that isn't backed by a real Vendure field.
+Never: hardcode product/variant/collection IDs, prices, stock, currency, discounts, ratings, or reviews. Never fake data that isn't backed by a real Vendure field. Sole client-approved exception: the display-only struck-through reference price via `DiscountedPrice` — the variant's Vendure MRP custom field (`customFields.mrp`, with "Save ₹X") when set, else Vendure price × 1.10 (`features/pricing/display-price.ts`); never used in cart/checkout/orders (see `docs/commerce.md` "MRP custom field", `docs/decisions.md` 2026-09-29).
 
 ## Millnex marketing layer (2026-09-28)
 
 The storefront presents the Millnex machinery site; details in `docs/ui-system.md` and `docs/decisions.md`.
 - Contact details: `src/config/contact.ts` only (filled 2026-09-28 with the millnex.in address, email and phone/WhatsApp; never hardcode a number/email elsewhere).
-- Products: **Vendure only** — no frontend product catalogue (the old `site/catalog/machines.ts` was removed; `/machines` redirects to `/shop`). Copy: `src/site/content/*`. Replaceable stock imagery + credits: `src/site/content/media.ts`.
+- Products: **Vendure only** — no frontend product catalogue (the old `site/catalog/machines.ts` was removed; `/machines` redirects to `/shop`). Copy: `src/site/content/*`. Replaceable stock imagery + credits: `src/site/content/media.ts`. Local images live in `public/site/` and `public/products category/products image/`; after moving anything in `public/`, run `npm run test` (`tests/assets/public-images.test.mjs` lists broken references).
 - Wishlist: device-local product IDs (`src/features/products/wishlist.ts`); Vendure has no wishlist API.
 - Enquiries: `src/features/enquiry` (endpoint via `NEXT_PUBLIC_ENQUIRY_ENDPOINT`, else WhatsApp/email hand-off).
 - No fake statistics, testimonials, certifications or ratings — the stats/testimonials/insights sections render only real entries.
+- Industrial redesign (2026-09-29): **light only** — no dark mode/dark sections, logo blue/green/orange as the secondary palette (tints for bands, `logo-blue` for secondary actions), no eyebrow/kicker labels above headings; one site-wide quote modal (`features/enquiry/quote-dialog.tsx`), marketing cards resolve to real catalog data by name (`site/home/catalog-links.ts`) — see `docs/ui-system.md`. Product photos are always `object-contain` on `bg-stage`, never cropped.
 
 ## Coding rules
 
@@ -60,4 +61,6 @@ npm run lint
 npm run test
 npm run build
 ```
+`npm run build` clears the Vendure fetch cache first (the `prebuild` hook can't run: `.npmrc` has `ignore-scripts=true`). Verify static output in `out/` (e.g. product cards and ₹ prices present in `out/en/shop/index.html`).
+
 For commerce-adjacent UI changes, additionally walk the affected flow (add-to-cart, checkout step, filter, search) manually per the regression checklist in the master prompt.

@@ -28,6 +28,17 @@
     "itemCount": "{count, plural, one {# आइटम} other {# आइटम}}",
     "loadError": "आपका कार्ट लोड नहीं हो सका।",
     "retry": "फिर से प्रयास करें",
-    "viewCart": "कार्ट देखें"
+    "viewCart": "कार्ट देखें",
+    "home": "होम",
+    "lineTotal": "कुल",
+    "quantity": "मात्रा",
+    "saveToWishlist": "विशलिस्ट में सहेजें",
+    "savedInWishlist": "सहेजा गया",
+    "savedToWishlist": "आपकी विशलिस्ट में सहेजा गया",
+    "removedFromWishlist": "आपकी विशलिस्ट से हटाया गया",
+    "exploreMachines": "मशीनें देखें",
+    "estimatedTotal": "अनुमानित कुल",
+    "secureCheckoutNote": "सुरक्षित चेकआउट। भुगतान से पहले शिपिंग और अंतिम कुल की पुष्टि की जाती है।",
+    "itemsInCart": "आपके कार्ट में आइटम"
   }
 }

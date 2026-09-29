@@ -126,6 +126,17 @@
     "recentOrders": "Letzte Bestellungen",
     "viewAllOrders": "Alle ansehen",
     "ordersLoadError": "Ihre Bestellungen konnten nicht geladen werden. Bitte später erneut versuchen.",
-    "startShopping": "Jetzt einkaufen"
+    "startShopping": "Jetzt einkaufen",
+    "accountNavigation": "Kontonavigation",
+    "wishlist": "Wunschliste",
+    "ordersCount": "{count, plural, =0 {Noch keine Bestellungen} one {# Bestellung} other {# Bestellungen}}",
+    "wishlistCount": "{count, plural, =0 {Noch nichts gemerkt} one {# gemerktes Produkt} other {# gemerkte Produkte}}",
+    "wishlistShortcut": "Auf diesem Gerät gemerkte Maschinen",
+    "accountDetails": "Kontodaten",
+    "dashboardIntro": "Bestellungen verfolgen, Adressen verwalten und Daten aktualisieren.",
+    "andMore": "+ {count} weitere",
+    "viewOrder": "Bestellung ansehen",
+    "savedAddressCount": "{count, plural, =0 {Keine gespeicherten Adressen} one {# gespeicherte Adresse} other {# gespeicherte Adressen}}",
+    "addressActions": "Adressaktionen"
   }
 }

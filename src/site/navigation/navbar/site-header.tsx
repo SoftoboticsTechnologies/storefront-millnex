@@ -1,23 +1,18 @@
 'use client';
 
-import {useEffect, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import Image from 'next/image';
 import {usePathname} from 'next/navigation';
-import {ChevronDown, Heart, LayoutGrid, LogIn, Menu, Package, Search, User, UserPlus} from 'lucide-react';
+import {ArrowRight, ChevronDown, Heart, LogIn, Menu, Package, Phone, Search, ShieldCheck, ShoppingCart, User, UserPlus} from 'lucide-react';
 import {Sheet, SheetClose, SheetContent, SheetTitle, SheetTrigger} from '@/components/ui/sheet';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from '@/components/ui/accordion';
 import {cn} from '@/lib/utils';
 import {Link} from '@/platform/i18n/navigation';
 import {useAuth} from '@/features/authentication/auth-context';
 import {CartDrawer} from '@/features/cart/cart-drawer';
 import {useWishlist} from '@/features/products/wishlist';
 import {AccountMenu} from '@/site/navigation/navbar/account-menu';
+import {MegaMenu} from '@/site/navigation/navbar/mega-menu';
 import {SearchOverlay} from '@/site/navigation/navbar/search-overlay';
 
 export interface SiteNavItem {
@@ -27,40 +22,61 @@ export interface SiteNavItem {
     href: string;
 }
 
-export interface SiteNavCategory {
+export interface MegaMenuProduct {
     name: string;
     slug: string;
+    imageUrl: string | null;
+    inStock: boolean;
+}
+
+export interface MegaMenuData {
+    totalProducts: number;
+    categories: Array<{name: string; slug: string; productCount: number; products: MegaMenuProduct[]}>;
+    /** The catalog's main Vendure facet (e.g. "Type"), linked as shop filters. */
+    typeFacet: {id: string; name: string; values: Array<{id: string; name: string; count: number}>} | null;
+}
+
+export interface SiteHeaderLabels {
+    categories: string;
+    allProducts: string;
+    searchProducts: string;
+    openMenu: string;
+    menu: string;
+    primaryNavigation: string;
+    myAccount: string;
+    myOrders: string;
+    signIn: string;
+    createAccount: string;
+    wishlist: string;
+    cart: string;
+    utility: string[];
+    megaCategories: string;
+    megaByType: string;
+    megaViewCategory: string;
+    megaHelpTitle: string;
+    megaHelpBody: string;
+    browseAllMachines: string;
+    compare: string;
+    company: string;
+    contact: string;
 }
 
 interface SiteHeaderProps {
     items: SiteNavItem[];
-    categories: SiteNavCategory[];
+    mega: MegaMenuData;
     logo: {src: string; width: number; height: number; alt: string};
-    labels: {
-        categories: string;
-        allProducts: string;
-        searchProducts: string;
-        openMenu: string;
-        menu: string;
-        primaryNavigation: string;
-        account: string;
-        myAccount: string;
-        myOrders: string;
-        signIn: string;
-        createAccount: string;
-        wishlist: string;
-    };
+    phone: {href: string; label: string} | null;
+    labels: SiteHeaderLabels;
 }
 
 /**
- * Routes whose first section is a dark (ink) hero, so the header can start
- * transparent with light text and turn solid once the page scrolls.
- * Everything else (shop, product, cart, checkout, account…) gets the solid
- * header from the first paint.
+ * Routes whose first section is a full-bleed tinted hero (which includes the
+ * header space): the header starts transparent there (same dark text) and
+ * turns solid once the page scrolls.
+ * Every other route gets the solid header from the first paint.
  */
-// Empty since the light redesign: no route opens on a dark hero any more.
-// Add a route segment here if one does again.
-const TRANSPARENT_ROUTES = new Set<string>([]);
+// Not the homepage: its hero is a banner carousel that starts below the header.
+const TRANSPARENT_ROUTES = new Set<string>(['about', 'manufacturing', 'shop', 'collection', 'search']);
 
 function routeSegment(pathname: string): string {
     // "/en/about/" -> "about"; "/en/product/x/" -> "product/x"
@@ -70,225 +86,311 @@ function routeSegment(pathname: string): string {
 function activeKeyFor(segment: string): string | null {
     if (segment === '') return 'home';
     const first = segment.split('/')[0];
-    if (['shop', 'search', 'product'].includes(first)) return 'shop';
+    if (['shop', 'search', 'product', 'compare'].includes(first)) return 'shop';
     if (first === 'collection') return 'categories';
-    return ['about', 'contact'].includes(first) ? first : null;
+    return ['about', 'manufacturing', 'faq', 'contact'].includes(first) ? first : null;
 }
 
-export function SiteHeader({items, categories, logo, labels}: SiteHeaderProps) {
+export function SiteHeader({items, mega, logo, phone, labels}: SiteHeaderProps) {
     const pathname = usePathname();
     const segment = routeSegment(pathname);
-    const transparentRoute = TRANSPARENT_ROUTES.has(segment);
+    // Matched on the first path segment, so every /collection/<slug> counts.
+    const transparentRoute = TRANSPARENT_ROUTES.has(segment.split('/')[0]);
     const activeKey = activeKeyFor(segment);
     const {customer} = useAuth();
 
     const [scrolled, setScrolled] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
     const [searchOpen, setSearchOpen] = useState(false);
+    const [megaOpen, setMegaOpen] = useState(false);
+    const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     useEffect(() => {
-        const onScroll = () => setScrolled(window.scrollY > 16);
+        const onScroll = () => setScrolled(window.scrollY > 24);
         onScroll();
         window.addEventListener('scroll', onScroll, {passive: true});
         return () => window.removeEventListener('scroll', onScroll);
     }, []);
 
-    const solid = !transparentRoute || scrolled || menuOpen;
+    // Close the mega menu on navigation and on Escape.
+    useEffect(() => setMegaOpen(false), [pathname]);
+    useEffect(() => {
+        if (!megaOpen) return;
+        const onKey = (event: KeyboardEvent) => event.key === 'Escape' && setMegaOpen(false);
+        window.addEventListener('keydown', onKey);
+        return () => window.removeEventListener('keydown', onKey);
+    }, [megaOpen]);
+
+    const openMega = () => {
+        if (closeTimer.current) clearTimeout(closeTimer.current);
+        setMegaOpen(true);
+    };
+    const scheduleCloseMega = () => {
+        if (closeTimer.current) clearTimeout(closeTimer.current);
+        closeTimer.current = setTimeout(() => setMegaOpen(false), 160);
+    };
+
+    const solid = !transparentRoute || scrolled || menuOpen || megaOpen;
     const wishlistCount = useWishlist().ids.length;
+
     const iconButton = cn(
-        'inline-flex size-10 items-center justify-center rounded-xl transition-colors outline-none focus-visible:ring-3 focus-visible:ring-brand/40',
-        solid ? 'text-foreground hover:bg-muted' : 'text-white hover:bg-white/10',
+        'relative inline-flex size-10 items-center justify-center rounded-lg transition-colors outline-none focus-visible:ring-3 focus-visible:ring-brand/40',
+        'text-foreground hover:bg-muted',
     );
     const navLink = (active: boolean) => cn(
-        'group relative inline-flex h-10 items-center gap-1 rounded-lg px-3 text-sm font-semibold transition-colors outline-none focus-visible:ring-3 focus-visible:ring-brand/40',
-        solid
-            ? active ? 'text-foreground' : 'text-foreground/65 hover:text-foreground'
-            : active ? 'text-white' : 'text-white/75 hover:text-white',
+        'group relative inline-flex h-16 items-center gap-1 px-3 text-[14px] font-semibold transition-colors outline-none focus-visible:text-brand 2xl:px-3.5',
+        active ? 'text-foreground' : 'text-foreground/65 hover:text-foreground',
     );
     const underline = (active: boolean) => cn(
-        'absolute inset-x-3 bottom-1 h-0.5 origin-left rounded-full bg-brand transition-transform duration-300',
-        active ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-50',
+        'absolute inset-x-3 bottom-0 h-[2px] origin-left bg-brand transition-transform duration-300 ease-out 2xl:inset-x-3.5',
+        active ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100',
     );
 
     return (
         <header
             className={cn(
-                'fixed inset-x-0 top-0 z-50 border-b transition-[background-color,border-color,box-shadow] duration-300',
-                solid
-                    ? 'border-border/70 bg-background/90 shadow-[0_10px_30px_-24px_rgb(0_0_0/0.35)] backdrop-blur-xl'
-                    : 'border-transparent bg-transparent',
+                'fixed inset-x-0 top-0 z-50 transition-transform duration-300 ease-out',
+                // The 32px utility bar (lg+) slides away once the page scrolls.
+                scrolled && !megaOpen && 'lg:-translate-y-8',
             )}
+            onMouseLeave={scheduleCloseMega}
         >
-            <div className="site-container flex h-16 items-center gap-3 lg:gap-6">
-                <Link href="/" className="flex shrink-0 items-center rounded-md outline-none focus-visible:ring-3 focus-visible:ring-brand/40">
-                    <Image src={logo.src} alt={logo.alt} width={logo.width} height={logo.height} priority className="h-[3.25rem] w-auto sm:h-14" />
-                </Link>
-
-                <nav aria-label={labels.primaryNavigation} className="hidden lg:block">
-                    <ul className="flex items-center gap-0.5">
-                        {items.map((item) => {
-                            const active = item.key === activeKey;
-                            if (item.key === 'categories') {
-                                return (
-                                    <li key={item.key}>
-                                        <DropdownMenu>
-                                            <DropdownMenuTrigger openOnHover delay={80} closeDelay={150} render={<button type="button" className={navLink(active)} />}>
-                                                {item.label}
-                                                <ChevronDown className="size-3.5 opacity-70" />
-                                                <span aria-hidden="true" className={underline(active)} />
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent sideOffset={10} className="w-64 p-1.5">
-                                                {categories.map((category) => (
-                                                    <DropdownMenuItem key={category.slug} className="px-2.5 py-2 text-sm" render={<Link href={`/collection/${category.slug}`} />}>
-                                                        {category.name}
-                                                    </DropdownMenuItem>
-                                                ))}
-                                                {categories.length > 0 && <DropdownMenuSeparator />}
-                                                <DropdownMenuItem className="gap-2 px-2.5 py-2 text-sm font-semibold" render={<Link href="/shop" />}>
-                                                    <LayoutGrid className="size-4" />
-                                                    {labels.allProducts}
-                                                </DropdownMenuItem>
-                                            </DropdownMenuContent>
-                                        </DropdownMenu>
-                                    </li>
-                                );
-                            }
-                            return (
-                                <li key={item.key}>
-                                    <Link href={item.href} aria-current={active ? 'page' : undefined} className={navLink(active)}>
-                                        {item.label}
-                                        <span aria-hidden="true" className={underline(active)} />
-                                    </Link>
-                                </li>
-                            );
-                        })}
-                    </ul>
-                </nav>
-
-                <div className="ml-auto flex items-center gap-1 sm:gap-1.5">
-                    {/* Desktop: search field-style trigger; mobile: icon */}
-                    <button
-                        type="button"
-                        onClick={() => setSearchOpen(true)}
-                        className={cn(
-                            'hidden h-10 w-56 items-center gap-2 rounded-xl border px-3 text-sm transition-colors outline-none focus-visible:ring-3 focus-visible:ring-brand/40 xl:flex 2xl:w-72',
-                            solid
-                                ? 'border-border bg-card text-muted-foreground hover:border-foreground/25'
-                                : 'border-white/20 bg-white/5 text-white/75 hover:border-white/40',
-                        )}
-                    >
-                        <Search className="size-4 shrink-0" />
-                        <span className="truncate">{labels.searchProducts}</span>
-                    </button>
-                    <button type="button" onClick={() => setSearchOpen(true)} aria-label={labels.searchProducts} className={cn(iconButton, 'xl:hidden')}>
-                        <Search className="size-5" />
-                    </button>
-
-                    <AccountMenu triggerClassName={solid ? 'text-foreground hover:bg-muted' : 'text-white hover:bg-white/10'} />
-                    <Link href="/wishlist" aria-label={labels.wishlist} className={cn(iconButton, 'relative')}>
-                        <Heart className="size-5" />
-                        {wishlistCount > 0 && (
-                            <span className="absolute right-0.5 top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-brand px-1 text-[10px] font-bold leading-none text-brand-foreground ring-2 ring-background">
-                                {wishlistCount > 99 ? '99+' : wishlistCount}
+            <div className="hidden h-8 border-b border-logo-blue/10 bg-tint-blue text-logo-blue-deep lg:block">
+                <div className="site-container flex h-full items-center justify-between gap-6 text-xs">
+                    <p className="flex items-center gap-2.5">
+                        <ShieldCheck aria-hidden="true" className="size-3.5 text-logo-green-deep" />
+                        {labels.utility.map((part, index) => (
+                            <span key={part} className="flex items-center gap-2.5">
+                                {index > 0 && <span aria-hidden="true" className="size-1 rounded-full bg-current opacity-40" />}
+                                {part}
                             </span>
+                        ))}
+                    </p>
+                    <div className="flex items-center gap-5">
+                        {phone && (
+                            <a href={phone.href} className="flex items-center gap-1.5 font-medium transition-colors hover:text-brand">
+                                <Phone aria-hidden="true" className="size-3.5" />
+                                {phone.label}
+                            </a>
                         )}
+                        <Link href="/compare" className="font-medium transition-colors hover:text-brand">{labels.compare}</Link>
+                    </div>
+                </div>
+            </div>
+
+            <div
+                className={cn(
+                    'border-b transition-[background-color,border-color,box-shadow] duration-300',
+                    solid
+                        ? 'border-border bg-background/95 shadow-[0_12px_32px_-28px_rgb(10_15_25/0.45)] backdrop-blur-xl'
+                        : 'border-transparent bg-transparent',
+                )}
+            >
+                <div className="site-container flex h-16 items-center gap-2 xl:gap-5">
+                    <Link href="/" className="flex shrink-0 items-center rounded-md outline-none focus-visible:ring-3 focus-visible:ring-brand/40">
+                        <Image
+                            src={logo.src}
+                            alt={logo.alt}
+                            width={logo.width}
+                            height={logo.height}
+                            priority
+                            className="h-12 w-auto sm:h-[3.25rem]"
+                        />
                     </Link>
-                    <CartDrawer triggerClassName={solid ? 'text-foreground hover:bg-muted' : 'text-white hover:bg-white/10'} />
 
-                    <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
-                        <SheetTrigger render={<button type="button" className={cn(iconButton, 'lg:hidden')} />}>
-                            <Menu className="size-5" />
-                            <span className="sr-only">{labels.openMenu}</span>
-                        </SheetTrigger>
-                        <SheetContent side="right" className="w-full gap-0 overflow-y-auto p-0 sm:max-w-sm">
-                            <div className="flex h-16 items-center border-b border-border px-5">
-                                <SheetTitle className="sr-only">{labels.menu}</SheetTitle>
-                                <Image src={logo.src} alt={logo.alt} width={logo.width} height={logo.height} className="h-12 w-auto" />
-                            </div>
-
-                            <div className="p-5">
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        setMenuOpen(false);
-                                        setSearchOpen(true);
-                                    }}
-                                    className="flex h-11 w-full items-center gap-2 rounded-xl border border-border bg-card px-3 text-sm text-muted-foreground"
-                                >
-                                    <Search className="size-4" />
-                                    {labels.searchProducts}
-                                </button>
-                            </div>
-
-                            <nav aria-label={labels.primaryNavigation} className="px-5">
-                                <ul className="divide-y divide-border border-y border-border">
-                                    {items.filter((item) => item.key !== 'categories').map((item) => (
-                                        <li key={item.key}>
-                                            <SheetClose
-                                                nativeButton={false}
-                                                render={
-                                                    <Link
-                                                        href={item.href}
-                                                        aria-current={item.key === activeKey ? 'page' : undefined}
-                                                        className={cn('flex min-h-12 items-center text-base font-bold', item.key === activeKey && 'text-brand')}
-                                                    />
-                                                }
+                    <nav aria-label={labels.primaryNavigation} className="ml-2 hidden xl:block">
+                        <ul className="flex items-center">
+                            {items.map((item) => {
+                                const active = item.key === activeKey;
+                                if (item.key === 'categories') {
+                                    return (
+                                        <li key={item.key} onMouseEnter={openMega}>
+                                            <button
+                                                type="button"
+                                                aria-expanded={megaOpen}
+                                                aria-controls="mega-menu"
+                                                onClick={() => setMegaOpen((open) => !open)}
+                                                className={navLink(active || megaOpen)}
                                             >
                                                 {item.label}
-                                            </SheetClose>
+                                                <ChevronDown aria-hidden="true" className={cn('size-3.5 opacity-70 transition-transform duration-200', megaOpen && 'rotate-180')} />
+                                                <span aria-hidden="true" className={underline(active || megaOpen)} />
+                                            </button>
                                         </li>
-                                    ))}
-                                </ul>
-                            </nav>
+                                    );
+                                }
+                                return (
+                                    <li key={item.key} onMouseEnter={scheduleCloseMega}>
+                                        <Link href={item.href} aria-current={active ? 'page' : undefined} className={navLink(active)}>
+                                            {item.label}
+                                            <span aria-hidden="true" className={underline(active)} />
+                                        </Link>
+                                    </li>
+                                );
+                            })}
+                        </ul>
+                    </nav>
 
-                            {categories.length > 0 && (
-                                <div className="px-5 pt-6">
-                                    <p className="mb-2 text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground">{labels.categories}</p>
-                                    <ul className="space-y-1">
-                                        {categories.map((category) => (
-                                            <li key={category.slug}>
+                    <div className="ml-auto flex items-center gap-0.5 sm:gap-1">
+                        {/* Field-style trigger from lg (narrower at xl, where the full nav
+                            shares the row); icon-only below. Both open the search overlay. */}
+                        <button
+                            type="button"
+                            onClick={() => setSearchOpen(true)}
+                            className="mr-2 hidden h-11 w-72 items-center gap-2.5 rounded-full border border-border bg-card px-4 text-[15px] text-muted-foreground shadow-[0_1px_2px_rgb(10_15_25/0.04)] transition-[border-color,box-shadow] outline-none hover:border-foreground/25 hover:shadow-[0_4px_14px_-8px_rgb(10_15_25/0.25)] focus-visible:ring-3 focus-visible:ring-brand/40 lg:flex xl:w-56 2xl:w-72"
+                        >
+                            <Search aria-hidden="true" className="size-[18px] shrink-0 text-foreground/80" />
+                            <span className="truncate">{labels.searchProducts}</span>
+                        </button>
+                        {/* Phones get the wishlist here instead; search stays in the bottom tab bar and the menu drawer. */}
+                        <button type="button" onClick={() => setSearchOpen(true)} aria-label={labels.searchProducts} className={cn(iconButton, 'hidden sm:inline-flex lg:hidden')}>
+                            <Search className="size-5" />
+                        </button>
+                        <AccountMenu triggerClassName={'hidden sm:inline-flex rounded-lg text-foreground hover:bg-muted'} />
+                        <Link href="/wishlist" aria-label={labels.wishlist} className={iconButton}>
+                            <Heart className="size-5" />
+                            {wishlistCount > 0 && (
+                                <span className="absolute right-0.5 top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-brand px-1 text-[10px] font-bold leading-none text-brand-foreground ring-2 ring-background">
+                                    {wishlistCount > 99 ? '99+' : wishlistCount}
+                                </span>
+                            )}
+                        </Link>
+                        <CartDrawer triggerClassName={'rounded-lg text-foreground hover:bg-muted'} />
+
+
+                        <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
+                            <SheetTrigger render={<button type="button" className={cn(iconButton, 'ml-1 xl:hidden')} />}>
+                                <Menu className="size-5" />
+                                <span className="sr-only">{labels.openMenu}</span>
+                            </SheetTrigger>
+                            <SheetContent side="right" className="w-full gap-0 overflow-y-auto p-0 sm:max-w-sm">
+                                <div className="flex h-16 items-center border-b border-border px-5">
+                                    <SheetTitle className="sr-only">{labels.menu}</SheetTitle>
+                                    <Image src={logo.src} alt={logo.alt} width={logo.width} height={logo.height} className="h-12 w-auto" />
+                                </div>
+
+                                <div className="p-5 pb-3">
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setMenuOpen(false);
+                                            setSearchOpen(true);
+                                        }}
+                                        className="flex h-11 w-full items-center gap-2 rounded-lg border border-border bg-card px-3 text-sm text-muted-foreground"
+                                    >
+                                        <Search className="size-4" />
+                                        {labels.searchProducts}
+                                    </button>
+                                </div>
+
+                                <nav aria-label={labels.primaryNavigation} className="px-5">
+                                    <ul className="divide-y divide-border border-y border-border">
+                                        {items.map((item) => item.key === 'categories' ? (
+                                            <li key={item.key}>
+                                                <Accordion>
+                                                    <AccordionItem value="categories" className="border-0">
+                                                        <AccordionTrigger className="min-h-12 items-center py-0 text-base font-bold hover:no-underline">{item.label}</AccordionTrigger>
+                                                        <AccordionContent className="pb-3">
+                                                            <ul className="space-y-3">
+                                                                {mega.categories.map((category) => (
+                                                                    <li key={category.slug}>
+                                                                        <SheetClose
+                                                                            nativeButton={false}
+                                                                            render={<Link href={`/collection/${category.slug}`} className="flex items-center justify-between rounded-lg bg-muted px-3 py-2.5 text-sm font-bold" />}
+                                                                        >
+                                                                            {category.name}
+                                                                        </SheetClose>
+                                                                        <ul className="mt-1 space-y-0.5 pl-3">
+                                                                            {category.products.map((product) => (
+                                                                                <li key={product.slug}>
+                                                                                    <SheetClose
+                                                                                        nativeButton={false}
+                                                                                        render={<Link href={`/product/${product.slug}`} className="flex min-h-9 items-center text-sm text-muted-foreground hover:text-foreground" />}
+                                                                                    >
+                                                                                        <span className="truncate">{product.name}</span>
+                                                                                    </SheetClose>
+                                                                                </li>
+                                                                            ))}
+                                                                        </ul>
+                                                                    </li>
+                                                                ))}
+                                                            </ul>
+                                                        </AccordionContent>
+                                                    </AccordionItem>
+                                                </Accordion>
+                                            </li>
+                                        ) : (
+                                            <li key={item.key}>
                                                 <SheetClose
                                                     nativeButton={false}
-                                                    render={<Link href={`/collection/${category.slug}`} className="flex min-h-10 items-center rounded-lg px-2 text-sm font-semibold hover:bg-muted" />}
+                                                    render={
+                                                        <Link
+                                                            href={item.href}
+                                                            aria-current={item.key === activeKey ? 'page' : undefined}
+                                                            className={cn('flex min-h-12 items-center justify-between text-base font-bold', item.key === activeKey && 'text-brand')}
+                                                        />
+                                                    }
                                                 >
-                                                    {category.name}
+                                                    {item.label}
+                                                    <ArrowRight aria-hidden="true" className="size-4 text-steel" />
                                                 </SheetClose>
                                             </li>
                                         ))}
                                     </ul>
-                                </div>
-                            )}
+                                </nav>
 
-                            <div className="mt-6 grid gap-2 border-t border-border p-5">
-                                {customer ? (
-                                    <>
-                                        <SheetClose nativeButton={false} render={<Link href="/account" className="flex h-11 items-center gap-2 rounded-xl border border-border px-3 text-sm font-semibold" />}>
-                                            <User className="size-4" />{labels.myAccount}
+                                <div className="grid gap-2 p-5">
+                                    {customer ? (
+                                        <div className="grid grid-cols-2 gap-2">
+                                            <SheetClose nativeButton={false} render={<Link href="/account" className="flex h-11 items-center gap-2 rounded-lg border border-border px-3 text-sm font-semibold" />}>
+                                                <User className="size-4" />{labels.myAccount}
+                                            </SheetClose>
+                                            <SheetClose nativeButton={false} render={<Link href="/account/orders" className="flex h-11 items-center gap-2 rounded-lg border border-border px-3 text-sm font-semibold" />}>
+                                                <Package className="size-4" />{labels.myOrders}
+                                            </SheetClose>
+                                        </div>
+                                    ) : (
+                                        <div className="grid grid-cols-2 gap-2">
+                                            <SheetClose nativeButton={false} render={<Link href="/sign-in" className="flex h-11 items-center justify-center gap-2 rounded-lg bg-logo-blue px-3 text-sm font-bold text-white" />}>
+                                                <LogIn className="size-4" />{labels.signIn}
+                                            </SheetClose>
+                                            <SheetClose nativeButton={false} render={<Link href="/register" className="flex h-11 items-center justify-center gap-2 rounded-lg border border-border px-3 text-sm font-semibold" />}>
+                                                <UserPlus className="size-4" />{labels.createAccount}
+                                            </SheetClose>
+                                        </div>
+                                    )}
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <SheetClose nativeButton={false} render={<Link href="/wishlist" className="flex h-11 items-center gap-2 rounded-lg border border-border px-3 text-sm font-semibold" />}>
+                                            <Heart className="size-4" />{labels.wishlist}
+                                            {wishlistCount > 0 && <span className="spec-label ml-auto text-brand">{wishlistCount}</span>}
                                         </SheetClose>
-                                        <SheetClose nativeButton={false} render={<Link href="/account/orders" className="flex h-11 items-center gap-2 rounded-xl border border-border px-3 text-sm font-semibold" />}>
-                                            <Package className="size-4" />{labels.myOrders}
+                                        <SheetClose nativeButton={false} render={<Link href="/cart" className="flex h-11 items-center gap-2 rounded-lg border border-border px-3 text-sm font-semibold" />}>
+                                            <ShoppingCart className="size-4" />{labels.cart}
                                         </SheetClose>
-                                    </>
-                                ) : (
-                                    <>
-                                        <SheetClose nativeButton={false} render={<Link href="/sign-in" className="flex h-11 items-center justify-center gap-2 rounded-xl bg-brand px-3 text-sm font-bold text-brand-foreground" />}>
-                                            <LogIn className="size-4" />{labels.signIn}
-                                        </SheetClose>
-                                        <SheetClose nativeButton={false} render={<Link href="/register" className="flex h-11 items-center justify-center gap-2 rounded-xl border border-border px-3 text-sm font-semibold" />}>
-                                            <UserPlus className="size-4" />{labels.createAccount}
-                                        </SheetClose>
-                                    </>
-                                )}
-                                <SheetClose nativeButton={false} render={<Link href="/wishlist" className="flex h-11 items-center gap-2 rounded-xl border border-border px-3 text-sm font-semibold" />}>
-                                    <Heart className="size-4" />{labels.wishlist}
-                                </SheetClose>
-                            </div>
-                        </SheetContent>
-                    </Sheet>
+                                    </div>
+                                    {phone && (
+                                        <a href={phone.href} className="mt-2 flex items-center justify-center gap-2 text-sm font-semibold text-muted-foreground">
+                                            <Phone aria-hidden="true" className="size-4" />
+                                            {phone.label}
+                                        </a>
+                                    )}
+                                </div>
+                            </SheetContent>
+                        </Sheet>
+                    </div>
                 </div>
             </div>
 
-            <SearchOverlay open={searchOpen} onOpenChange={setSearchOpen} />
+            <MegaMenu
+                id="mega-menu"
+                open={megaOpen}
+                data={mega}
+                labels={labels}
+                onMouseEnter={openMega}
+                onNavigate={() => setMegaOpen(false)}
+            />
+
+            <SearchOverlay open={searchOpen} onOpenChange={setSearchOpen} categories={mega.categories} />
         </header>
     );
 }

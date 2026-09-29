@@ -20,15 +20,15 @@ export function VerifyPendingContent() {
         <Card>
             <CardContent className="pt-6 space-y-4">
                 <div className="flex justify-center">
-                    <CheckCircle className="h-16 w-16 text-green-600" />
+                    <CheckCircle className="h-16 w-16 text-success" />
                 </div>
                 <div className="space-y-2 text-center">
-                    <h1 className="text-2xl font-bold">{t('pending.title')}</h1>
+                    <h1 className="font-display-wide text-2xl font-extrabold tracking-tight">{t('pending.title')}</h1>
                     <p className="text-muted-foreground">
                         {t('pending.message')}
                     </p>
                 </div>
-                <div className="bg-muted p-4 rounded-md">
+                <div className="rounded-lg bg-surface p-4">
                     <p className="text-sm text-muted-foreground">
                         {t('pending.spamNote')}
                     </p>

@@ -6,14 +6,17 @@
       "email": "E-Mail",
       "company": "Firma / Unternehmen",
       "product": "Gewünschtes Produkt",
-      "message": "Anforderung / Nachricht"
+      "message": "Anforderung / Nachricht",
+      "businessType": "Art der Nutzung",
+      "quantity": "Menge / Bedarf"
     },
     "placeholders": {
       "name": "Ihr vollständiger Name",
       "phone": "+91 98765 43210",
       "email": "sie@unternehmen.de",
       "company": "Optional",
-      "message": "Was möchten Sie mahlen, wie viel ungefähr pro Tag, und wohin soll geliefert werden?"
+      "message": "Was möchten Sie mahlen, wie viel ungefähr pro Tag, und wohin soll geliefert werden?",
+      "quantity": "z. B. 1 Maschine, ca. 20 kg pro Tag"
     },
     "productNotSure": "Noch unsicher – bitte beraten Sie mich",
     "validation": {
@@ -47,6 +50,21 @@
     },
     "requestQuote": "Angebot anfordern",
     "quoteTitle": "Angebot anfordern",
-    "quoteDescription": "Sagen Sie uns, was Sie brauchen – unser Team empfiehlt die passende Maschine und sendet Ihnen ein Angebot."
+    "quoteDescription": "Sagen Sie uns, was Sie brauchen – unser Team empfiehlt die passende Maschine und sendet Ihnen ein Angebot.",
+    "businessTypes": {
+      "notSpecified": "Auswählen (optional)",
+      "home": "Privatgebrauch",
+      "smallBusiness": "Kleinbetrieb / Laden",
+      "commercial": "Gewerbliche Produktion",
+      "foodBusiness": "Gastronomie / Großküche",
+      "dealer": "Händler / Wiederverkäufer"
+    },
+    "getQuote": "Angebot anfordern",
+    "submitQuote": "Angebot anfordern",
+    "submitRecommendation": "Empfehlung erhalten",
+    "quoteAssurance": "Unser Team antwortet mit einer Empfehlung und einem Preis. Unverbindlich.",
+    "preferWhatsApp": "Lieber WhatsApp?",
+    "chatOnWhatsApp": "Per WhatsApp chatten",
+    "requestQuoteButton": "Angebot anfordern"
   }
 }

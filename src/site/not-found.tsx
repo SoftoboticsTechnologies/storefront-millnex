@@ -1,68 +1,60 @@
-import { getRouteLocale } from '@/platform/i18n/server';
-import { Button } from '@/components/ui/button';
-import { SearchX, Home, ShoppingBag } from 'lucide-react';
-import { Link } from '@/platform/i18n/navigation';
-import { getTranslations } from 'next-intl/server';
-import {getTopCollections} from '@/features/collections/data';
+import {getTranslations} from 'next-intl/server';
+import {ArrowRight, Home} from 'lucide-react';
+import {getRouteLocale} from '@/platform/i18n/server';
+import {Link} from '@/platform/i18n/navigation';
+import {getShopCategories} from '@/features/collections/data';
+import {siteButton, arrowNudge} from '@/site/ui/button-styles';
 
+/** Light 404 band — below the solid header, with real Vendure categories as ways back in. */
 export default async function NotFound() {
     const locale = await getRouteLocale();
     const t = await getTranslations({locale, namespace: 'NotFound'});
-    let collections: { id: string; name: string; slug: string }[] = [];
+    let categories: Array<{id: string; name: string; slug: string}> = [];
     try {
-        collections = await getTopCollections(locale);
+        categories = await getShopCategories(locale);
     } catch {
-        // Gracefully handle if collections can't be fetched
+        // Collections unavailable — the page still offers home and shop.
     }
 
     return (
-        <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center px-4 py-16">
-            <div className="text-center space-y-8 max-w-lg">
-                <div className="flex justify-center">
-                    <div className="rounded-full bg-muted p-6">
-                        <SearchX className="h-16 w-16 text-muted-foreground" />
+        <section className="relative isolate flex min-h-[calc(100dvh-4rem)] items-center overflow-hidden bg-background pt-28 pb-20 lg:pt-36">
+            <div className="site-container">
+                <div className="mx-auto max-w-2xl text-center">
+                    <p aria-hidden="true" className="font-display-wide text-[6.5rem] leading-none font-bold text-foreground/10 sm:text-[9rem]">404</p>
+                    <h1 className="mt-4 font-display-wide text-[2rem] leading-[1.05] font-bold text-balance sm:text-5xl">{t('title')}</h1>
+                    <p className="mx-auto mt-5 max-w-md text-base leading-relaxed text-muted-foreground">{t('message')}</p>
+
+                    <div className="mt-9 flex flex-col justify-center gap-3 sm:flex-row">
+                        <Link href="/shop" prefetch={false} className={siteButton({variant: 'brand', size: 'lg'})}>
+                            {t('browseProducts')}
+                            <ArrowRight aria-hidden="true" className={arrowNudge} />
+                        </Link>
+                        <Link href="/" prefetch={false} className={siteButton({variant: 'outline', size: 'lg'})}>
+                            <Home aria-hidden="true" />
+                            {t('goHome')}
+                        </Link>
                     </div>
-                </div>
 
-                <div className="space-y-3">
-                    <h1 className="text-7xl font-bold text-primary">404</h1>
-                    <h2 className="text-2xl font-semibold">{t('title')}</h2>
-                    <p className="text-muted-foreground max-w-sm mx-auto">
-                        {t('message')}
-                    </p>
-                </div>
-
-                <div className="flex gap-3 justify-center">
-                    <Button nativeButton={false} render={<Link href="/" />} size="lg">
-                        <Home className="mr-2 h-4 w-4" />
-                        {t('goHome')}
-                    </Button>
-                    <Button nativeButton={false} render={<Link href="/shop" />} variant="outline" size="lg">
-                        <ShoppingBag className="mr-2 h-4 w-4" />
-                        {t('browseProducts')}
-                    </Button>
-                </div>
-
-                {collections.length > 0 && (
-                    <div className="pt-4 border-t">
-                        <p className="text-sm font-medium text-muted-foreground mb-3">{t('popularCollections')}</p>
-                        <div className="flex flex-wrap gap-2 justify-center">
-                            {collections.slice(0, 6).map((collection) => (
-                                <Button
-                                    key={collection.id}
-                                    render={<Link href={`/collection/${collection.slug}`} prefetch={false} />}
-                                    nativeButton={false}
-                                    variant="outline"
-                                    size="sm"
-                                    className="rounded-full"
-                                >
-                                    {collection.name}
-                                </Button>
-                            ))}
+                    {categories.length > 0 && (
+                        <div className="mt-12 border-t border-border pt-8">
+                            <p className="spec-label text-steel">{t('popularCollections')}</p>
+                            <ul className="mt-4 flex flex-wrap justify-center gap-2">
+                                {categories.slice(0, 6).map((category) => (
+                                    <li key={category.id}>
+                                        <Link
+                                            href={`/collection/${category.slug}`}
+                                            prefetch={false}
+                                            className="inline-flex rounded-lg border border-border bg-card px-3.5 py-2 text-sm font-semibold transition-colors hover:border-foreground/35"
+                                        >
+                                            {category.name.trim()}
+                                        </Link>
+                                    </li>
+                                ))}
+                            </ul>
                         </div>
-                    </div>
-                )}
+                    )}
+                </div>
             </div>
-        </div>
+        </section>
     );
 }

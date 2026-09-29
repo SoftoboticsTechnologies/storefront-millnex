@@ -42,6 +42,27 @@
     "seeAllResults": "See all results for \"{term}\"",
     "wishlist": "Wishlist",
     "faq": "FAQ",
-    "backToTop": "Back to top"
+    "backToTop": "Back to top",
+    "manufacturing": "Manufacturing",
+    "compare": "Compare machines",
+    "utilityDomestic": "Domestic & Commercial Milling Solutions",
+    "utilitySupport": "Expert Support",
+    "utilitySecure": "Secure Shopping",
+    "megaCategories": "Shop by category",
+    "megaByType": "Shop by {facet}",
+    "megaViewCategory": "View all",
+    "megaMachineCount": "{count, plural, one {# machine} other {# machines}}",
+    "megaHelpTitle": "Not sure which machine?",
+    "megaHelpBody": "Tell us what you grind and how much. Our team will recommend a model and send a quote.",
+    "browseAllMachines": "Browse all machines",
+    "recentSearches": "Recent searches",
+    "clearRecent": "Clear",
+    "popularCategories": "Popular categories",
+    "searchHint": "Search by machine name, category, type or SKU",
+    "matchingProducts": "Matching machines",
+    "closeSearch": "Close search",
+    "chatWithMillnex": "Chat with Millnex",
+    "company": "Company",
+    "callUs": "Call {phone}"
   }
 }
