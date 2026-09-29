@@ -1,4 +1,4 @@
-import {MILL_GALLERY, type CatalogImage} from '@/site/content/media';
+import {DISPLAY_MACHINE_PHOTO, MILL_GALLERY, type CatalogImage} from '@/site/content/media';
 import {ABOUT_COPY, CTA_COPY, MANUFACTURING_COPY, WHY_COPY} from '@/site/content/home';
 
 /**
@@ -54,6 +54,7 @@ export const MACHINE_GALLERY: CatalogImage[] = [
     {src: '/products%20category/products%20image/millnex-gravy-machine-01.webp', alt: 'Millnex gravy machine', width: 500, height: 500},
     {src: '/products%20category/products%20image/millnex-vegetable-cutter-01.webp', alt: 'Millnex vegetable cutter', width: 500, height: 500},
     {src: '/products%20category/products%20image/millnex-fafda-machine-01.webp', alt: 'Millnex fafda machine', width: 500, height: 500},
+    DISPLAY_MACHINE_PHOTO,
 ];
 
 export const MANUFACTURING_PAGE_COPY = {

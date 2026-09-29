@@ -72,11 +72,11 @@ function Gallery() {
         <section className="bg-surface py-20 sm:py-24 lg:py-28">
             <div className="site-container">
                 <SectionHeading title={gallery.title} body={gallery.body} />
-                <ul className="mt-12 grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 lg:mt-16 lg:grid-cols-4">
+                <ul className="mt-12 grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 lg:mt-16">
                     {MACHINE_GALLERY.map((image, index) => (
-                        <li key={image.src} data-reveal style={{'--reveal-delay': `${50 * (index % 4)}ms`} as React.CSSProperties}>
+                        <li key={image.src} data-reveal style={{'--reveal-delay': `${50 * (index % 3)}ms`} as React.CSSProperties}>
                             <figure>
-                                <MachineStage image={image} sizes="(min-width: 1024px) 20vw, (min-width: 768px) 30vw, 45vw" className="border border-border" />
+                                <MachineStage image={image} sizes="(min-width: 768px) 30vw, 45vw" className="border border-border" />
                                 <figcaption className="mt-3 text-sm leading-snug text-muted-foreground">{image.alt}</figcaption>
                             </figure>
                         </li>

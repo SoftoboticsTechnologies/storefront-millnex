@@ -3,6 +3,10 @@
 Concise history. Not a full commit log — one line per meaningful change.
 
 ## 2026-09-29
+- Homepage: Featured Machines (`ProductRail`) moved directly below "Shop by category" (shown only when the catalog has products).
+- Trust strip redesigned to the client reference: full-width warm gradient band (no inset card), centered items with logo-tinted icon circles (ISO blue, energy/support green, others orange), two-tone titles (lead in brand orange), short brand rule, hairline dividers, wheat art at the screen edges (2xl). Same copy and ISO mark.
+- Homepage: trust strip (ISO mark + 5 qualities, same copy) made compact — icon beside text, smaller type/padding — and moved directly below the hero, above "Shop by category".
+- ISO mark: the green check tile in the trust strip and the check icon in the `IsoBadge` pill (footer, About hero) now show the "Certified ISO Company" mark cropped from Millnex's own hero banner (`public/site/iso-certified.webp`, `ISO_MARK` in `site/content/media.ts`).
 - About "What we build" (`WhatWeBuild`): categories with a Millnex banner (`findCategoryBanner`) show it whole instead of the product-image collage; others keep the collage. Footer: Get a Quote button under the address; less bottom padding in the footer body.
 - Footer: "Promoted and Marketed By …" moved from the credit bar to under the Shop / Company / Customer columns (md+) and under the link disclosures on phones.
 - PDP: live stock is always re-fetched on load, so a product restocked in Vendure admin shows quantity + Add to cart without a rebuild (previously the build-time OUT_OF_STOCK stuck when the currency matched).

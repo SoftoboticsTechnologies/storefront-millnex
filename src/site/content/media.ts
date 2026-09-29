@@ -178,6 +178,21 @@ export const HERO_SLIDES: HeroSlide[] = [
     },
 ];
 
+/**
+ * Display-only Millnex machine photo supplied by the client (public/site/ss
+ * body 2 in 1.png → ss-body-2-in-1.webp, re-export the WebP if the PNG
+ * changes). Shown for presentation on the homepage features section and the
+ * Manufacturing gallery; it is not a Vendure product, so no price, stock or
+ * model claim is attached to it (the model name and HP options are part of
+ * the artwork).
+ */
+export const DISPLAY_MACHINE_PHOTO: CatalogImage = {
+    src: '/site/ss-body-2-in-1.webp',
+    alt: 'Millnex stainless-steel 2-in-1 grinding machine — S.S Body 2 in 1 Deluxe Model',
+    width: 900,
+    height: 1238,
+};
+
 export const BRAND_LOGO = {
     src: '/site/millnex-logo.webp',
     width: 273,
@@ -210,3 +225,6 @@ export const CATEGORY_BANNERS: Array<{match: RegExp; image: CatalogImage}> = [
 export function findCategoryBanner(categoryName: string): CatalogImage | null {
     return CATEGORY_BANNERS.find((banner) => banner.match.test(categoryName))?.image ?? null;
 }
+
+/** "Certified ISO Company" mark, cropped from Millnex's own hero banner (public/hero/1.png). */
+export const ISO_MARK: CatalogImage = {src: '/site/iso-certified.webp', alt: 'Certified ISO company', width: 160, height: 164};

@@ -23,6 +23,7 @@ import {COMPARE_COPY, FEATURED_COPY, FINDER_COPY} from "@/site/content/home";
 import {NavigationLink} from "@/site/navigation/navigation-link";
 import {MachineComparison} from "@/site/ui/machine-comparison";
 import {MachineFeatures} from "@/site/ui/machine-features";
+import {DISPLAY_MACHINE_PHOTO} from "@/site/content/media";
 import {SectionHeading} from "@/site/ui/section-heading";
 import {siteButton} from "@/site/ui/button-styles";
 import {JsonLd} from "@/site/seo/json-ld";
@@ -114,24 +115,24 @@ export default async function Home() {
         <>
             <JsonLd data={organizationSchema(locale)} />
             <Hero categories={categories} facets={catalog.facets} />
-            <ShopByCategory categories={shopByCategory} />
             <TrustStrip />
-            <MachineFeatures className="bg-background" />
+            <ShopByCategory categories={shopByCategory} />
+            {hasProducts && (
+                <ProductRail
+                    id="featured"
+                    title={FEATURED_COPY.title}
+                    description={FEATURED_COPY.body}
+                    products={featured.products}
+                    collectionNames={collectionNames}
+                    viewAll={featuredCollection ? {href: `/collection/${featuredCollection.slug}`, label: t('viewAll')} : {href: '/shop', label: t('viewAllMachines')}}
+                    className="border-y border-border bg-surface py-20 sm:py-24 lg:py-28"
+                    preloadFirstProduct
+                />
+            )}
+            <MachineFeatures className="bg-background" image={DISPLAY_MACHINE_PHOTO} />
 
             {hasProducts ? (
                 <>
-                    <ProductRail
-                        id="featured"
-                       
-                        title={FEATURED_COPY.title}
-                        description={FEATURED_COPY.body}
-                        products={featured.products}
-                        collectionNames={collectionNames}
-                        viewAll={featuredCollection ? {href: `/collection/${featuredCollection.slug}`, label: t('viewAll')} : {href: '/shop', label: t('viewAllMachines')}}
-                        className="border-y border-border bg-surface py-20 sm:py-24 lg:py-28"
-                        preloadFirstProduct
-                    />
-
                     <CategoryShowcase categories={categories} facets={catalog.facets} productsByCategory={productsByCategory} />
 
                     {spotlight && <ProductSpotlight product={spotlight} />}
