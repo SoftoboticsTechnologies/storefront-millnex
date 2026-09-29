@@ -82,6 +82,5 @@ export const MANUFACTURING_PAGE_COPY = {
     gallery: {
         title: 'Machines we build',
         body: 'Millnex’s own product photography — flour mills, pulverizers and food-processing machines.',
-        note: 'Facility photography isn’t published yet, so this gallery shows the machines themselves rather than stock factory images.',
     },
 } as const;

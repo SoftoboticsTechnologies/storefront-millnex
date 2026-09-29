@@ -3,6 +3,7 @@
 Concise history. Not a full commit log — one line per meaningful change.
 
 ## 2026-09-29
+- Manufacturing gallery: removed the visitor-facing "Facility photography isn't published yet…" note (and `gallery.note` copy).
 - Homepage: Featured Machines (`ProductRail`) moved directly below "Shop by category" (shown only when the catalog has products).
 - Trust strip redesigned to the client reference: full-width warm gradient band (no inset card), centered items with logo-tinted icon circles (ISO blue, energy/support green, others orange), two-tone titles (lead in brand orange), short brand rule, hairline dividers, wheat art at the screen edges (2xl). Same copy and ISO mark.
 - Homepage: trust strip (ISO mark + 5 qualities, same copy) made compact — icon beside text, smaller type/padding — and moved directly below the hero, above "Shop by category".

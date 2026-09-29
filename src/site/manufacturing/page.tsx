@@ -1,6 +1,6 @@
 import type {Metadata} from 'next';
 import {getTranslations} from 'next-intl/server';
-import {ArrowRight, Check, Info} from 'lucide-react';
+import {ArrowRight, Check} from 'lucide-react';
 import {getRouteLocale} from '@/platform/i18n/server';
 import {QuoteButton} from '@/features/enquiry/quote-dialog';
 import {NavigationLink} from '@/site/navigation/navigation-link';
@@ -82,10 +82,6 @@ function Gallery() {
                         </li>
                     ))}
                 </ul>
-                <p data-reveal className="mt-10 flex max-w-3xl gap-3 rounded-xl border border-border bg-card p-5 text-sm leading-relaxed text-muted-foreground">
-                    <Info aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-steel" />
-                    {gallery.note}
-                </p>
             </div>
         </section>
     );

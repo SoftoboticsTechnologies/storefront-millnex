@@ -25,7 +25,7 @@ The storefront presents the Millnex machinery site; details in `docs/ui-system.m
 - Products: **Vendure only** — no frontend product catalogue (the old `site/catalog/machines.ts` was removed; `/machines` redirects to `/shop`). Copy: `src/site/content/*`. Replaceable stock imagery + credits: `src/site/content/media.ts`. Local images live in `public/site/` and `public/products category/products image/`; after moving anything in `public/`, run `npm run test` (`tests/assets/public-images.test.mjs` lists broken references).
 - Wishlist: device-local product IDs (`src/features/products/wishlist.ts`); Vendure has no wishlist API.
 - Enquiries: `src/features/enquiry` (endpoint via `NEXT_PUBLIC_ENQUIRY_ENDPOINT`, else WhatsApp/email hand-off).
-- No fake statistics, testimonials, certifications or ratings — the stats/testimonials/insights sections render only real entries.
+- No fake statistics, testimonials, certifications or ratings — the stats/testimonials/insights sections render only real entries. Don't show visitors notes explaining missing content ("X isn't published yet", "stock images", etc.) — just omit it.
 - Industrial redesign (2026-09-29): **light only** — no dark mode/dark sections, logo blue/green/orange as the secondary palette (tints for bands, `logo-blue` for secondary actions), no eyebrow/kicker labels above headings; one site-wide quote modal (`features/enquiry/quote-dialog.tsx`), marketing cards resolve to real catalog data by name (`site/home/catalog-links.ts`) — see `docs/ui-system.md`. Product photos are always `object-contain` on `bg-stage`, never cropped.
 
 ## Coding rules
