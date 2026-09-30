@@ -1,12 +1,12 @@
 import Image from 'next/image';
 import {getTranslations} from 'next-intl/server';
-import {ArrowUpRight, ChevronDown, Mail, MapPin, Phone} from 'lucide-react';
+import {ArrowUpRight, ChevronDown, Globe, Mail, MapPin, Phone} from 'lucide-react';
 import {getRouteLocale} from '@/platform/i18n/server';
 import {getShopCategories} from '@/features/collections/data';
 import {QuoteButton} from '@/features/enquiry/quote-dialog';
 import {CONTACT_CONFIG, getSocialProfiles, isPlaceholder} from '@/config/contact';
 import {NavigationLink} from '@/site/navigation/navigation-link';
-import {BRAND_LOGO} from '@/site/content/media';
+import {BRAND_LOGO, WEBSITE_QR} from '@/site/content/media';
 import {FOOTER_COPY} from '@/site/content/home';
 import {siteButton} from '@/site/ui/button-styles';
 import {externalLinkProps, resolveContactLinks, type ContactLink} from '@/site/ui/contact-links';
@@ -138,42 +138,29 @@ export async function Footer() {
         },
     ];
 
-    const marketedBy = !isPlaceholder(CONTACT_CONFIG.marketedBy) && (
-        <p className="mt-6 text-sm text-muted-foreground md:mt-10 md:border-t md:border-border md:pt-5">
-            {t('marketedBy')} <span className="font-semibold text-foreground">{CONTACT_CONFIG.marketedBy}</span>
-        </p>
+    // Marketing credit, under the link columns (md+) / the link disclosures (phones).
+    const marketedBy = (
+        <div className="mt-6 flex flex-col items-center text-center md:mt-10 md:border-t md:border-border md:pt-5">
+            {!isPlaceholder(CONTACT_CONFIG.marketedBy) && (
+                <p className="text-sm text-muted-foreground">
+                    {t('marketedBy')} <span className="font-semibold text-foreground">{CONTACT_CONFIG.marketedBy}</span>
+                </p>
+            )}
+        </div>
     );
 
     return (
         <footer className="relative isolate mt-auto overflow-hidden border-t border-border bg-tint-sheen text-foreground">
             <div aria-hidden="true" className="absolute -right-40 -top-40 -z-10 size-[36rem] rounded-full bg-logo-blue/10 blur-[160px]" />
 
-            {/* Closing CTA band */}
+            {/* Top band: brand (left) and the closing CTA (right). */}
             <div className="site-container">
-                <div className="flex flex-col gap-8 border-b border-border py-14 lg:flex-row lg:items-end lg:justify-between lg:py-16">
-                    <div className="max-w-2xl">
-                        <p className="font-display-wide text-3xl font-bold leading-[1.05] sm:text-4xl lg:text-5xl">{t('ctaTitle')}</p>
-                        <p className="mt-4 max-w-xl text-base leading-relaxed text-muted-foreground">{t('ctaBody')}</p>
-                    </div>
-                    <div className="flex flex-col gap-3 sm:flex-row">
-                        <QuoteButton className={siteButton({variant: 'brand', size: 'lg'})} />
-                        {contact.whatsapp.configured && (
-                            <a href={contact.whatsapp.href} {...externalLinkProps(contact.whatsapp)} className={siteButton({variant: 'whatsapp', size: 'lg'})}>
-                                <WhatsAppIcon aria-hidden="true" className="text-[#25D366]" />
-                                {t('whatsapp')}
-                            </a>
-                        )}
-                    </div>
-                </div>
-            </div>
-
-            <div className="site-container pb-6 pt-14 lg:pb-8 lg:pt-16">
-                <div className="grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-3 md:gap-y-12 lg:grid-cols-12 lg:gap-8">
-                    <div className="col-span-2 md:col-span-3 lg:col-span-3">
+                <div className="grid gap-10 border-b border-border pb-8 pt-14 lg:grid-cols-12 lg:gap-12 lg:pb-10 lg:pt-16">
+                    <div className="lg:col-span-4">
                         <NavigationLink href="/" className="inline-block rounded-md">
                             <Image src={BRAND_LOGO.src} alt={tNav('logoAlt')} width={BRAND_LOGO.width} height={BRAND_LOGO.height} className="h-16 w-auto lg:h-20" />
                         </NavigationLink>
-                        <IsoBadge className="mt-4" />
+                        <IsoBadge className="mt-4 flex w-fit" />
                         <p className="mt-6 font-display-wide text-lg font-bold leading-snug">{FOOTER_COPY.tagline}</p>
                         <p className="mt-3 max-w-sm text-sm leading-relaxed text-muted-foreground">{FOOTER_COPY.description}</p>
                         {socials.length > 0 && (
@@ -189,32 +176,32 @@ export async function Footer() {
                             </ul>
                         )}
                     </div>
-
-                    {/* Phones: one disclosure per link group (Shop open). */}
-                    <div className="col-span-2 md:hidden">
-                        <div className="border-t border-border">
-                            {linkGroups.map((group, index) => (
-                                <FooterAccordionItem key={group.key} title={group.title} links={group.links} open={index === 0} />
-                            ))}
+                    <div className="flex flex-col justify-center gap-8 lg:col-span-8 lg:border-l lg:border-border lg:pl-12">
+                        <div className="max-w-2xl">
+                            <p className="font-display-wide text-3xl font-bold leading-[1.05] sm:text-4xl lg:text-5xl">{t('ctaTitle')}</p>
+                            <p className="mt-4 max-w-xl text-base leading-relaxed text-muted-foreground">{t('ctaBody')}</p>
                         </div>
-                        {marketedBy}
-                    </div>
-                    {/* md+: titled columns, with the marketing credit under them. */}
-                    <div className="hidden md:col-span-3 md:block lg:col-span-6">
-                        <div className="grid grid-cols-3 gap-x-6 lg:gap-x-8">
-                            {linkGroups.map((group) => (
-                                <FooterColumn key={group.key} title={group.title} links={group.links} />
-                            ))}
+                        <div className="flex flex-col gap-3 sm:flex-row">
+                            <QuoteButton className={siteButton({variant: 'brand', size: 'lg'})} />
+                            {contact.whatsapp.configured && (
+                                <a href={contact.whatsapp.href} {...externalLinkProps(contact.whatsapp)} className={siteButton({variant: 'whatsapp', size: 'lg'})}>
+                                    <WhatsAppIcon aria-hidden="true" className="text-[#25D366]" />
+                                    {t('whatsapp')}
+                                </a>
+                            )}
                         </div>
-                        {marketedBy}
                     </div>
+                </div>
+            </div>
 
-                    <div className="col-span-2 md:col-span-3 lg:col-span-3">
+            <div className="site-container pb-4 pt-8 lg:pb-6 lg:pt-10">
+                <div className="grid gap-x-6 gap-y-10 md:grid-cols-2 md:gap-y-12 lg:grid-cols-12 lg:gap-8">
+                    {/* Left: phone, WhatsApp, address. */}
+                    <div className="lg:col-span-3">
                         <p className="spec-label mb-5 text-muted-foreground">{t('contact')}</p>
-                        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-1">
+                        <div className="grid gap-5">
                             <ContactRow icon={<Phone aria-hidden="true" className="size-4" />} label={t('phone')} value={CONTACT_CONFIG.phone} link={contact.phone} />
                             <ContactRow icon={<WhatsAppIcon aria-hidden="true" className="size-4" />} label={t('whatsapp')} value={CONTACT_CONFIG.whatsapp} link={contact.whatsapp} whatsapp />
-                            <ContactRow icon={<Mail aria-hidden="true" className="size-4" />} label={t('email')} value={CONTACT_CONFIG.email} link={contact.email} />
                             <div className="flex gap-3">
                                 <span className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-border bg-card text-brand">
                                     <MapPin aria-hidden="true" className="size-4" />
@@ -224,7 +211,44 @@ export async function Footer() {
                                     <address className="mt-0.5 text-sm leading-relaxed not-italic text-foreground">{CONTACT_CONFIG.address}</address>
                                 </span>
                             </div>
-                            <QuoteButton className={cn(siteButton({variant: 'brand', size: 'md'}), 'w-full sm:col-span-2 sm:w-auto sm:justify-self-start lg:col-span-1 lg:w-full')} />
+                            <QuoteButton className={cn(siteButton({variant: 'brand', size: 'md'}), 'w-full sm:w-auto sm:justify-self-start')} />
+                        </div>
+                    </div>
+
+                    {/* Middle — phones: one disclosure per link group (Shop open). */}
+                    <div className="md:hidden">
+                        <div className="border-t border-border">
+                            {linkGroups.map((group, index) => (
+                                <FooterAccordionItem key={group.key} title={group.title} links={group.links} open={index === 0} />
+                            ))}
+                        </div>
+                        {marketedBy}
+                    </div>
+                    {/* Middle — md+: titled columns, with the marketing credit under them (full row on tablets). */}
+                    <div className="hidden md:col-span-2 md:row-start-1 md:block lg:col-span-6 lg:row-start-auto">
+                        <div className="grid grid-cols-3 gap-x-6 lg:gap-x-8">
+                            {linkGroups.map((group) => (
+                                <FooterColumn key={group.key} title={group.title} links={group.links} />
+                            ))}
+                        </div>
+                        {marketedBy}
+                    </div>
+
+                    {/* Right: website QR, website, email(s) — centred. */}
+                    <div className="flex flex-col items-center lg:col-span-3">
+                        {!isPlaceholder(CONTACT_CONFIG.website) && (
+                            <a href={contact.website.href} {...externalLinkProps(contact.website)} className="inline-block rounded-xl border border-border bg-white p-2 shadow-sm transition-shadow hover:shadow-md">
+                                <Image src={WEBSITE_QR.src} alt={WEBSITE_QR.alt} width={WEBSITE_QR.width} height={WEBSITE_QR.height} className="size-36" />
+                            </a>
+                        )}
+                        <div className="mt-4 grid w-fit max-w-full gap-3.5">
+                            {!isPlaceholder(CONTACT_CONFIG.website) && (
+                                <ContactRow icon={<Globe aria-hidden="true" className="size-4" />} label={t('website')} value={CONTACT_CONFIG.website} link={contact.website} />
+                            )}
+                            <ContactRow icon={<Mail aria-hidden="true" className="size-4" />} label={t('email')} value={CONTACT_CONFIG.email} link={contact.email} />
+                            {!isPlaceholder(CONTACT_CONFIG.secondaryEmail) && (
+                                <ContactRow icon={<Mail aria-hidden="true" className="size-4" />} label={t('email')} value={CONTACT_CONFIG.secondaryEmail} link={contact.secondaryEmail} />
+                            )}
                         </div>
                     </div>
                 </div>
@@ -234,6 +258,7 @@ export async function Footer() {
                 <div className="site-container flex flex-col gap-4 pb-24 pt-6 text-[13px] text-muted-foreground lg:flex-row lg:items-center lg:justify-between lg:gap-8 lg:py-6">
                     <div className="flex flex-col gap-1.5 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-5">
                         <p>&copy; {COPYRIGHT_YEAR} {t('copyright')}</p>
+                        <p className="font-semibold text-foreground">{t('isoCompany')}</p>
                     </div>
                     <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-3 lg:mr-16 lg:shrink-0 lg:flex-nowrap lg:justify-start">
                         <a

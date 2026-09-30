@@ -1,6 +1,6 @@
 import type {Metadata} from 'next';
 import {getTranslations} from 'next-intl/server';
-import {ArrowUpRight, Mail, MapPin, Phone} from 'lucide-react';
+import {ArrowUpRight, Globe, Mail, MapPin, Phone} from 'lucide-react';
 import {getRouteLocale} from '@/platform/i18n/server';
 import {CONTACT_CONFIG, isPlaceholder} from '@/config/contact';
 import {EnquiryForm} from '@/features/enquiry/enquiry-form';
@@ -92,6 +92,8 @@ export default async function ContactPage() {
         {key: 'phone', icon: <Phone aria-hidden="true" className="size-5" />, label: tFooter('phone'), value: CONTACT_CONFIG.phone, action: t('callNow'), link: links.phone},
         {key: 'whatsapp', icon: <WhatsAppIcon aria-hidden="true" className="size-5" />, label: 'WhatsApp', value: CONTACT_CONFIG.whatsapp, action: t('chatNow'), link: links.whatsapp},
         {key: 'email', icon: <Mail aria-hidden="true" className="size-5" />, label: tFooter('email'), value: CONTACT_CONFIG.email, action: t('emailNow'), link: links.email},
+        ...(isPlaceholder(CONTACT_CONFIG.secondaryEmail) ? [] : [{key: 'secondary-email', icon: <Mail aria-hidden="true" className="size-5" />, label: tFooter('email'), value: CONTACT_CONFIG.secondaryEmail, action: t('emailNow'), link: links.secondaryEmail}]),
+        ...(isPlaceholder(CONTACT_CONFIG.website) ? [] : [{key: 'website', icon: <Globe aria-hidden="true" className="size-5" />, label: tFooter('website'), value: CONTACT_CONFIG.website, action: t('visitWebsite'), link: links.website}]),
         {key: 'address', icon: <MapPin aria-hidden="true" className="size-5" />, label: tFooter('address'), value: CONTACT_CONFIG.address, action: t('openInMaps'), link: mapsLink},
     ];
 

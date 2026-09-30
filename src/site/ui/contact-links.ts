@@ -1,4 +1,4 @@
-import {getEmailHref, getPhoneHref, getWhatsAppUrl} from '@/config/contact';
+import {CONTACT_CONFIG, getEmailHref, getPhoneHref, getWebsiteUrl, getWhatsAppUrl} from '@/config/contact';
 
 export interface ContactLink {
     href: string;
@@ -12,7 +12,7 @@ export interface ContactLink {
 export const CONTACT_DETAILS_ANCHOR = 'contact-details';
 
 /**
- * Resolves WhatsApp / phone / email CTAs from CONTACT_CONFIG. While a value
+ * Resolves WhatsApp / phone / email / website CTAs from CONTACT_CONFIG. While a value
  * is still a placeholder, its CTA falls back to the contact page's details
  * block instead of rendering a broken tel:/wa.me link, so layouts stay
  * complete and no link is ever dead.
@@ -22,11 +22,15 @@ export function resolveContactLinks(locale: string, whatsappMessage?: string) {
     const whatsapp = getWhatsAppUrl(whatsappMessage);
     const phone = getPhoneHref();
     const email = getEmailHref();
+    const secondaryEmail = getEmailHref(CONTACT_CONFIG.secondaryEmail);
+    const website = getWebsiteUrl();
 
     return {
         whatsapp: {href: whatsapp ?? fallback, external: whatsapp !== null, configured: whatsapp !== null},
         phone: {href: phone ?? fallback, external: false, configured: phone !== null},
         email: {href: email ?? fallback, external: false, configured: email !== null},
+        secondaryEmail: {href: secondaryEmail ?? fallback, external: false, configured: secondaryEmail !== null},
+        website: {href: website ?? fallback, external: website !== null, configured: website !== null},
     } satisfies Record<string, ContactLink>;
 }
 

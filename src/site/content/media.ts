@@ -228,3 +228,10 @@ export function findCategoryBanner(categoryName: string): CatalogImage | null {
 
 /** "Certified ISO Company" mark, cropped from Millnex's own hero banner (public/hero/1.png). */
 export const ISO_MARK: CatalogImage = {src: '/site/iso-certified.webp', alt: 'Certified ISO company', width: 160, height: 164};
+
+/**
+ * QR code for the Millnex website (https://www.millnex.in/ — CONTACT_CONFIG.website),
+ * generated once with Python `qrcode` into public/site/website-qr.svg. Regenerate it
+ * if the website address changes.
+ */
+export const WEBSITE_QR: CatalogImage = {src: '/site/website-qr.svg', alt: 'QR code for www.millnex.in', width: 116, height: 116};

@@ -58,7 +58,7 @@ export const MANUFACTURING_COPY = {
 } as const;
 
 export const FOOTER_COPY = {
-    description: 'Millnex manufactures domestic flour mills, pulverizers, masala machinery and food-processing machines engineered for efficiency, durability and consistent performance.',
+    description: 'Flour mills, pulverizers and food-processing machines built for efficiency and durability.',
     tagline: 'Engineered for performance. Built for business.',
 } as const;
 

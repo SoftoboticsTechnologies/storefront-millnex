@@ -2,6 +2,11 @@
 
 Concise history. Not a full commit log — one line per meaningful change.
 
+## 2026-09-30
+- Footer lower grid: left = phone, WhatsApp, address; middle = link columns + Get a Quote + marketing credit; right = website QR code (`public/site/website-qr.svg`, `WEBSITE_QR` in `site/content/media.ts` — regenerate if `CONTACT_CONFIG.website` changes), website, emails. Website row removed from the brand block. Tablets: links on top, the two contact groups side by side.
+- Footer: brand block (logo, ISO badge, tagline, description, website) moved into the top band, left of the "Have a requirement?" CTA (divider between on lg); lower grid is now links (8/12) + contact (4/12). Get a Quote sits above the marketing credit, both centred.
+- Contact details from the Millnex brochure: second email `millnexattachakki5@gmail.com` and website `www.millnex.in` (`CONTACT_CONFIG.secondaryEmail` / `website`, `getWebsiteUrl`), shown in the footer contact list and as contact-page cards; footer credit bar adds "An ISO 9001:2015 Certified Company" (`Footer.isoCompany`, 4 locales).
+
 ## 2026-09-29
 - Manufacturing gallery: removed the visitor-facing "Facility photography isn't published yet…" note (and `gallery.note` copy).
 - Homepage: Featured Machines (`ProductRail`) moved directly below "Shop by category" (shown only when the catalog has products).

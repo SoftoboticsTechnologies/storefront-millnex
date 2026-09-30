@@ -13,7 +13,7 @@ import type {ComparisonGroup} from '@/site/home/comparison-data';
 /**
  * Side-by-side machine comparison, one tab per Vendure collection. Rows are
  * built only from fields Vendure actually has — price (live), availability,
- * each facet present on any product in the group, SKU and variants — so a
+ * each facet present on any product in the group, and variants — so a
  * spec that isn't in the catalog never appears (shown as "—" where one
  * product lacks a facet another has).
  */
@@ -125,14 +125,6 @@ export function MachineComparison({groups}: {groups: ComparisonGroup[]}) {
                                 ))}
                             </tr>
                         )}
-                        <tr>
-                            <th scope="row" className={rowLabel}>{t('compareSku')}</th>
-                            {group.products.map((product) => (
-                                <td key={product.productId} className={cn(cell, 'font-mono text-xs text-muted-foreground')}>
-                                    {product.skus.join(' / ') || <Minus aria-label="—" className="size-4 text-steel" />}
-                                </td>
-                            ))}
-                        </tr>
                         <tr>
                             <td className={rowLabel} />
                             {group.products.map((product) => (

@@ -14,7 +14,8 @@
  * - phone:    human-readable, e.g. "+91 98765 43210" (digits are extracted for tel:)
  * - whatsapp: international number, digits only or formatted, e.g. "919876543210"
  *             (country code required; wa.me rejects local-format numbers)
- * - email:    plain address
+ * - email / secondaryEmail: plain address
+ * - website:  host only, e.g. "www.millnex.in" (https:// is added for links)
  */
 export const CONTACT_CONFIG = {
     companyName: 'Millnex',
@@ -22,6 +23,10 @@ export const CONTACT_CONFIG = {
     phone: '+91 92716 30646',
     whatsapp: '+91 92716 30646',
     email: 'info@millnex.in',
+    /** Second enquiry inbox (from the Millnex brochure). */
+    secondaryEmail: 'millnexattachakki5@gmail.com',
+    /** Public website, host only (from the Millnex brochure). */
+    website: 'www.millnex.in',
     /** Promotion & marketing partner, credited in the footer and on /about. */
     marketedBy: 'Swarnim Enterprises, Maharashtra',
     /**
@@ -73,6 +78,12 @@ export function getWhatsAppUrl(message?: string, whatsapp: string = CONTACT_CONF
     const digits = digitsOnly(whatsapp);
     if (digits.length < 8) return null;
     return `https://wa.me/${digits}${message ? `?text=${encodeURIComponent(message)}` : ''}`;
+}
+
+/** `https://` URL for the configured website, or null while it's a placeholder. */
+export function getWebsiteUrl(website: string = CONTACT_CONFIG.website): string | null {
+    if (isPlaceholder(website)) return null;
+    return `https://${website.trim().replace(/^https?:\/\//, '').replace(/\/+$/, '')}/`;
 }
 
 export function getSocialProfiles(): Array<{network: keyof typeof CONTACT_CONFIG.social; url: string}> {
