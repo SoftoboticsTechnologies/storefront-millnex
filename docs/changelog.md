@@ -3,6 +3,7 @@
 Concise history. Not a full commit log — one line per meaningful change.
 
 ## 2026-09-30
+- Homepage flagship: new `site/home/hero-product.tsx` section after "Shop by category" highlighting the 1.5 HP Atta Chakki (matched by name, `HERO_PRODUCT_COPY` in `site/content/home.ts`): Vendure photo + real machine photos, banner feature list, live price with % OFF, View machine + Get a Quote. The flagship also leads Featured Machines.
 - Address updated to "Millnex Industries, Lothada, Rajkot, Gujarat 360020" (`CONTACT_CONFIG.address`; footer, contact page, maps link, JSON-LD).
 - Real machine photos: "See the Machine Up Close" band (`site/ui/live-photos.tsx`, copy `LIVE_PHOTOS_COPY`, images `LIVE_PHOTOS` in `site/content/media.ts` — WebP 3:4 copies `public/live images/live-1..3.webp` of the client's 1.5 HP 2-in-1 photos) on the homepage (after Food Processing), About (after Who we are) and Manufacturing (before the gallery). Phones: horizontal snap row.
 - "Food Processing Made Effortless": the two cards split the full width 50/50 (lg+) using new `wide` options — `ProductRail wide` (2-column grid) and `ProductCard wide` (image left 46%, details right from sm). Other rails unchanged.

@@ -11,6 +11,7 @@ import {Hero} from "@/site/home/hero";
 import {TrustStrip} from "@/site/home/trust-strip";
 import {CategoryShowcase, type ShowcaseProduct} from "@/site/home/category-showcase";
 import {ShopByCategory, type ShopByCategoryEntry} from "@/site/home/shop-by-category";
+import {HeroProduct} from "@/site/home/hero-product";
 import {CatalogEmpty} from "@/site/home/catalog-empty";
 import {MachineFinder} from "@/site/home/machine-finder";
 import {WhyMillnex} from "@/site/home/why-millnex";
@@ -18,7 +19,7 @@ import {ManufacturingSection} from "@/site/home/manufacturing-section";
 import {SplitSection} from "@/site/home/split-section";
 import {getComparisonGroups} from "@/site/home/comparison-data";
 import type {CatalogCategory} from "@/site/home/catalog-links";
-import {COMPARE_COPY, FEATURED_COPY, FINDER_COPY, FOOD_PREP_COPY} from "@/site/content/home";
+import {COMPARE_COPY, FEATURED_COPY, FINDER_COPY, FOOD_PREP_COPY, HERO_PRODUCT_COPY} from "@/site/content/home";
 import {NavigationLink} from "@/site/navigation/navigation-link";
 import {MachineComparison} from "@/site/ui/machine-comparison";
 import {MachineFeatures} from "@/site/ui/machine-features";
@@ -84,6 +85,8 @@ export default async function Home() {
         getCatalogListing(locale, {take: 100}),
     ]);
     // "Food Processing Made Effortless": real products matched by name (FOOD_PREP_COPY.matches), in order.
+    // Flagship highlight: Millnex's hero product, matched by name (HERO_PRODUCT_COPY.match).
+    const heroProduct = fullCatalog.products.find((product) => HERO_PRODUCT_COPY.match.test(product.name));
     const foodPrepProducts = FOOD_PREP_COPY.matches
         .map((match) => fullCatalog.products.find((product) => match.test(product.name)))
         .filter((product): product is NonNullable<typeof product> => product !== undefined);
@@ -93,6 +96,10 @@ export default async function Home() {
         featuredCollection ? getCatalogListing(locale, {take: FEATURED_SIZE, collectionSlug: featuredCollection.slug}) : Promise.resolve(catalog),
         Promise.all(shopCategories.map((category) => getCatalogListing(locale, {take: CATEGORY_PREVIEW_SIZE, collectionSlug: category.slug}))),
     ]);
+    // The flagship always leads Featured Machines (list length unchanged).
+    const featuredProducts = heroProduct
+        ? [heroProduct, ...featured.products.filter((product) => product.productId !== heroProduct.productId)].slice(0, FEATURED_SIZE)
+        : featured.products;
     const categories: CatalogCategory[] = shopCategories.map((category, index) => ({
         name: category.name.trim(),
         slug: category.slug,
@@ -117,12 +124,13 @@ export default async function Home() {
             <Hero categories={categories} facets={catalog.facets} />
             <TrustStrip />
             <ShopByCategory categories={shopByCategory} />
+            <HeroProduct product={heroProduct} />
             {hasProducts && (
                 <ProductRail
                     id="featured"
                     title={FEATURED_COPY.title}
                     description={FEATURED_COPY.body}
-                    products={featured.products}
+                    products={featuredProducts}
                     collectionNames={collectionNames}
                     viewAll={featuredCollection ? {href: `/collection/${featuredCollection.slug}`, label: t('viewAll')} : {href: '/shop', label: t('viewAllMachines')}}
                     className="border-y border-border bg-surface py-20 sm:py-24 lg:py-28"

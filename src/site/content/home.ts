@@ -149,6 +149,27 @@ export const FOOD_PREP_COPY = {
     matches: [/vegetable\s*cutter/i, /papad/i],
 } as const;
 
+/**
+ * Flagship highlight: Millnex's hero product, matched by name against the
+ * live Vendure catalog (never by id). Features restate Millnex's own banner
+ * artwork (public/hero/1.png). Price, stock and image always come from Vendure.
+ */
+export const HERO_PRODUCT_COPY = {
+    match: /1\.5\s*hp/i,
+    badge: 'Millnex flagship',
+    title: 'The Millnex 1.5 HP Atta Chakki',
+    body: 'Our flagship home flour mill — fully automatic 2-in-1 grinding for fresh, pure atta every day.',
+    features: [
+        'Smart sensor technology',
+        'Overload protection',
+        'Low-temperature grinding',
+        'Stainless-steel grinding chamber',
+        '100% copper winding, power-saver motor',
+        'Auto start, auto stop, auto cleaning',
+    ],
+    cta: 'View machine',
+} as const;
+
 /** Real-photo band (home, About, Manufacturing) — images: media.ts#LIVE_PHOTOS. */
 export const LIVE_PHOTOS_COPY = {
     title: 'See the Machine Up Close',
