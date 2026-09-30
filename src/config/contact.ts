@@ -19,7 +19,7 @@
  */
 export const CONTACT_CONFIG = {
     companyName: 'Millnex',
-    address: 'Gokul Industries Area Plot No-3/1, Dist. Rajkot, Gujarat 360004',
+    address: 'Millnex Industries, Lothada, Rajkot, Gujarat 360020',
     phone: '+91 92716 30646',
     whatsapp: '+91 92716 30646',
     email: 'info@millnex.in',
