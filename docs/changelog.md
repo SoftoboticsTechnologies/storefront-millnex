@@ -3,6 +3,7 @@
 Concise history. Not a full commit log — one line per meaningful change.
 
 ## 2026-09-30
+- Real machine photos: "See the Machine Up Close" band (`site/ui/live-photos.tsx`, copy `LIVE_PHOTOS_COPY`, images `LIVE_PHOTOS` in `site/content/media.ts` — WebP 3:4 copies `public/live images/live-1..3.webp` of the client's 1.5 HP 2-in-1 photos) on the homepage (after Food Processing), About (after Who we are) and Manufacturing (before the gallery). Phones: horizontal snap row.
 - "Food Processing Made Effortless": the two cards split the full width 50/50 (lg+) using new `wide` options — `ProductRail wide` (2-column grid) and `ProductCard wide` (image left 46%, details right from sm). Other rails unchanged.
 - Homepage: new "Food Processing Made Effortless" rail in the spotlight's old place (after "Machines Built for Every Need") — Vegetable Cutter + Manual Papad, matched by name from the live catalog (`FOOD_PREP_COPY` in `site/content/home.ts`), standard product cards.
 - Homepage: removed the "Precision Where It Matters" spotlight (`site/home/product-spotlight.tsx`, `SPOTLIGHT_COPY`, its spotlight pick in `home/page.tsx`, messages `Home.spotlight` / `Home.compareSku`).

@@ -24,6 +24,7 @@ import {MachineComparison} from "@/site/ui/machine-comparison";
 import {MachineFeatures} from "@/site/ui/machine-features";
 import {DISPLAY_MACHINE_PHOTO} from "@/site/content/media";
 import {SectionHeading} from "@/site/ui/section-heading";
+import {LivePhotos} from "@/site/ui/live-photos";
 import {siteButton} from "@/site/ui/button-styles";
 import {JsonLd} from "@/site/seo/json-ld";
 import {organizationSchema} from "@/site/seo/schemas";
@@ -144,6 +145,8 @@ export default async function Home() {
                         viewAll={{href: '/shop', label: t('viewAllMachines')}}
                         className="border-y border-border bg-surface py-20 sm:py-24 lg:py-28"
                     />
+
+                    <LivePhotos className="bg-background" />
 
                     <section id="find-your-machine" className="scroll-mt-28 bg-background py-20 sm:py-24 lg:py-28">
                         <div className="site-container">

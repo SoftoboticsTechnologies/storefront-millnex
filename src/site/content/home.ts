@@ -149,6 +149,12 @@ export const FOOD_PREP_COPY = {
     matches: [/vegetable\s*cutter/i, /papad/i],
 } as const;
 
+/** Real-photo band (home, About, Manufacturing) — images: media.ts#LIVE_PHOTOS. */
+export const LIVE_PHOTOS_COPY = {
+    title: 'See the Machine Up Close',
+    body: 'Real photos of an atta chakki — the finish, grinding chamber and stainless-steel parts you get at home.',
+} as const;
+
 export const FEATURED_COPY = {
     title: 'Featured Machines',
     body: 'Explore Millnex machines engineered for everyday reliability and professional performance.',

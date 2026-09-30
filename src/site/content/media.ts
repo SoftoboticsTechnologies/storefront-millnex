@@ -199,6 +199,13 @@ export const BRAND_LOGO = {
     height: 160,
 } as const;
 
+/** Higher-resolution logo for large placements (e.g. the Contact hero). */
+export const BRAND_LOGO_LARGE = {
+    src: '/logo/millnex-logo.png',
+    width: 397,
+    height: 232,
+} as const;
+
 export const OG_IMAGE = {
     src: '/site/millnex-og.jpg',
     width: 1200,
@@ -235,3 +242,32 @@ export const ISO_MARK: CatalogImage = {src: '/site/iso-certified.webp', alt: 'Ce
  * if the website address changes.
  */
 export const WEBSITE_QR: CatalogImage = {src: '/site/website-qr.svg', alt: 'QR code for www.millnex.in', width: 116, height: 116};
+
+/**
+ * Real photographs of a Millnex 1.5 HP 2-in-1 atta chakki (public/live images,
+ * WebP copies of the client's photos, cropped to 3:4). Used by the "live
+ * photos" band on the home, About and Manufacturing pages.
+ */
+export const LIVE_PHOTOS: Array<CatalogImage & {caption: string}> = [
+    {
+        src: '/live%20images/live-3.webp',
+        alt: 'Millnex 1.5 HP 2-in-1 atta chakki with its door open, showing the grinding chamber and stainless-steel flour drum',
+        caption: 'Grinding chamber and stainless-steel drum',
+        width: 760,
+        height: 1013,
+    },
+    {
+        src: '/live%20images/live-2.webp',
+        alt: 'Millnex 1.5 HP 2-in-1 atta chakki with a designer leaf-print door panel',
+        caption: 'Designer door panel',
+        width: 760,
+        height: 1013,
+    },
+    {
+        src: '/live%20images/live-1.webp',
+        alt: 'Millnex 1.5 HP 2-in-1 atta chakki open, showing the stainless-steel feed hopper and flour container',
+        caption: 'Stainless-steel feed hopper',
+        width: 760,
+        height: 1013,
+    },
+];

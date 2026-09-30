@@ -6,6 +6,7 @@ import {QuoteButton} from '@/features/enquiry/quote-dialog';
 import {NavigationLink} from '@/site/navigation/navigation-link';
 import {PageHero} from '@/site/ui/page-hero';
 import {SectionHeading} from '@/site/ui/section-heading';
+import {LivePhotos} from '@/site/ui/live-photos';
 import {siteButton, arrowNudge} from '@/site/ui/button-styles';
 import {MACHINE_GALLERY, MANUFACTURING_PAGE_COPY} from '@/site/content/company';
 import {MILL_GALLERY} from '@/site/content/media';
@@ -116,6 +117,7 @@ export default async function ManufacturingPage() {
             </PageHero>
             <ProcessTimeline />
             <OutcomeBand />
+            <LivePhotos className="bg-background" />
             <Gallery />
             <CompanyCta />
         </>

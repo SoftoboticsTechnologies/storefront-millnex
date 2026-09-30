@@ -22,7 +22,7 @@ Never: hardcode product/variant/collection IDs, prices, stock, currency, discoun
 
 The storefront presents the Millnex machinery site; details in `docs/ui-system.md` and `docs/decisions.md`.
 - Contact details: `src/config/contact.ts` only (filled 2026-09-28 with the millnex.in address, email and phone/WhatsApp; never hardcode a number/email elsewhere).
-- Products: **Vendure only** — no frontend product catalogue (the old `site/catalog/machines.ts` was removed; `/machines` redirects to `/shop`). Copy: `src/site/content/*`. Replaceable stock imagery + credits: `src/site/content/media.ts`. Local images live in `public/site/` and `public/products category/products image/`; after moving anything in `public/`, run `npm run test` (`tests/assets/public-images.test.mjs` lists broken references).
+- Products: **Vendure only** — no frontend product catalogue (the old `site/catalog/machines.ts` was removed; `/machines` redirects to `/shop`). Copy: `src/site/content/*`. Replaceable stock imagery + credits: `src/site/content/media.ts`. Local images live in `public/site/`, `public/products category/products image/` and `public/live images/` (real machine photos); after moving anything in `public/`, run `npm run test` (`tests/assets/public-images.test.mjs` lists broken references).
 - Wishlist: device-local product IDs (`src/features/products/wishlist.ts`); Vendure has no wishlist API.
 - Enquiries: `src/features/enquiry` (endpoint via `NEXT_PUBLIC_ENQUIRY_ENDPOINT`, else WhatsApp/email hand-off).
 - No fake statistics, testimonials, certifications or ratings — the stats/testimonials/insights sections render only real entries. Don't show visitors notes explaining missing content ("X isn't published yet", "stock images", etc.) — just omit it.

@@ -6,6 +6,7 @@ import {CONTACT_CONFIG, isPlaceholder} from '@/config/contact';
 import {getShopCategories} from '@/features/collections/data';
 import {NavigationLink} from '@/site/navigation/navigation-link';
 import {PageHero} from '@/site/ui/page-hero';
+import {LivePhotos} from '@/site/ui/live-photos';
 import {siteButton, arrowNudge} from '@/site/ui/button-styles';
 import {MILL_GALLERY} from '@/site/content/media';
 import {JsonLd} from '@/site/seo/json-ld';
@@ -79,6 +80,7 @@ export default async function AboutPage() {
                 )}
             </PageHero>
             <WhoWeAre />
+            <LivePhotos className="border-y border-border bg-surface" />
             <WhatWeBuild categories={categories} />
             <MachineFeatures className="bg-background" />
             <ApproachSection />

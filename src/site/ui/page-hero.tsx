@@ -28,6 +28,7 @@ export async function PageHero({
     crumbs,
     tone = 'light',
     aside,
+    asideClassName,
     children,
 }: {
     title: string;
@@ -35,6 +36,8 @@ export async function PageHero({
     crumbs: Crumb[];
     tone?: 'light' | 'tint';
     aside?: ReactNode;
+    /** Extra classes for the aside's grid cell (e.g. `hidden lg:block`). */
+    asideClassName?: string;
     children?: ReactNode;
 }) {
     const locale = await getRouteLocale();
@@ -86,7 +89,7 @@ export async function PageHero({
                         )}
                         {children}
                     </div>
-                    {aside && <div className="min-w-0 lg:col-span-6">{aside}</div>}
+                    {aside && <div className={cn('min-w-0 lg:col-span-6', asideClassName)}>{aside}</div>}
                 </div>
             </div>
         </section>

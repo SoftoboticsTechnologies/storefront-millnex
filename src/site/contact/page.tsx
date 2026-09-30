@@ -1,10 +1,12 @@
 import type {Metadata} from 'next';
+import Image from 'next/image';
 import {getTranslations} from 'next-intl/server';
 import {ArrowUpRight, Globe, Mail, MapPin, Phone} from 'lucide-react';
 import {getRouteLocale} from '@/platform/i18n/server';
 import {CONTACT_CONFIG, isPlaceholder} from '@/config/contact';
 import {EnquiryForm} from '@/features/enquiry/enquiry-form';
 import {getProductOptions} from '@/features/products/data';
+import {BRAND_LOGO_LARGE} from '@/site/content/media';
 import {PageHero} from '@/site/ui/page-hero';
 import {siteButton} from '@/site/ui/button-styles';
 import {CONTACT_DETAILS_ANCHOR, externalLinkProps, resolveContactLinks, type ContactLink} from '@/site/ui/contact-links';
@@ -104,6 +106,18 @@ export default async function ContactPage() {
                 title={t('contactTitle')}
                 body={t('contactBody')}
                 crumbs={[{label: tNav('home'), href: '/'}, {label: tNav('contact')}]}
+                asideClassName="hidden lg:flex lg:justify-end"
+                aside={
+                    <Image
+                        src={BRAND_LOGO_LARGE.src}
+                        alt={tNav('logoAlt')}
+                        width={BRAND_LOGO_LARGE.width}
+                        height={BRAND_LOGO_LARGE.height}
+                        priority
+                        className="animate-hero-rise h-auto w-full max-w-[22rem] object-contain"
+                        style={{'--hero-delay': '180ms'} as React.CSSProperties}
+                    />
+                }
             />
 
             <section id="contact" className="bg-background py-16 sm:py-20 lg:py-24">
