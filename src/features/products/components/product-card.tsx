@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import {useTranslations} from 'next-intl';
 import {ImageOff} from 'lucide-react';
+import {cn} from '@/lib/utils';
 import {Link} from '@/platform/i18n/navigation';
 import {ProductCardPrice} from '@/features/products/product-price-client';
 import type {ProductCardData} from '@/features/products/product-card-data';
@@ -14,6 +15,8 @@ interface ProductCardProps {
     /** Collection name to label the card with, when the caller knows it. */
     category?: string;
     preload?: boolean;
+    /** Horizontal layout from sm (image left, details right) for 2-up rails where a tall 4:5 card would be oversized. */
+    wide?: boolean;
 }
 
 /**
@@ -23,15 +26,15 @@ interface ProductCardProps {
  * The single action is Add to cart (disabled, labelled "Out of Stock", when
  * Vendure reports no stock). Every value shown comes from Vendure.
  */
-export function ProductCard({product, category, preload}: ProductCardProps) {
+export function ProductCard({product, category, preload, wide = false}: ProductCardProps) {
     const t = useTranslations('Product');
     const href = `/product/${product.slug}`;
 
     return (
-        <article className="group/card relative flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card transition-[box-shadow,transform,border-color] duration-300 ease-out hover:-translate-y-1 hover:border-foreground/20 hover:shadow-[0_28px_50px_-34px_rgb(15_20_30/0.5)]">
+        <article className={cn('group/card relative flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card transition-[box-shadow,transform,border-color] duration-300 ease-out hover:-translate-y-1 hover:border-foreground/20 hover:shadow-[0_28px_50px_-34px_rgb(15_20_30/0.5)]', wide && 'sm:flex-row')}>
             {/* Link prefetch is disabled app-wide (static-export segment-cache
                 bug, see docs/decisions.md) — no per-link override here. */}
-            <div className="relative">
+            <div className={cn('relative', wide && 'sm:w-[46%] sm:shrink-0')}>
                 <Link href={href} className="frame-ticks relative block aspect-[4/5] overflow-hidden bg-stage" tabIndex={-1} aria-hidden="true">
                     {product.imageUrl ? (
                         <Image
@@ -61,7 +64,7 @@ export function ProductCard({product, category, preload}: ProductCardProps) {
                 />
             </div>
 
-            <div className="flex flex-1 flex-col border-t border-border p-3 sm:p-4">
+            <div className={cn('flex flex-1 flex-col border-t border-border p-3 sm:p-4', wide && 'sm:border-l sm:border-t-0 sm:p-6 lg:p-7')}>
                 {category && (
                     <p className="spec-label mb-1.5 truncate text-brand">{category}</p>
                 )}

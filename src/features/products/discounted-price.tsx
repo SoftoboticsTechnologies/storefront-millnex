@@ -1,8 +1,9 @@
 'use client';
 
 import type {ReactNode} from 'react';
-import {useTranslations} from 'next-intl';
+import {useLocale, useTranslations} from 'next-intl';
 import {cn} from '@/lib/utils';
+import {toIntlLocale} from '@/platform/i18n/locale-utils';
 import {Price} from '@/features/pricing/price';
 import {resolveReferencePrice} from '@/features/pricing/display-price';
 import {useMrp, type MrpLookup} from '@/features/pricing/mrp-context';
@@ -27,16 +28,18 @@ interface DiscountedPriceProps {
 
 /**
  * The single place a product price is shown with its struck-through
- * reference price (`resolveReferencePrice`): the product's real Vendure MRP
- * plus a "Save ₹X" line when it has one, otherwise the ×1.10 display price
- * with no saving claim. Sizes are `em`-relative so the caller's text size
- * sets the scale; the muted strikethrough uses `currentColor`.
+ * reference price (`resolveReferencePrice`): the product's real MRP (Vendure
+ * custom field or `config/pricing.ts`) plus an "N% OFF" line when it has
+ * one, otherwise the ×1.10 display price with no discount claim. Sizes are
+ * `em`-relative so the caller's text size sets the scale; the muted
+ * strikethrough uses `currentColor`.
  *
  * Presentation only: `value` is never altered, and cart/checkout/order
  * components keep using `Price` with the real line/order amounts.
  */
 export function DiscountedPrice({value, currencyCode, mrpFor, prefix, layout = 'inline', fallback = null, className}: DiscountedPriceProps) {
     const t = useTranslations('Product');
+    const locale = useLocale();
     const mrp = useMrp(mrpFor, currencyCode);
 
     if (typeof value !== 'number' || !Number.isFinite(value) || value <= 0) {
@@ -61,9 +64,9 @@ export function DiscountedPrice({value, currencyCode, mrpFor, prefix, layout = '
                     <Price value={value} currencyCode={currencyCode} />
                 </span>
             </span>
-            {reference?.saving != null && (
-                <span className="mt-1 whitespace-nowrap font-sans text-[max(0.75rem,0.5em)] font-semibold leading-none tracking-normal text-success">
-                    {t.rich('saveAmount', {price: () => <Price value={reference.saving!} currencyCode={currencyCode} />})}
+            {reference?.percentOff != null && (
+                <span className="mt-1 whitespace-nowrap font-sans text-[max(0.75rem,0.5em)] font-bold leading-none tracking-normal text-success">
+                    {t('percentOff', {percent: new Intl.NumberFormat(toIntlLocale(locale), {maximumFractionDigits: 2}).format(reference.percentOff)})}
                 </span>
             )}
         </span>

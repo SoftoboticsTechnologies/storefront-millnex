@@ -40,6 +40,8 @@ Vendure integration map for `apps/storefront/src`. Treat everything here as prot
 - `currency/currency-server.ts`: `getActiveCurrencyCode` validates the `vendure-currency` cookie against `channel.availableCurrencyCodes`, falling back to `channel.defaultCurrencyCode`. This is what prevents stale USD leaking after a channel is reconfigured to INR-only (fixed 2026-08-29, see `docs/decisions.md`). Safe under `'use cache: private'`, **not** safe under public `'use cache'`.
 
 ### MRP custom field (display-only, 2026-09-29)
+- Until the field exists, client-supplied original prices live in `src/config/pricing.ts` (`ORIGINAL_PRICES.bySku`, whole rupees, INR only); a Vendure `customFields.mrp` value wins over it. The loader tries the query with `customFields { mrp }` and retries without it if Vendure rejects the field.
+- Display: MRP struck through, Vendure price, "N% OFF" (`discountPercent`, 2 decimals) on every price surface; the PDP offer block also shows the saving.
 - Storefront reads `ProductVariant.customFields.mrp` (Int, **paise**, tax-inclusive — same unit as `priceWithTax`) at build via `features/pricing/mrp.ts` (own hand-written query, error-tolerant: missing field ⇒ no MRPs, nothing breaks) → `MrpProvider` (locale layout) → `DiscountedPrice` / `SpecialOfferPrice`.
 - MRP > Vendure price ⇒ MRP struck through + "Save ₹(MRP − price)" (+ "Special offer price" block at the end of the PDP Overview). Otherwise the ×1.10 display price (no saving). Only shown in the currency the MRPs were entered in.
 - **Never** used for cart/checkout/payment/orders — the Vendure price is what's charged. Set the offer (selling) price as the variant price in Vendure admin.

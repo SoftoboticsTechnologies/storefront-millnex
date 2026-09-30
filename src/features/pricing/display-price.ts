@@ -32,8 +32,10 @@ export function calculateDisplayOriginalPrice(sellingPrice: number | null | unde
 export interface ReferencePrice {
     /** Struck-through price (minor units). */
     original: number;
-    /** `original − selling`, only for a real Vendure MRP; null for the ×1.10 fallback (no "Save" claim). */
+    /** `original − selling`, only for a real MRP; null for the ×1.10 fallback (no saving claim). */
     saving: number | null;
+    /** `(original − selling) / original × 100`, rounded to 2 decimals; null for the ×1.10 fallback. */
+    percentOff: number | null;
 }
 
 /**
@@ -45,8 +47,13 @@ export interface ReferencePrice {
 export function resolveReferencePrice(sellingPrice: number | null | undefined, mrp: number | null | undefined): ReferencePrice | null {
     if (typeof sellingPrice !== 'number' || !Number.isFinite(sellingPrice) || sellingPrice <= 0) return null;
     if (typeof mrp === 'number' && Number.isFinite(mrp) && mrp > sellingPrice) {
-        return {original: mrp, saving: mrp - sellingPrice};
+        return {original: mrp, saving: mrp - sellingPrice, percentOff: discountPercent(mrp, sellingPrice)};
     }
     const original = calculateDisplayOriginalPrice(sellingPrice);
-    return original === null ? null : {original, saving: null};
+    return original === null ? null : {original, saving: null, percentOff: null};
+}
+
+/** Discount percentage off the original price, rounded to 2 decimals (₹18,000 → ₹15,499 = 13.89). */
+export function discountPercent(original: number, selling: number): number {
+    return Math.round(((original - selling) / original) * 100 * 100) / 100;
 }

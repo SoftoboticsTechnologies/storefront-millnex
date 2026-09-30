@@ -27,7 +27,7 @@
     "originalPrice": "मूल मूल्य",
     "sellingPrice": "विक्रय मूल्य",
     "mrpLabel": "एमआरपी",
-    "saveAmount": "<price></price> की बचत",
+    "percentOff": "{percent}% छूट",
     "specialOfferTitle": "विशेष ऑफ़र मूल्य",
     "offerPriceLabel": "ऑफ़र मूल्य",
     "youSaveLabel": "आपकी बचत",

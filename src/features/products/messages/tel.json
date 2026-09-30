@@ -27,7 +27,7 @@
     "originalPrice": "అసలు ధర",
     "sellingPrice": "అమ్మకపు ధర",
     "mrpLabel": "ఎంఆర్‌పి",
-    "saveAmount": "<price></price> ఆదా",
+    "percentOff": "{percent}% తగ్గింపు",
     "specialOfferTitle": "ప్రత్యేక ఆఫర్ ధర",
     "offerPriceLabel": "ఆఫర్ ధర",
     "youSaveLabel": "మీకు ఆదా",

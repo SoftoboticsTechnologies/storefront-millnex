@@ -15,6 +15,8 @@ interface ProductRailProps {
     /** `grid` (default) for homepage merchandising; `carousel` for long, secondary lists. */
     layout?: 'grid' | 'carousel';
     preloadFirstProduct?: boolean;
+    /** Two wide (horizontal) cards per row, filling the width — for short, 2-product rails. */
+    wide?: boolean;
     className?: string;
 }
 
@@ -32,6 +34,7 @@ export function ProductRail({
     viewAll,
     layout = 'grid',
     preloadFirstProduct,
+    wide = false,
     className,
 }: ProductRailProps) {
     if (products.length === 0) {
@@ -62,13 +65,14 @@ export function ProductRail({
                 {layout === 'carousel' ? (
                     <ProductCarousel products={products} collectionNames={collectionNames} preloadFirstProduct={preloadFirstProduct} />
                 ) : (
-                    <ul className={PRODUCT_RAIL_GRID_CLASS}>
+                    <ul className={wide ? 'grid gap-5 lg:grid-cols-2' : PRODUCT_RAIL_GRID_CLASS}>
                         {products.map((product, position) => (
                             <li key={product.productId}>
                                 <ProductCard
                                     product={product}
                                     category={product.collectionIds.map((collectionId) => collectionNames?.[collectionId]).find(Boolean)}
                                     preload={preloadFirstProduct && position === 0}
+                                    wide={wide}
                                 />
                             </li>
                         ))}

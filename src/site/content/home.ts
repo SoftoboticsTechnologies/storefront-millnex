@@ -138,6 +138,17 @@ export const SHOWCASE_COPY: {
     ],
 };
 
+/**
+ * Food-processing pair shown after the category showcase. Products are
+ * matched by name against the live Vendure catalog (never by id), in this
+ * order; a match that doesn't exist is simply skipped.
+ */
+export const FOOD_PREP_COPY = {
+    title: 'Food Processing Made Effortless',
+    body: 'Machines that take the effort out of everyday food preparation — from slicing vegetables to making papad.',
+    matches: [/vegetable\s*cutter/i, /papad/i],
+} as const;
+
 export const FEATURED_COPY = {
     title: 'Featured Machines',
     body: 'Explore Millnex machines engineered for everyday reliability and professional performance.',
@@ -186,9 +197,6 @@ export const FINDER_COPY = {
     resultNote: 'Capacity and usage aren’t listed for every model online, so send them with a quote request and our team will confirm the right machine and motor.',
 } as const;
 
-export const SPOTLIGHT_COPY = {
-    title: 'Precision Where It Matters',
-} as const;
 
 export const WHY_SECTION = {
     /** Screen-reader heading for the trust strip. */

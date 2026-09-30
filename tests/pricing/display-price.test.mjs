@@ -35,15 +35,23 @@ test('no reference price is invented without a real price', async () => {
 test('a real Vendure MRP above the price is used with its saving', async () => {
     const {resolveReferencePrice} = await loadDisplayPrice();
     // MRP ₹21,000, Vendure price ₹16,000 → strike ₹21,000, save ₹5,000.
-    assert.deepEqual(resolveReferencePrice(1_600_000, 2_100_000), {original: 2_100_000, saving: 500_000});
+    assert.deepEqual(resolveReferencePrice(1_600_000, 2_100_000), {original: 2_100_000, saving: 500_000, percentOff: 23.81});
 });
 
 test('without a usable MRP the ×1.10 price is used and no saving is claimed', async () => {
     const {resolveReferencePrice, SHOW_REFERENCE_PRICE} = await loadDisplayPrice();
     for (const mrp of [null, undefined, 0, 1_000_000, 900_000]) {
         const result = resolveReferencePrice(1_000_000, mrp);
-        assert.deepEqual(result, SHOW_REFERENCE_PRICE ? {original: 1_100_000, saving: null} : null, `mrp ${mrp}`);
+        assert.deepEqual(result, SHOW_REFERENCE_PRICE ? {original: 1_100_000, saving: null, percentOff: null} : null, `mrp ${mrp}`);
     }
     assert.equal(resolveReferencePrice(0, 2_000_000), null);
     assert.equal(resolveReferencePrice(null, 2_000_000), null);
+});
+
+test('discount percentage is (original − selling) / original, 2 decimals', async () => {
+    const {discountPercent} = await loadDisplayPrice();
+    assert.equal(discountPercent(1_800_000, 1_549_900), 13.89); // 1 HP
+    assert.equal(discountPercent(2_100_000, 1_600_000), 23.81); // 1.5 HP
+    assert.equal(discountPercent(2_500_000, 2_100_000), 16); // 2 HP
+    assert.equal(discountPercent(3_700_000, 3_200_000), 13.51); // 3 HP
 });

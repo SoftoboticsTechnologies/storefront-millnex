@@ -1,8 +1,9 @@
 'use client';
 
-import {useTranslations} from 'next-intl';
+import {useLocale, useTranslations} from 'next-intl';
 import {BadgePercent} from 'lucide-react';
 import {cn} from '@/lib/utils';
+import {toIntlLocale} from '@/platform/i18n/locale-utils';
 import {Price} from '@/features/pricing/price';
 import {resolveReferencePrice} from '@/features/pricing/display-price';
 import {useMrp} from '@/features/pricing/mrp-context';
@@ -19,11 +20,12 @@ interface SpecialOfferPriceProps {
 /**
  * "Special offer price" summary at the end of the PDP's product content:
  * MRP (struck through) → offer price (the real Vendure price) → saving.
- * Rendered only when the variant has a Vendure MRP above its price — never
+ * Rendered only when the variant has a real MRP above its price — never
  * for the generated ×1.10 reference price, which makes no saving claim.
  */
 export function SpecialOfferPrice({slug, variantId, price, currencyCode, className}: SpecialOfferPriceProps) {
     const t = useTranslations('Product');
+    const locale = useLocale();
     const mrp = useMrp({slug, variantId}, currencyCode);
     const reference = resolveReferencePrice(price, mrp);
 
@@ -54,6 +56,11 @@ export function SpecialOfferPrice({slug, variantId, price, currencyCode, classNa
                     <dt className="text-sm font-medium text-muted-foreground">{t('youSaveLabel')}</dt>
                     <dd className="mt-1 text-xl font-bold tabular-nums text-success">
                         <Price value={reference.saving} currencyCode={currencyCode} />
+                        {reference.percentOff !== null && (
+                            <span className="ml-2 text-sm font-semibold">
+                                ({t('percentOff', {percent: new Intl.NumberFormat(toIntlLocale(locale), {maximumFractionDigits: 2}).format(reference.percentOff)})})
+                            </span>
+                        )}
                     </dd>
                 </div>
             </dl>

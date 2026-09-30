@@ -27,7 +27,7 @@
     "originalPrice": "Ursprünglicher Preis",
     "sellingPrice": "Verkaufspreis",
     "mrpLabel": "UVP",
-    "saveAmount": "Sie sparen <price></price>",
+    "percentOff": "{percent} % Rabatt",
     "specialOfferTitle": "Sonderangebotspreis",
     "offerPriceLabel": "Angebotspreis",
     "youSaveLabel": "Sie sparen",

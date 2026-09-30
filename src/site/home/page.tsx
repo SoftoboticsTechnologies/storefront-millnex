@@ -4,7 +4,7 @@ import {getRouteLocale} from "@/platform/i18n/server";
 import {toOgLocale} from '@/platform/i18n/locale-utils';
 import {routing} from '@/platform/i18n/routing';
 import {buildCanonicalUrl} from "@/config/metadata";
-import {getCatalogListing, getProductSpecSheets} from '@/features/products/data';
+import {getCatalogListing} from '@/features/products/data';
 import {ProductRail} from '@/features/products/featured-products';
 import {getCollectionNames, getShopCategories, getTopCollections} from '@/features/collections/data';
 import {Hero} from "@/site/home/hero";
@@ -13,13 +13,12 @@ import {CategoryShowcase, type ShowcaseProduct} from "@/site/home/category-showc
 import {ShopByCategory, type ShopByCategoryEntry} from "@/site/home/shop-by-category";
 import {CatalogEmpty} from "@/site/home/catalog-empty";
 import {MachineFinder} from "@/site/home/machine-finder";
-import {ProductSpotlight} from "@/site/home/product-spotlight";
 import {WhyMillnex} from "@/site/home/why-millnex";
 import {ManufacturingSection} from "@/site/home/manufacturing-section";
 import {SplitSection} from "@/site/home/split-section";
 import {getComparisonGroups} from "@/site/home/comparison-data";
 import type {CatalogCategory} from "@/site/home/catalog-links";
-import {COMPARE_COPY, FEATURED_COPY, FINDER_COPY} from "@/site/content/home";
+import {COMPARE_COPY, FEATURED_COPY, FINDER_COPY, FOOD_PREP_COPY} from "@/site/content/home";
 import {NavigationLink} from "@/site/navigation/navigation-link";
 import {MachineComparison} from "@/site/ui/machine-comparison";
 import {MachineFeatures} from "@/site/ui/machine-features";
@@ -66,7 +65,7 @@ export async function generateMetadata(): Promise<Metadata> {
 /**
  * Homepage. Each section answers one question — What does Millnex sell
  * (hero) → what can I buy (featured) → which type do I need (categories) →
- * which one is right (finder, compare, spotlight) → why trust them (why,
+ * which one is right (finder, compare) → why trust them (why,
  * manufacturing) → home or business (split); the footer's CTA band closes with
  * "what next". Every product, price, stock state, category and count is
  * read from Vendure at build time; nothing is hardcoded.
@@ -75,13 +74,18 @@ export default async function Home() {
     const locale = await getRouteLocale();
     const t = await getTranslations({locale, namespace: 'Home'});
 
-    const [allCollections, shopCategories, collectionNames, catalog, comparisonGroups] = await Promise.all([
+    const [allCollections, shopCategories, collectionNames, catalog, comparisonGroups, fullCatalog] = await Promise.all([
         getTopCollections(locale),
         getShopCategories(locale),
         getCollectionNames(locale),
         getCatalogListing(locale, {take: FEATURED_SIZE}),
         getComparisonGroups(locale),
+        getCatalogListing(locale, {take: 100}),
     ]);
+    // "Food Processing Made Effortless": real products matched by name (FOOD_PREP_COPY.matches), in order.
+    const foodPrepProducts = FOOD_PREP_COPY.matches
+        .map((match) => fullCatalog.products.find((product) => match.test(product.name)))
+        .filter((product): product is NonNullable<typeof product> => product !== undefined);
 
     const featuredCollection = allCollections.find((collection) => FEATURED_SLUGS.includes(collection.slug));
     const [featured, categoryListings] = await Promise.all([
@@ -103,11 +107,6 @@ export default async function Home() {
         category.slug,
         categoryListings[index].products.map(({name, slug, imageUrl, inStock}) => ({name: name.trim(), slug, imageUrl, inStock})),
     ]));
-
-    // Spotlight: the product with the richest catalog data (most facet values).
-    const candidates = comparisonGroups.flatMap((group) => group.products);
-    const spotlight = [...(candidates.length > 0 ? candidates : await getProductSpecSheets(locale, catalog.products.slice(0, 1).map((product) => product.slug)))]
-        .sort((a, b) => b.specs.reduce((sum, spec) => sum + spec.values.length, 0) - a.specs.reduce((sum, spec) => sum + spec.values.length, 0))[0];
 
     const hasProducts = catalog.totalItems > 0;
 
@@ -135,7 +134,16 @@ export default async function Home() {
                 <>
                     <CategoryShowcase categories={categories} facets={catalog.facets} productsByCategory={productsByCategory} />
 
-                    {spotlight && <ProductSpotlight product={spotlight} />}
+                    <ProductRail
+                        id="food-processing"
+                        wide
+                        title={FOOD_PREP_COPY.title}
+                        description={FOOD_PREP_COPY.body}
+                        products={foodPrepProducts}
+                        collectionNames={collectionNames}
+                        viewAll={{href: '/shop', label: t('viewAllMachines')}}
+                        className="border-y border-border bg-surface py-20 sm:py-24 lg:py-28"
+                    />
 
                     <section id="find-your-machine" className="scroll-mt-28 bg-background py-20 sm:py-24 lg:py-28">
                         <div className="site-container">

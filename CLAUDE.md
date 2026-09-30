@@ -16,7 +16,7 @@ Treat as protected infrastructure — preserve behavior exactly, only restyle pr
 - Facet filter OR-within-group / AND-across-group semantics (`src/features/search/search-helpers.ts`)
 - Currency/channel resolution (`src/features/currency/currency-server.ts`) — never assume USD
 
-Never: hardcode product/variant/collection IDs, prices, stock, currency, discounts, ratings, or reviews. Never fake data that isn't backed by a real Vendure field. Sole client-approved exception: the display-only struck-through reference price via `DiscountedPrice` — the variant's Vendure MRP custom field (`customFields.mrp`, with "Save ₹X") when set, else Vendure price × 1.10 (`features/pricing/display-price.ts`); never used in cart/checkout/orders (see `docs/commerce.md` "MRP custom field", `docs/decisions.md` 2026-09-29).
+Never: hardcode product/variant/collection IDs, prices, stock, currency, discounts, ratings, or reviews. Never fake data that isn't backed by a real Vendure field. Sole client-approved exception: the display-only struck-through reference price via `DiscountedPrice` — the variant's original price (Vendure `customFields.mrp` when the backend adds it, else the client-supplied `src/config/pricing.ts` by SKU) with "N% OFF" when set, else Vendure price × 1.10 (no % claim) (`features/pricing/display-price.ts`); never used in cart/checkout/orders (see `docs/commerce.md` "MRP custom field", `docs/decisions.md` 2026-09-29).
 
 ## Millnex marketing layer (2026-09-28)
 
