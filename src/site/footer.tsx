@@ -308,10 +308,10 @@ export async function Footer() {
                 </div>
 
                 {/* Credit bar (thin, client request 2026-10-08): copyright on the left, Powered By DripFunnel on the right, from sm.
-                    lg+ right padding keeps it clear of the WhatsApp / back-to-top floats; below lg the bottom padding clears the
-                    mobile tab bar. Phones stack both lines, centred. (Was centred, pt-6 / lg:pb-8, one line from xl.) */}
+                    lg+ right padding keeps it clear of the WhatsApp / back-to-top floats. No extra bottom padding below lg: the body
+                    already reserves the mobile tab bar's height (locale-layout.tsx). Phones stack both lines, centred. (Was centred, pt-6 / lg:pb-8, one line from xl.) */}
                 <div className="border-t border-border bg-card/70">
-                    <div className="site-container flex flex-col items-center gap-2 pb-24 pt-3 text-center text-xs text-muted-foreground sm:flex-row sm:justify-between sm:text-left lg:py-2.5 lg:pr-20 lg:whitespace-nowrap">
+                    <div className="site-container flex flex-col items-center gap-2 py-3 text-center text-xs text-muted-foreground sm:flex-row sm:justify-between sm:text-left lg:py-2.5 lg:pr-20 lg:whitespace-nowrap">
                         <div className="flex items-center">
                             <p>&copy; {COPYRIGHT_YEAR} {t('copyright')}</p>
                             {/* Moved under the contact card 2026-10-08 (client request):
