@@ -393,29 +393,29 @@ export function SiteHeader({items, mega, logo, phone, labels}: SiteHeaderProps) 
                                     {customer ? (
                                         <div className="grid grid-cols-2 gap-2">
                                             <SheetClose nativeButton={false} render={<Link href="/account" className="flex h-11 items-center gap-2 rounded-lg border border-border px-3 text-sm font-semibold" />}>
-                                                <User className="size-4" />{labels.myAccount}
+                                                <User className="size-4 shrink-0" />{labels.myAccount}
                                             </SheetClose>
                                             <SheetClose nativeButton={false} render={<Link href="/account/orders" className="flex h-11 items-center gap-2 rounded-lg border border-border px-3 text-sm font-semibold" />}>
-                                                <Package className="size-4" />{labels.myOrders}
+                                                <Package className="size-4 shrink-0" />{labels.myOrders}
                                             </SheetClose>
                                         </div>
                                     ) : (
-                                        <div className="grid grid-cols-2 gap-2">
+                                        <div className="grid gap-2">
                                             <SheetClose nativeButton={false} render={<Link href="/sign-in" className="flex h-11 items-center justify-center gap-2 rounded-lg bg-logo-blue px-3 text-sm font-bold text-white" />}>
-                                                <LogIn className="size-4" />{labels.signIn}
+                                                <LogIn className="size-4 shrink-0" />{labels.signIn}
                                             </SheetClose>
                                             <SheetClose nativeButton={false} render={<Link href="/register" className="flex h-11 items-center justify-center gap-2 rounded-lg border border-border px-3 text-sm font-semibold" />}>
-                                                <UserPlus className="size-4" />{labels.createAccount}
+                                                <UserPlus className="size-4 shrink-0" />{labels.createAccount}
                                             </SheetClose>
                                         </div>
                                     )}
                                     <div className="grid grid-cols-2 gap-2">
                                         <SheetClose nativeButton={false} render={<Link href="/wishlist" className="flex h-11 items-center gap-2 rounded-lg border border-border px-3 text-sm font-semibold" />}>
-                                            <Heart className="size-4" />{labels.wishlist}
+                                            <Heart className="size-4 shrink-0" />{labels.wishlist}
                                             {wishlistCount > 0 && <span className="spec-label ml-auto text-brand">{wishlistCount}</span>}
                                         </SheetClose>
                                         <SheetClose nativeButton={false} render={<Link href="/cart" className="flex h-11 items-center gap-2 rounded-lg border border-border px-3 text-sm font-semibold" />}>
-                                            <ShoppingCart className="size-4" />{labels.cart}
+                                            <ShoppingCart className="size-4 shrink-0" />{labels.cart}
                                         </SheetClose>
                                     </div>
                                     {phone && (

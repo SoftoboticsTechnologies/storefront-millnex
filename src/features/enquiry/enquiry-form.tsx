@@ -369,7 +369,7 @@ export function EnquiryForm({products, className, variant = 'contact', defaultPr
                     <button
                         type="submit"
                         disabled={submitting}
-                        className="group/btn inline-flex h-12 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-brand px-7 text-[15px] font-semibold text-brand-foreground shadow-[0_10px_30px_-14px_var(--brand)] transition-[transform,background-color] duration-200 hover:-translate-y-0.5 hover:bg-[oklch(0.52_0.17_37)] focus-visible:ring-3 focus-visible:ring-brand/40 outline-none disabled:pointer-events-none disabled:opacity-70"
+                        className="group/btn inline-flex min-h-12 w-full shrink-0 items-center justify-center gap-2 rounded-lg bg-brand px-5 py-2.5 text-center sm:w-auto sm:whitespace-nowrap sm:px-7 text-[15px] font-semibold text-brand-foreground shadow-[0_10px_30px_-14px_var(--brand)] transition-[transform,background-color] duration-200 hover:-translate-y-0.5 hover:bg-[oklch(0.52_0.17_37)] focus-visible:ring-3 focus-visible:ring-brand/40 outline-none disabled:pointer-events-none disabled:opacity-70"
                     >
                         {submitting ? (
                             <>

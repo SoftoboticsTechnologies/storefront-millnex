@@ -40,7 +40,7 @@ function ContactCardItem({card, index}: {card: ContactCard; index: number}) {
             </span>
             <span className="min-w-0 flex-1">
                 <span className="spec-label block text-steel">{card.label}</span>
-                <span className="mt-1 block text-[15px] font-semibold break-words text-foreground">{card.value}</span>
+                <span className="mt-1 block text-[15px] font-semibold text-foreground [overflow-wrap:anywhere]">{card.value}</span>
                 {card.link?.configured && card.action && (
                     <span className="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-brand">
                         {card.action}
@@ -122,12 +122,12 @@ export default async function ContactPage() {
 
             <section id="contact" className="bg-background py-16 sm:py-20 lg:py-24">
                 <div className="site-container grid gap-12 lg:grid-cols-12 lg:gap-14">
-                    <div className="lg:col-span-5">
+                    <div className="min-w-0 lg:col-span-5">
                         <div data-reveal>
                             <h2 className="font-display-wide text-2xl font-bold sm:text-3xl">{t('contactDirectTitle')}</h2>
                             <p className="mt-3 text-[15px] leading-relaxed text-muted-foreground">{t('contactDirectBody')}</p>
                         </div>
-                        <ul id={CONTACT_DETAILS_ANCHOR} className="mt-8 grid scroll-mt-28 gap-3 sm:grid-cols-2 lg:grid-cols-1">
+                        <ul id={CONTACT_DETAILS_ANCHOR} className="mt-8 grid scroll-mt-28 grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-1">
                             {cards.map((card, index) => (
                                 <ContactCardItem key={card.key} card={card} index={index} />
                             ))}
@@ -154,7 +154,7 @@ export default async function ContactPage() {
                         )}
                     </div>
 
-                    <div id="enquiry" data-reveal className="scroll-mt-28 lg:col-span-7">
+                    <div id="enquiry" data-reveal className="min-w-0 scroll-mt-28 lg:col-span-7">
                         <div className="rounded-2xl border border-border bg-card p-6 shadow-[0_30px_60px_-44px_rgb(15_20_30/0.45)] sm:p-10">
                             <h2 className="font-display-wide text-2xl font-bold sm:text-3xl">{t('recommendationTitle')}</h2>
                             <p className="mt-3 mb-8 text-[15px] leading-relaxed text-muted-foreground">{t('enquiryFormBody')}</p>

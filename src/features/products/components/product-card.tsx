@@ -53,7 +53,7 @@ export function ProductCard({product, category, preload, wide = false}: ProductC
                         </span>
                     )}
                 </Link>
-                <StockBadge inStock={product.inStock} className="pointer-events-none absolute left-2.5 top-2.5 z-10 bg-card/95 shadow-sm backdrop-blur sm:left-3 sm:top-3" />
+                <StockBadge inStock={product.inStock} className="pointer-events-none absolute bottom-2.5 left-2.5 z-10 bg-card/95 shadow-sm backdrop-blur max-sm:h-5 max-sm:gap-1 max-sm:px-2 max-sm:text-[10px] max-sm:tracking-[0.02em] sm:bottom-auto sm:left-3 sm:top-3" />
                 {/* Siblings of the image link (not inside it: that link is
                     aria-hidden) and above the card-wide name overlay. */}
                 <WishlistButton productId={product.productId} name={product.name} className="absolute right-2.5 top-2.5 z-20 sm:right-3 sm:top-3" />

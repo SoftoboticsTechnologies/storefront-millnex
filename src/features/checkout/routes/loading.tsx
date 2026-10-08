@@ -7,13 +7,13 @@ export default function CheckoutLoading() {
 
             <div className="grid lg:grid-cols-3 gap-8">
                 {/* Checkout Steps */}
-                <div className="lg:col-span-2 space-y-6">
+                <div className="min-w-0 lg:col-span-2 space-y-6">
                     {/* Step Indicator */}
-                    <div className="flex items-center justify-between mb-8">
+                    <div className="mb-8 hidden items-center justify-between sm:flex">
                         {Array.from({ length: 4 }).map((_, i) => (
-                            <div key={i} className="flex items-center">
+                            <div key={i} className="flex flex-1 items-center last:flex-none">
                                 <Skeleton className="h-8 w-8 rounded-full" />
-                                {i < 3 && <Skeleton className="h-1 w-16 mx-2" />}
+                                {i < 3 && <Skeleton className="h-1 flex-1 mx-2" />}
                             </div>
                         ))}
                     </div>
@@ -49,7 +49,7 @@ export default function CheckoutLoading() {
                 </div>
 
                 {/* Order Summary */}
-                <div className="lg:col-span-1">
+                <div className="min-w-0 lg:col-span-1">
                     <div className="border rounded-lg p-6 space-y-4 sticky top-24">
                         <Skeleton className="h-6 w-32" />
 
