@@ -106,6 +106,12 @@ function ContactRow({icon, tone, label, value, link}: {icon: React.ReactNode; to
     );
 }
 
+/** Soft break before "@" so a long address wraps there, not mid-domain ("co|m"). */
+function EmailText({value}: {value: string}) {
+    const at = value.indexOf('@');
+    return at > 0 ? <>{value.slice(0, at)}<wbr />{value.slice(at)}</> : <>{value}</>;
+}
+
 /** Email cell: one icon/label, each configured address on its own line. */
 function EmailRow({label, emails}: {label: string; emails: Array<{value: string; link: ContactLink}>}) {
     return (
@@ -116,9 +122,9 @@ function EmailRow({label, emails}: {label: string; emails: Array<{value: string;
             <span className="min-w-0 flex-1">
                 <span className="block text-xs font-medium text-muted-foreground">{label}</span>
                 {emails.map(({value, link}) => link.configured ? (
-                    <a key={value} href={link.href} {...externalLinkProps(link)} className="mt-0.5 block text-sm font-semibold leading-relaxed text-foreground transition-colors [overflow-wrap:anywhere] hover:text-brand">{value}</a>
+                    <a key={value} href={link.href} {...externalLinkProps(link)} className="mt-0.5 block text-[13px] font-semibold leading-relaxed text-foreground transition-colors [overflow-wrap:anywhere] hover:text-brand sm:text-sm"><EmailText value={value} /></a>
                 ) : (
-                    <span key={value} className="mt-0.5 block text-sm font-semibold leading-relaxed text-foreground [overflow-wrap:anywhere]">{value}</span>
+                    <span key={value} className="mt-0.5 block text-[13px] font-semibold leading-relaxed text-foreground [overflow-wrap:anywhere] sm:text-sm"><EmailText value={value} /></span>
                 ))}
             </span>
         </div>
@@ -280,13 +286,14 @@ export async function Footer() {
                                         />
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-4 border-t border-border pt-4 lg:shrink-0 lg:border-l lg:border-t-0 lg:pl-8 lg:pt-0">
+                                {/* flex-wrap: on narrow phones the (nowrap) demo button drops under the QR instead of overflowing the card. */}
+                                <div className="flex flex-wrap items-center gap-4 border-t border-border pt-4 lg:shrink-0 lg:border-l lg:border-t-0 lg:pl-8 lg:pt-0">
                                     {!isPlaceholder(CONTACT_CONFIG.website) && (
                                         <a href={contact.website.href} {...externalLinkProps(contact.website)} className="shrink-0 rounded-xl border border-border bg-white p-1.5 transition-shadow hover:shadow-md">
                                             <Image src={WEBSITE_QR.src} alt={WEBSITE_QR.alt} width={WEBSITE_QR.width} height={WEBSITE_QR.height} className="size-20" />
                                         </a>
                                     )}
-                                    <QuoteButton className={cn(siteButton({variant: 'brand', size: 'md'}), 'flex-1 sm:flex-none')} />
+                                    <QuoteButton className={cn(siteButton({variant: 'brand', size: 'md'}), 'grow basis-40 sm:grow-0 sm:basis-auto')} />
                                 </div>
                             </div>
 
