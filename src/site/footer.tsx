@@ -292,10 +292,11 @@ export async function Footer() {
 
                             {/* ISO + marketing credit, centred under the contact card (moved from the credit bar, client request 2026-10-08). */}
                             <div className="mt-6 flex flex-col items-center justify-center gap-2 text-center text-[13px] text-muted-foreground sm:flex-row sm:gap-x-3.5">
-                                <p className="font-semibold text-foreground">{t('isoCompany')}</p>
+                                {/* Hidden 2026-10-08 (client request) — ISO line and its separator:
+                                <p className="font-semibold text-foreground">{t('isoCompany')}</p> */}
                                 {!isPlaceholder(CONTACT_CONFIG.marketedBy) && (
                                     <>
-                                        <span aria-hidden="true" className="hidden h-4 w-px bg-foreground/25 sm:block" />
+                                        {/* <span aria-hidden="true" className="hidden h-4 w-px bg-foreground/25 sm:block" /> */}
                                         <p>
                                             {t('marketedBy')} <span className="font-semibold text-foreground">{CONTACT_CONFIG.marketedBy}</span>
                                         </p>
