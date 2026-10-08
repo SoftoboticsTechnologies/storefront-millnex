@@ -77,7 +77,10 @@ export async function ModelPicker({groups}: {groups: ComparisonGroup[]}) {
                                 </div>
                             )}
 
-                            <ul className="-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 [scrollbar-width:none] sm:mx-0 sm:grid sm:snap-none sm:grid-cols-2 sm:gap-5 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-3">
+                            {/* `relative` makes the swipe row the containing block for absolutely positioned
+                                descendants (the price's sr-only labels), so they're clipped by it instead of
+                                stretching the page sideways on phones (blank strip on the right, fixed 2026-10-08). */}
+                            <ul className="relative -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 [scrollbar-width:none] sm:mx-0 sm:grid sm:snap-none sm:grid-cols-2 sm:gap-5 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-3">
                                 {group.products.map((product, index) => {
                                     const href = `/product/${product.slug}`;
                                     const specs = distinct

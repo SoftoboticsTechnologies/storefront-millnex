@@ -23,8 +23,9 @@ import {DemoSection} from "@/site/home/demo-section";
 import {CatalogEmpty} from "@/site/home/catalog-empty";
 import {WhyMillnex} from "@/site/home/why-millnex";
 import {ManufacturingSection} from "@/site/home/manufacturing-section";
-import {getComparisonGroups} from "@/site/home/comparison-data";
-import {ModelPicker} from "@/site/home/model-picker";
+// Hidden 2026-10-08 — "Which Atta Chakki Is Right for You?" (model picker), removed at client request:
+// import {getComparisonGroups} from "@/site/home/comparison-data";
+// import {ModelPicker} from "@/site/home/model-picker";
 import type {CatalogCategory} from "@/site/home/catalog-links";
 import {FEATURED_COPY, FRESH_FLOUR_COPY, HERO_PRODUCT_COPY} from "@/site/content/home";
 import {MachineFeatures} from "@/site/ui/machine-features";
@@ -85,12 +86,12 @@ export default async function Home() {
     const locale = await getRouteLocale();
     const t = await getTranslations({locale, namespace: 'Home'});
 
-    const [allCollections, shopCategories, collectionNames, catalog, comparisonGroups, fullCatalog] = await Promise.all([
+    const [allCollections, shopCategories, collectionNames, catalog, fullCatalog] = await Promise.all([
         getTopCollections(locale),
         getShopCategories(locale),
         getCollectionNames(locale),
         getCatalogListing(locale, {take: FEATURED_SIZE}),
-        getComparisonGroups(locale),
+        // getComparisonGroups(locale), // Hidden 2026-10-08 (model picker)
         getCatalogListing(locale, {take: 100}),
     ]);
     // Flagship highlight: Millnex's hero product, matched by name (HERO_PRODUCT_COPY.match).
@@ -197,7 +198,8 @@ export default async function Home() {
                         </div>
                     </section> */}
 
-                    <ModelPicker groups={comparisonGroups} />
+                    {/* Hidden 2026-10-08 — "Which Atta Chakki Is Right for You?", removed at client request.
+                    <ModelPicker groups={comparisonGroups} /> */}
 
                 </>
             ) : (
