@@ -291,21 +291,23 @@ export async function Footer() {
                     </div>
                 </div>
 
-                {/* Credit bar: two centred rows at every width (a side-by-side row wrapped mid-group and ran under the floating buttons). */}
+                {/* Credit bar: one line from xl (client request) — 12px text, tight gaps, and right padding that keeps it clear of the
+                    WhatsApp / back-to-top floats; below xl the lines stack, centred and narrow enough to stay clear of the floats. */}
                 <div className="border-t border-border bg-card/70">
-                    <div className="site-container flex flex-col items-center gap-3 pb-24 pt-6 text-center text-[13px] text-muted-foreground lg:pb-8">
-                        <div className="flex flex-col items-center gap-1.5 sm:flex-row sm:flex-wrap sm:justify-center sm:gap-x-4">
+                    <div className="site-container flex flex-col items-center gap-3 pb-24 pt-6 text-center text-[13px] text-muted-foreground lg:pb-8 xl:flex-row xl:justify-center xl:gap-x-3.5 xl:pr-20 xl:text-xs xl:whitespace-nowrap">
+                        <div className="flex flex-col items-center gap-1.5 sm:flex-row sm:flex-wrap sm:justify-center sm:gap-x-4 xl:flex-nowrap xl:gap-x-3.5">
                             <p>&copy; {COPYRIGHT_YEAR} {t('copyright')}</p>
                             <span aria-hidden="true" className="hidden size-1 rounded-full bg-muted-foreground/40 sm:block" />
                             <p className="font-semibold text-foreground">{t('isoCompany')}</p>
                         </div>
-                        <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
+                        <span aria-hidden="true" className="hidden h-5 w-px bg-foreground/25 xl:block" />
+                        <div className="flex flex-col items-center justify-center gap-2.5 xl:flex-row xl:gap-x-3.5">
                             {!isPlaceholder(CONTACT_CONFIG.marketedBy) && (
                                 <>
                                     <p>
                                         {t('marketedBy')} <span className="font-semibold text-foreground">{CONTACT_CONFIG.marketedBy}</span>
                                     </p>
-                                    <span aria-hidden="true" className="hidden h-5 w-px bg-foreground/25 sm:block" />
+                                    <span aria-hidden="true" className="hidden h-5 w-px bg-foreground/25 xl:block" />
                                 </>
                             )}
                             <a
@@ -316,7 +318,7 @@ export async function Footer() {
                                 className="flex items-center gap-2.5 font-semibold text-foreground transition-opacity hover:opacity-80"
                             >
                                 <span aria-hidden="true">{t('poweredBy')}</span>
-                                <Image src="/logo/dripfunnel-logo.png" alt="" width={845} height={143} className="h-5 w-auto" />
+                                <Image src="/logo/dripfunnel-logo.png" alt="" width={845} height={143} className="h-5 w-auto xl:h-[18px]" />
                             </a>
                         </div>
                     </div>
