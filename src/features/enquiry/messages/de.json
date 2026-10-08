@@ -8,7 +8,8 @@
       "product": "Gewünschtes Produkt",
       "message": "Anforderung / Nachricht",
       "businessType": "Art der Nutzung",
-      "quantity": "Menge / Bedarf"
+      "quantity": "Menge / Bedarf",
+      "address": "Adresse"
     },
     "placeholders": {
       "name": "Ihr vollständiger Name",
@@ -16,7 +17,8 @@
       "email": "sie@unternehmen.de",
       "company": "Optional",
       "message": "Was möchten Sie mahlen, wie viel ungefähr pro Tag, und wohin soll geliefert werden?",
-      "quantity": "z. B. 1 Maschine, ca. 20 kg pro Tag"
+      "quantity": "z. B. 1 Maschine, ca. 20 kg pro Tag",
+      "address": "Hausnr., Straße, Ort, PLZ"
     },
     "productNotSure": "Noch unsicher – bitte beraten Sie mich",
     "validation": {
@@ -24,7 +26,9 @@
       "phone": "Bitte geben Sie eine gültige Telefonnummer ein (10–15 Ziffern).",
       "email": "Bitte geben Sie eine gültige E-Mail-Adresse ein.",
       "message": "Bitte beschreiben Sie kurz Ihre Anforderung (mindestens 10 Zeichen).",
-      "messageTooLong": "Bitte halten Sie Ihre Nachricht unter 2000 Zeichen."
+      "messageTooLong": "Bitte halten Sie Ihre Nachricht unter 2000 Zeichen.",
+      "address": "Bitte geben Sie Ihre vollständige Adresse ein (mindestens 10 Zeichen).",
+      "addressTooLong": "Bitte halten Sie die Adresse unter 500 Zeichen."
     },
     "requiredNote": "* Pflichtfeld. Wir verwenden Ihre Angaben nur zur Beantwortung dieser Anfrage.",
     "submit": "Anfrage senden",
@@ -65,6 +69,14 @@
     "quoteAssurance": "Unser Team antwortet mit einer Empfehlung und einem Preis. Unverbindlich.",
     "preferWhatsApp": "Lieber WhatsApp?",
     "chatOnWhatsApp": "Per WhatsApp chatten",
-    "requestQuoteButton": "Angebot anfordern"
+    "requestQuoteButton": "Angebot anfordern",
+    "bookDemo": "Kostenlose Vorführung buchen",
+    "demoTitle": "Kostenlose Vorführung zu Hause buchen",
+    "demoDescription": "Wir kommen zu Ihnen nach Hause, führen die Atta Chakki vor und beantworten alle Ihre Fragen. Sie entscheiden erst, wenn Sie zufrieden sind.",
+    "demoAssurance": "Die Vorführung ist kostenlos und unverbindlich.",
+    "demoMessage": "Ich möchte eine kostenlose Vorführung der Millnex Atta Chakki bei mir zu Hause.",
+    "demoHandoffIntro": "Hallo {company}, ich möchte eine kostenlose Vorführung zu Hause buchen. Meine Angaben:",
+    "demoSubject": "Anfrage kostenlose Vorführung: {product}",
+    "submitDemo": "Vorführung buchen"
   }
 }

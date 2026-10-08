@@ -1,7 +1,7 @@
 {
   "Home": {
-    "metaTitle": "Millnex | Getreidemühlen, Pulverisierer & Maschinen für die Lebensmittelverarbeitung",
-    "metaDescription": "Millnex fertigt in Rajkot, Gujarat, Haushaltsmühlen (Atta Chakki), Pulverisierer und Maschinen für die Lebensmittelverarbeitung. Sortiment entdecken, Maschinen vergleichen und Angebot anfordern.",
+    "metaTitle": "Millnex Atta Chakki | Haushaltsmühle für frisches Atta zu Hause",
+    "metaDescription": "Kaufen Sie die Millnex Atta Chakki für frisches, hygienisches und bequemes Mahlen zu Hause. Buchen Sie eine kostenlose Vorführung zu Hause – kostenloser Versand bis {km} km.",
     "heroTitle": "Entdecken Sie unsere Produkte",
     "shopNow": "Jetzt einkaufen",
     "browseCategories": "Kategorien ansehen",
@@ -31,7 +31,7 @@
     "liveCatalogue": "Aktuell im Katalog",
     "machineCount": "{count, plural, one {# Maschine} other {# Maschinen}}",
     "categoryCount": "{count, plural, one {# Kategorie} other {# Kategorien}}",
-    "viewAllMachines": "Alle Maschinen ansehen",
+    "viewAllMachines": "Alle Atta-Chakki-Modelle ansehen",
     "exploreCategory": "Kategorie entdecken",
     "finderStep": "Schritt {current} von {total}",
     "finderBack": "Zurück",
@@ -51,15 +51,19 @@
     "compareAvailability": "Verfügbarkeit",
     "compareVariants": "Varianten",
     "compareNote": "Es werden nur Angaben aus unserem Katalog gezeigt. Motorleistung, Kapazität und Maße erhalten Sie per Angebotsanfrage oder von unserem Team.",
-    "compareMachines": "Maschinen vergleichen",
-    "compareMetaTitle": "Maschinen vergleichen",
-    "compareMetaDescription": "Vergleichen Sie Millnex-Mühlen, Pulverisierer und Maschinen für die Lebensmittelverarbeitung – Preis, Verfügbarkeit und Katalogangaben.",
+    "compareMachines": "Modelle vergleichen",
+    "compareMetaTitle": "Atta-Chakki-Modelle vergleichen",
+    "compareMetaDescription": "Vergleichen Sie Millnex-Atta-Chakki-Modelle nebeneinander – Preis, Verfügbarkeit und Katalogangaben.",
     "compareEmpty": "Vergleiche erscheinen hier, sobald eine Kategorie mindestens zwei Maschinen hat.",
     "inThisRange": "In diesem Sortiment",
     "heroCarousel": "Millnex im Überblick",
     "heroPrevious": "Vorherige Folie",
     "heroNext": "Nächste Folie",
     "heroGoTo": "Zu Folie {index}",
-    "heroSlideOf": "Folie {index} von {total}"
+    "heroSlideOf": "Folie {index} von {total}",
+    "viewAttaChakki": "Atta Chakki ansehen",
+    "bookFreeHomeDemo": "Kostenlose Vorführung buchen",
+    "whatsappUs": "WhatsApp schreiben",
+    "compareShared": "Jedes Modell:"
   }
 }

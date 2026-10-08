@@ -18,11 +18,13 @@ interface CategoryTabsProps {
 /**
  * Category tab strip under the listing band: "All" (= /shop) plus one tab per
  * real Vendure collection, each a link to its prerendered collection page.
- * Scrolls horizontally on phones rather than wrapping. Server-renderable —
+ * Scrolls horizontally on phones rather than wrapping. Hidden with fewer
+ * than two categories. Server-renderable —
  * the active tab is known at build time from the route.
  */
 export function CategoryTabs({categories, activeSlug, allLabel, label}: CategoryTabsProps) {
-    if (categories.length === 0) return null;
+    // One category (e.g. the Atta Chakki catalog focus) would only repeat "All".
+    if (categories.length < 2) return null;
 
     const tabs = [{name: allLabel, href: '/shop', active: !activeSlug}].concat(
         categories.map((category) => ({

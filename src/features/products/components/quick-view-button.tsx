@@ -135,7 +135,7 @@ export function QuickViewButton({product, category, className}: QuickViewButtonP
                             {product.inStock ? (
                                 <QuickAddButton slug={product.slug} name={product.name} inStock className="h-11" />
                             ) : (
-                                <QuoteButton product={product.slug} hideIcon className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-lg bg-logo-blue px-4 text-sm font-semibold text-white transition-colors hover:bg-logo-blue-deep">
+                                <QuoteButton product={product.slug} intent="quote" hideIcon className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-lg bg-logo-blue px-4 text-sm font-semibold text-white transition-colors hover:bg-logo-blue-deep">
                                     {t('askAvailability')}
                                 </QuoteButton>
                             )}

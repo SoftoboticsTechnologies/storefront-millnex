@@ -6,7 +6,7 @@ import {cn} from '@/lib/utils';
 import {getRouteLocale} from '@/platform/i18n/server';
 import type {CatalogFacet} from '@/features/products/data';
 import {NavigationLink} from '@/site/navigation/navigation-link';
-import {SHOWCASE_COPY} from '@/site/content/home';
+import {SHOWCASE_COPY, type ShowcaseCopy} from '@/site/content/home';
 import {resolveCatalogLink, type CatalogCategory} from '@/site/home/catalog-links';
 import {SectionHeading} from '@/site/ui/section-heading';
 
@@ -28,7 +28,9 @@ const LAYOUT = [
 ] as const;
 
 /**
- * "Machines Built for Every Need": four editorial category cards. Imagery is
+ * Four editorial cards — "Designed for Fresh Flour at Home" on the homepage
+ * (`copy`, home.ts#FRESH_FLOUR_COPY); defaults to the hidden "Machines Built
+ * for Every Need" copy (SHOWCASE_COPY). Imagery is
  * Millnex's own machine photography; each card's link is resolved against
  * the live Vendure catalog at build time (catalog-links.ts), so it always
  * lands on real products. The tall feature card also lists the real Vendure
@@ -38,11 +40,19 @@ export async function CategoryShowcase({
     categories,
     facets,
     productsByCategory = {},
+    copy = SHOWCASE_COPY,
+    viewAllLabel,
+    cardCtaLabel,
 }: {
     categories: CatalogCategory[];
     facets: CatalogFacet[];
     /** Collection slug → its products (build time), for the feature card's range list. */
     productsByCategory?: Record<string, ShowcaseProduct[]>;
+    copy?: ShowcaseCopy;
+    /** Header link label; defaults to "View all machines". */
+    viewAllLabel?: string;
+    /** Card footer label; defaults to "Explore Category". */
+    cardCtaLabel?: string;
 }) {
     const locale = await getRouteLocale();
     const t = await getTranslations({locale, namespace: 'Home'});
@@ -51,15 +61,15 @@ export async function CategoryShowcase({
         <section id="categories" className="scroll-mt-28 bg-background py-20 sm:py-24 lg:py-28">
             <div className="site-container">
                 <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-                    <SectionHeading title={SHOWCASE_COPY.title} body={SHOWCASE_COPY.body} />
+                    <SectionHeading title={copy.title} body={copy.body} />
                     <NavigationLink href="/shop" className="group/btn inline-flex shrink-0 items-center gap-2 text-sm font-bold text-foreground hover:text-brand" data-reveal>
-                        {t('viewAllMachines')}
+                        {viewAllLabel ?? t('viewAllMachines')}
                         <ArrowUpRight aria-hidden="true" className="size-4 transition-transform group-hover/btn:-translate-y-0.5 group-hover/btn:translate-x-0.5" />
                     </NavigationLink>
                 </div>
 
                 <ul className="mt-12 grid gap-4 sm:gap-5 lg:auto-rows-[minmax(17rem,auto)] lg:grid-cols-12">
-                    {SHOWCASE_COPY.cards.map((card, index) => {
+                    {copy.cards.map((card, index) => {
                         const layout = LAYOUT[index % LAYOUT.length];
                         const link = resolveCatalogLink(card.match, categories, facets);
                         const collectionSlug = link.href.startsWith('/collection/') ? link.href.slice('/collection/'.length) : null;
@@ -113,7 +123,7 @@ export async function CategoryShowcase({
                                             )}
                                         </div>
                                         <span className="inline-flex items-center justify-between gap-3 border-t border-border pt-4 text-sm font-bold">
-                                            {t('exploreCategory')}
+                                            {cardCtaLabel ?? t('exploreCategory')}
                                             <span className="flex size-9 items-center justify-center rounded-lg bg-logo-blue text-white transition-colors duration-300 group-hover/card:bg-brand">
                                                 <ArrowUpRight aria-hidden="true" className="size-4 transition-transform duration-300 group-hover/card:-translate-y-0.5 group-hover/card:translate-x-0.5" />
                                             </span>

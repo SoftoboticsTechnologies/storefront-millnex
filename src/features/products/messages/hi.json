@@ -98,7 +98,15 @@
     "readFaq": "FAQ पढ़ें",
     "youMayAlsoLike": "आपको यह भी पसंद आ सकता है",
     "previousSlide": "पिछले उत्पाद",
-    "nextSlide": "अगले उत्पाद"
+    "nextSlide": "अगले उत्पाद",
+    "offerDemoTitle": "मुफ़्त होम डेमो",
+    "offerDemoBody": "खरीदने से पहले देखें — हम आपके घर आकर आटा चक्की का डेमो देंगे और आपके सभी सवालों के जवाब देंगे। आप संतुष्ट होने के बाद ही फ़ैसला करें।",
+    "offerShippingTitle": "{km} किमी तक मुफ़्त शिपिंग",
+    "offerShippingBody": "{km} किमी के भीतर के ऑर्डर पर मुफ़्त शिपिंग।",
+    "trustFreeShipping": "{km} किमी तक मुफ़्त शिपिंग",
+    "shippingFreeBody": "{km} किमी के भीतर के ऑर्डर पर शिपिंग मुफ़्त है। आपके पते के लिए डिलीवरी विकल्प भुगतान से पहले चेकआउट पर दिखाए जाते हैं।",
+    "whatsappUs": "WhatsApp करें",
+    "whatsappProductGreeting": "नमस्ते Millnex, मुझे {product} में रुचि है।"
   },
   "Wishlist": {
     "title": "विशलिस्ट",

@@ -1,5 +1,5 @@
 // Builds the homepage hero carousel's WebP files from the PNG banners in
-// public/hero (1.png … 4.png): <n>.webp at up to 2048px and <n>-1024.webp for
+// public/hero (1.png … 7.png): <n>.webp at up to 2048px and <n>-1024.webp for
 // phones. The PNGs are the editable source (~2.3MB each); the WebPs are what
 // the site serves (~70–200KB). A WebP is only regenerated when it is missing
 // or older than its PNG, so replacing a banner PNG is all that's needed.

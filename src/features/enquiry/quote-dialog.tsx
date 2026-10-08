@@ -2,17 +2,24 @@
 
 import {createContext, useCallback, useContext, useMemo, useState, type ReactNode} from 'react';
 import {useTranslations} from 'next-intl';
-import {FileText, ShieldCheck} from 'lucide-react';
+import {CalendarCheck, FileText, ShieldCheck} from 'lucide-react';
 import {Dialog, DialogContent, DialogDescription, DialogTitle} from '@/components/ui/dialog';
 import {cn} from '@/lib/utils';
 import {getWhatsAppUrl} from '@/config/contact';
 import {EnquiryForm, type EnquiryProductOption} from './enquiry-form';
+
+/**
+ * `demo` (default — client direction 2026-10-08): "Book a Free Home Demo".
+ * `quote`: the original "Request a quote". Same form and delivery path.
+ */
+export type EnquiryIntent = 'demo' | 'quote';
 
 interface QuoteRequest {
     /** Product slug to pre-select in the form. */
     product?: string;
     /** Requirement text to pre-fill. */
     message?: string;
+    intent?: EnquiryIntent;
 }
 
 interface QuoteContextValue {
@@ -22,7 +29,7 @@ interface QuoteContextValue {
 const QuoteContext = createContext<QuoteContextValue | null>(null);
 
 /**
- * One site-wide "Get a Quote" modal (mounted once in the locale layout), so
+ * One site-wide "Book a Free Demo" / "Get a Quote" modal (mounted once in the locale layout), so
  * the header, hero, product pages, category pages and footer can all open it
  * with `<QuoteButton>` without each rendering its own dialog. Same form and
  * delivery path as the contact page (submit-enquiry.ts).
@@ -40,7 +47,8 @@ export function QuoteProvider({products, children}: {products: EnquiryProductOpt
         setOpen(true);
     }, []);
     const value = useMemo(() => ({openQuote}), [openQuote]);
-    const whatsappUrl = getWhatsAppUrl(t('handoffIntro', {company: 'Millnex'}));
+    const demo = (request.intent ?? 'demo') === 'demo';
+    const whatsappUrl = getWhatsAppUrl(t(demo ? 'demoHandoffIntro' : 'handoffIntro', {company: 'Millnex'}));
 
     return (
         <QuoteContext.Provider value={value}>
@@ -49,11 +57,11 @@ export function QuoteProvider({products, children}: {products: EnquiryProductOpt
                 <DialogContent className="max-h-[92dvh] gap-0 overflow-y-auto rounded-2xl p-0 sm:max-w-3xl">
                     <div className="grid md:grid-cols-[15rem_1fr]">
                         <div className="relative isolate flex flex-col overflow-hidden bg-tint-blue p-6 text-foreground md:rounded-l-2xl md:p-7">
-                            <DialogTitle className="font-display-wide text-2xl font-bold leading-tight text-foreground">{t('quoteTitle')}</DialogTitle>
-                            <DialogDescription className="mt-3 text-sm leading-relaxed text-muted-foreground">{t('quoteDescription')}</DialogDescription>
+                            <DialogTitle className="font-display-wide text-2xl font-bold leading-tight text-foreground">{t(demo ? 'demoTitle' : 'quoteTitle')}</DialogTitle>
+                            <DialogDescription className="mt-3 text-sm leading-relaxed text-muted-foreground">{t(demo ? 'demoDescription' : 'quoteDescription')}</DialogDescription>
                             <p className="mt-6 flex gap-2.5 border-t border-border pt-5 text-xs leading-relaxed text-muted-foreground">
                                 <ShieldCheck aria-hidden="true" className="size-4 shrink-0 text-brand" />
-                                {t('quoteAssurance')}
+                                {t(demo ? 'demoAssurance' : 'quoteAssurance')}
                             </p>
                             {whatsappUrl && (
                                 <p className="mt-4 text-xs text-muted-foreground md:mt-auto">
@@ -65,7 +73,14 @@ export function QuoteProvider({products, children}: {products: EnquiryProductOpt
                             )}
                         </div>
                         <div className="p-5 sm:p-7">
-                            <EnquiryForm key={session} products={products} variant="quote" defaultProduct={request.product} defaultMessage={request.message} />
+                            <EnquiryForm
+                                key={session}
+                                products={products}
+                                variant="quote"
+                                intent={demo ? 'demo' : 'quote'}
+                                defaultProduct={request.product}
+                                defaultMessage={request.message ?? (demo ? t('demoMessage') : undefined)}
+                            />
                         </div>
                     </div>
                 </DialogContent>
@@ -83,24 +98,27 @@ export function useQuote(): QuoteContextValue {
 interface QuoteButtonProps {
     /** Product slug to pre-select. */
     product?: string;
+    /** Defaults to `demo` ("Book a Free Demo"). */
+    intent?: EnquiryIntent;
     className?: string;
-    /** Button content; defaults to an icon + "Get a Quote". */
+    /** Button content; defaults to an icon + "Book a Free Demo" (or "Get a Quote"). */
     children?: ReactNode;
     /** Hide the default leading icon. */
     hideIcon?: boolean;
 }
 
-/** Opens the site-wide quote modal. Style it with `siteButton(...)` from the caller. */
-export function QuoteButton({product, className, children, hideIcon}: QuoteButtonProps) {
+/** Opens the site-wide demo/quote modal. Style it with `siteButton(...)` from the caller. */
+export function QuoteButton({product, intent = 'demo', className, children, hideIcon}: QuoteButtonProps) {
     const t = useTranslations('Enquiry');
     const {openQuote} = useQuote();
+    const Icon = intent === 'demo' ? CalendarCheck : FileText;
 
     return (
-        <button type="button" onClick={() => openQuote({product})} className={cn('cursor-pointer', className)}>
+        <button type="button" onClick={() => openQuote({product, intent})} className={cn('cursor-pointer', className)}>
             {children ?? (
                 <>
-                    {!hideIcon && <FileText aria-hidden="true" />}
-                    {t('getQuote')}
+                    {!hideIcon && <Icon aria-hidden="true" />}
+                    {t(intent === 'demo' ? 'bookDemo' : 'getQuote')}
                 </>
             )}
         </button>

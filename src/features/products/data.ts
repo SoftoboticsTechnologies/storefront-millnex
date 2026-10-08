@@ -4,6 +4,7 @@ import {getActiveCurrencyCode} from '@/features/currency/currency-server';
 import {readFragment} from '@/platform/vendure/graphql';
 import {ProductCardFragment, GetProductDetailQuery, GetNewestProductsQuery} from './graphql';
 import {cardFromProduct, cardFromSearchResult, type ProductCardData} from './product-card-data';
+import {focusSearchScope, hasCatalogFocus} from '@/config/catalog-focus';
 
 // Page size used while enumerating the full catalog at build time.
 const PRODUCT_SLUG_PAGE_SIZE = 100;
@@ -29,7 +30,7 @@ export function getPopularProductSlugs(locale: string): Promise<string[]> {
 
 const productSlugsByLocale = new Map<string, Promise<string[]>>();
 
-async function fetchProductSlugs(locale: string): Promise<string[]> {
+async function fetchProductSlugs(locale: string, {listedOnly = false}: {listedOnly?: boolean} = {}): Promise<string[]> {
     const slugs: string[] = [];
     let skip = 0;
     let fetched = 0;
@@ -41,6 +42,7 @@ async function fetchProductSlugs(locale: string): Promise<string[]> {
                 skip,
                 groupByProduct: true,
                 sort: {name: 'ASC'},
+                ...(listedOnly && focusSearchScope()),
             },
         }, {languageCode: locale});
 
@@ -59,6 +61,16 @@ async function fetchProductSlugs(locale: string): Promise<string[]> {
     }
 
     return slugs;
+}
+
+/**
+ * Slugs of the products listed to visitors — the catalog focus
+ * (config/catalog-focus.ts) when one is set, else every product. Used by the
+ * sitemap; product pages themselves are still prerendered for every slug
+ * (getPopularProductSlugs) so links to unlisted products keep working.
+ */
+export function getListedProductSlugs(locale: string): Promise<string[]> {
+    return hasCatalogFocus() ? fetchProductSlugs(locale, {listedOnly: true}) : getPopularProductSlugs(locale);
 }
 
 /**
@@ -133,7 +145,8 @@ export async function getCatalogListing(
             skip: 0,
             groupByProduct: true,
             sort: {name: 'ASC'},
-            ...(collectionSlug && {collectionSlug}),
+            // No collection: scoped to the catalog focus (Atta Chakki only), if set.
+            ...(collectionSlug ? {collectionSlug} : focusSearchScope()),
             ...(inStockOnly && {inStock: true}),
         },
     }, {languageCode: locale, currencyCode});
@@ -165,14 +178,14 @@ export async function getNewestProducts(locale: string, take: number): Promise<P
         .map(cardFromProduct);
 }
 
-/** `{value: slug, label: name}` for every indexed product — e.g. an enquiry form's product picker. */
+/** `{value: slug, label: name}` for every listed product (catalog focus, if set) — e.g. an enquiry form's product picker. */
 export async function getProductOptions(locale: string): Promise<Array<{value: string; label: string}>> {
     const options: Array<{value: string; label: string}> = [];
     let skip = 0;
 
     for (;;) {
         const result = await query(SearchProductsQuery, {
-            input: {take: PRODUCT_SLUG_PAGE_SIZE, skip, groupByProduct: true, sort: {name: 'ASC'}},
+            input: {take: PRODUCT_SLUG_PAGE_SIZE, skip, groupByProduct: true, sort: {name: 'ASC'}, ...focusSearchScope()},
         }, {languageCode: locale});
         const items = result.data.search.items.map((item) => readFragment(ProductCardFragment, item));
         options.push(...items.filter((item) => item.slug).map((item) => ({value: item.slug, label: item.productName})));

@@ -1,8 +1,9 @@
 import Image from 'next/image';
 import {getTranslations} from 'next-intl/server';
-import {ArrowUpRight, ChevronDown, Globe, Mail, MapPin, Phone} from 'lucide-react';
+import {ArrowRight, ArrowUpRight, ChevronDown, Mail, MapPin, Phone} from 'lucide-react';
 import {getRouteLocale} from '@/platform/i18n/server';
-import {getShopCategories} from '@/features/collections/data';
+// Hidden 2026-10-08 — category links are no longer listed in the footer:
+// import {getShopCategories} from '@/features/collections/data';
 import {QuoteButton} from '@/features/enquiry/quote-dialog';
 import {CONTACT_CONFIG, getSocialProfiles, isPlaceholder} from '@/config/contact';
 import {NavigationLink} from '@/site/navigation/navigation-link';
@@ -27,19 +28,20 @@ const SOCIAL_LABELS = {
 
 type FooterLinks = Array<{href: string; label: string}>;
 
+/** Logo colour per link group — the small bar beside each column title. */
+const GROUP_ACCENTS = ['bg-logo-blue', 'bg-logo-green', 'bg-logo-orange'] as const;
+
 function FooterLinkList({links, className}: {links: FooterLinks; className?: string}) {
     return (
-        <ul className={cn('space-y-3', className)}>
+        <ul className={cn('space-y-2.5', className)}>
             {links.map((link) => (
                 <li key={`${link.href}-${link.label}`}>
                     <NavigationLink
                         href={link.href}
-                        className="group/link inline-flex items-center gap-1.5 text-[15px] text-foreground transition-colors hover:text-brand"
+                        className="group/link inline-flex items-center text-[15px] text-muted-foreground transition-colors hover:text-foreground"
                     >
-                        <span className="relative">
-                            {link.label}
-                            <span aria-hidden="true" className="absolute inset-x-0 -bottom-0.5 h-px origin-left scale-x-0 bg-brand transition-transform duration-300 group-hover/link:scale-x-100" />
-                        </span>
+                        <ArrowRight aria-hidden="true" className="mr-0 size-3.5 w-0 text-brand opacity-0 transition-all duration-200 group-hover/link:mr-1.5 group-hover/link:w-3.5 group-hover/link:opacity-100" />
+                        {link.label}
                     </NavigationLink>
                 </li>
             ))}
@@ -47,11 +49,22 @@ function FooterLinkList({links, className}: {links: FooterLinks; className?: str
     );
 }
 
-/** md+: a plain titled column. */
-function FooterColumn({title, links}: {title: string; links: FooterLinks}) {
+function GroupTitle({title, accent}: {title: string; accent: string}) {
+    return (
+        <span className="flex items-center gap-2.5">
+            <span aria-hidden="true" className={cn('h-4 w-1 rounded-full', accent)} />
+            {title}
+        </span>
+    );
+}
+
+/** md+: a titled column with a logo-colour accent bar. */
+function FooterColumn({title, links, accent}: {title: string; links: FooterLinks; accent: string}) {
     return (
         <div>
-            <p className="spec-label mb-5 text-muted-foreground">{title}</p>
+            <p className="mb-5 text-[15px] font-bold text-foreground">
+                <GroupTitle title={title} accent={accent} />
+            </p>
             <FooterLinkList links={links} />
         </div>
     );
@@ -61,40 +74,45 @@ function FooterColumn({title, links}: {title: string; links: FooterLinks}) {
  * < md: the same links as a native disclosure (no JS), so three link groups
  * don't stack into one long column on phones.
  */
-function FooterAccordionItem({title, links, open}: {title: string; links: FooterLinks; open?: boolean}) {
+function FooterAccordionItem({title, links, accent, open}: {title: string; links: FooterLinks; accent: string; open?: boolean}) {
     return (
-        <details open={open} className="group/acc border-b border-border">
-            <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-4 text-[15px] font-semibold [&::-webkit-details-marker]:hidden">
-                {title}
+        <details open={open} className="group/acc border-b border-border last:border-b-0">
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-4 text-[15px] font-bold [&::-webkit-details-marker]:hidden">
+                <GroupTitle title={title} accent={accent} />
                 <ChevronDown aria-hidden="true" className="size-4 shrink-0 text-muted-foreground transition-transform duration-200 group-open/acc:rotate-180" />
             </summary>
-            <FooterLinkList links={links} className="pb-5" />
+            <FooterLinkList links={links} className="pb-5 pl-3.5" />
         </details>
     );
 }
 
-function ContactRow({icon, label, value, link, whatsapp}: {icon: React.ReactNode; label: string; value: string; link?: ContactLink; whatsapp?: boolean}) {
+function ContactRow({icon, tone, label, value, link}: {icon: React.ReactNode; tone: string; label: string; value: React.ReactNode; link?: ContactLink}) {
     const body = (
         <>
-            <span className={cn('flex size-10 shrink-0 items-center justify-center rounded-lg border', whatsapp ? 'border-[#1c9e52]/20 bg-[#effaf3] text-[#1c9e52]' : 'border-border bg-card text-brand')}>{icon}</span>
-            <span className="min-w-0">
-                <span className="spec-label block text-muted-foreground">{label}</span>
-                <span className="mt-0.5 block text-sm font-semibold text-foreground [overflow-wrap:anywhere] sm:whitespace-nowrap lg:whitespace-normal xl:whitespace-nowrap">{value}</span>
+            <span className={cn('flex size-9 shrink-0 items-center justify-center rounded-full', tone)}>{icon}</span>
+            <span className="min-w-0 flex-1">
+                <span className="block text-xs font-medium text-muted-foreground">{label}</span>
+                <span className="mt-0.5 block text-sm font-semibold leading-relaxed text-foreground [overflow-wrap:anywhere]">{value}</span>
             </span>
-            {link?.configured && <ArrowUpRight aria-hidden="true" className="ml-auto size-4 shrink-0 text-muted-foreground transition-transform group-hover/row:-translate-y-0.5 group-hover/row:translate-x-0.5 group-hover/row:text-brand" />}
         </>
     );
     return link?.configured ? (
-        <a href={link.href} {...externalLinkProps(link)} className="group/row flex items-center gap-3">{body}</a>
+        <a href={link.href} {...externalLinkProps(link)} className="group/row -mx-2 flex items-start gap-3 rounded-xl p-2 transition-colors hover:bg-muted/60">
+            {body}
+            <ArrowUpRight aria-hidden="true" className="mt-1 size-4 shrink-0 text-muted-foreground transition-transform group-hover/row:-translate-y-0.5 group-hover/row:translate-x-0.5 group-hover/row:text-brand" />
+        </a>
     ) : (
-        <div className="flex items-center gap-3">{body}</div>
+        <div className="-mx-2 flex items-start gap-3 p-2">{body}</div>
     );
 }
 
 /**
- * Graphite site footer: a closing CTA band (quote modal + WhatsApp), brand
- * column, Shop (real Vendure categories) / Company / Customer link columns,
- * contact rows from CONTACT_CONFIG, and the credit bar.
+ * Site footer (redesigned 2026-10-08): logo-colour stripe, a closing CTA card
+ * (quote modal + WhatsApp), then brand column · Shop (Home, Atta Chakki,
+ * compare) / Company / Customer link columns · contact card (CONTACT_CONFIG
+ * rows + website QR), and the credit bar (copyright, ISO, marketing credit,
+ * DripFunnel). The "Website" row was removed at client request; the QR still
+ * links to the site.
  */
 export async function Footer() {
     const locale = await getRouteLocale();
@@ -102,16 +120,23 @@ export async function Footer() {
     const tNav = await getTranslations({locale, namespace: 'Navigation'});
     const contact = resolveContactLinks(locale, tNav('whatsappGreeting'));
     const socials = getSocialProfiles();
-    const categories = (await getShopCategories(locale)).slice(0, 5);
+    // Hidden 2026-10-08 (Atta Chakki focus): the Shop column listed every Vendure
+    // category (incl. Grinding Machines & Cutters) and "Compare machines".
+    // const categories = (await getShopCategories(locale)).slice(0, 5);
+    // links: [
+    //     {href: '/shop/', label: t('allProducts')},
+    //     ...categories.map((category) => ({href: `/collection/${category.slug}/`, label: category.name.trim()})),
+    //     {href: '/compare/', label: tNav('compare')},
+    // ],
 
     const linkGroups: Array<{key: string; title: string; links: FooterLinks}> = [
         {
             key: 'shop',
             title: t('shop'),
             links: [
-                {href: '/shop/', label: t('allProducts')},
-                ...categories.map((category) => ({href: `/collection/${category.slug}/`, label: category.name.trim()})),
-                {href: '/compare/', label: tNav('compare')},
+                {href: '/', label: tNav('home')},
+                {href: '/shop/', label: tNav('attaChakki')},
+                {href: '/compare/', label: tNav('compareModels')},
             ],
         },
         {
@@ -138,47 +163,23 @@ export async function Footer() {
         },
     ];
 
-    // Marketing credit, under the link columns (md+) / the link disclosures (phones).
-    const marketedBy = (
-        <div className="mt-6 flex flex-col items-center text-center md:mt-10 md:border-t md:border-border md:pt-5">
-            {!isPlaceholder(CONTACT_CONFIG.marketedBy) && (
-                <p className="text-sm text-muted-foreground">
-                    {t('marketedBy')} <span className="font-semibold text-foreground">{CONTACT_CONFIG.marketedBy}</span>
-                </p>
-            )}
-        </div>
-    );
-
     return (
-        <footer className="relative isolate mt-auto overflow-hidden border-t border-border bg-tint-sheen text-foreground">
-            <div aria-hidden="true" className="absolute -right-40 -top-40 -z-10 size-[36rem] rounded-full bg-logo-blue/10 blur-[160px]" />
+        <footer className="relative isolate mt-auto overflow-hidden border-t border-border bg-surface text-foreground">
+            {/* Logo-colour stripe. */}
+            <div aria-hidden="true" className="flex h-1">
+                <span className="flex-1 bg-logo-blue" />
+                <span className="flex-1 bg-logo-green" />
+                <span className="flex-1 bg-logo-orange" />
+            </div>
 
-            {/* Top band: brand (left) and the closing CTA (right). */}
-            <div className="site-container">
-                <div className="grid gap-10 border-b border-border pb-8 pt-14 lg:grid-cols-12 lg:gap-12 lg:pb-10 lg:pt-16">
-                    <div className="lg:col-span-4">
-                        <NavigationLink href="/" className="inline-block rounded-md">
-                            <Image src={BRAND_LOGO.src} alt={tNav('logoAlt')} width={BRAND_LOGO.width} height={BRAND_LOGO.height} className="h-16 w-auto lg:h-20" />
-                        </NavigationLink>
-                        <IsoBadge className="mt-4 flex w-fit" />
-                        <p className="mt-6 font-display-wide text-lg font-bold leading-snug">{FOOTER_COPY.tagline}</p>
-                        <p className="mt-3 max-w-sm text-sm leading-relaxed text-muted-foreground">{FOOTER_COPY.description}</p>
-                        {socials.length > 0 && (
-                            <ul className="mt-6 flex flex-wrap gap-2">
-                                {socials.map(({network, url}) => (
-                                    <li key={network}>
-                                        <a href={url} target="_blank" rel="noopener noreferrer" className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-border bg-card px-3.5 text-xs font-semibold transition-colors hover:border-foreground/30">
-                                            {SOCIAL_LABELS[network]}
-                                            <ArrowUpRight aria-hidden="true" className="size-3.5" />
-                                        </a>
-                                    </li>
-                                ))}
-                            </ul>
-                        )}
-                    </div>
-                    <div className="flex flex-col justify-center gap-8 lg:col-span-8 lg:border-l lg:border-border lg:pl-12">
+            {/* Closing CTA card. */}
+            <div className="site-container pt-10 lg:pt-14">
+                <div className="relative isolate overflow-hidden rounded-3xl border border-border bg-tint-sheen px-6 py-8 sm:px-10 sm:py-10 lg:px-14 lg:py-12">
+                    <div aria-hidden="true" className="absolute -right-24 -top-24 -z-10 size-80 rounded-full bg-logo-orange/15 blur-3xl" />
+                    <div aria-hidden="true" className="absolute -bottom-28 left-1/3 -z-10 size-72 rounded-full bg-logo-blue/10 blur-3xl" />
+                    <div className="grid items-center gap-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-12">
                         <div className="max-w-2xl">
-                            <p className="font-display-wide text-3xl font-bold leading-[1.05] sm:text-4xl lg:text-5xl">{t('ctaTitle')}</p>
+                            <p className="font-display-wide text-3xl font-bold leading-[1.05] sm:text-4xl">{t('ctaTitle')}</p>
                             <p className="mt-4 max-w-xl text-base leading-relaxed text-muted-foreground">{t('ctaBody')}</p>
                         </div>
                         <div className="flex flex-col gap-3 sm:flex-row">
@@ -194,73 +195,92 @@ export async function Footer() {
                 </div>
             </div>
 
-            <div className="site-container pb-4 pt-8 lg:pb-6 lg:pt-10">
-                <div className="grid gap-x-6 gap-y-10 md:grid-cols-2 md:gap-y-12 lg:grid-cols-12 lg:gap-8">
-                    {/* Left: phone, WhatsApp, address. */}
-                    <div className="lg:col-span-3">
-                        <p className="spec-label mb-5 text-muted-foreground">{t('contact')}</p>
-                        <div className="grid gap-5">
-                            <ContactRow icon={<Phone aria-hidden="true" className="size-4" />} label={t('phone')} value={CONTACT_CONFIG.phone} link={contact.phone} />
-                            <ContactRow icon={<WhatsAppIcon aria-hidden="true" className="size-4" />} label={t('whatsapp')} value={CONTACT_CONFIG.whatsapp} link={contact.whatsapp} whatsapp />
-                            <div className="flex gap-3">
-                                <span className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-border bg-card text-brand">
-                                    <MapPin aria-hidden="true" className="size-4" />
-                                </span>
-                                <span className="min-w-0">
-                                    <span className="spec-label block text-muted-foreground">{t('address')}</span>
-                                    <address className="mt-0.5 text-sm leading-relaxed not-italic text-foreground">{CONTACT_CONFIG.address}</address>
-                                </span>
-                            </div>
-                            <QuoteButton className={cn(siteButton({variant: 'brand', size: 'md'}), 'w-full sm:w-auto sm:justify-self-start')} />
-                        </div>
-                    </div>
-
-                    {/* Middle — phones: one disclosure per link group (Shop open). */}
-                    <div className="md:hidden">
-                        <div className="border-t border-border">
-                            {linkGroups.map((group, index) => (
-                                <FooterAccordionItem key={group.key} title={group.title} links={group.links} open={index === 0} />
-                            ))}
-                        </div>
-                        {marketedBy}
-                    </div>
-                    {/* Middle — md+: titled columns, with the marketing credit under them (full row on tablets). */}
-                    <div className="hidden md:col-span-2 md:row-start-1 md:block lg:col-span-6 lg:row-start-auto">
-                        <div className="grid grid-cols-3 gap-x-6 lg:gap-x-8">
-                            {linkGroups.map((group) => (
-                                <FooterColumn key={group.key} title={group.title} links={group.links} />
-                            ))}
-                        </div>
-                        {marketedBy}
-                    </div>
-
-                    {/* Right: website QR, website, email(s) — centred. */}
-                    <div className="flex flex-col items-center lg:col-span-3">
-                        {!isPlaceholder(CONTACT_CONFIG.website) && (
-                            <a href={contact.website.href} {...externalLinkProps(contact.website)} className="inline-block rounded-xl border border-border bg-white p-2 shadow-sm transition-shadow hover:shadow-md">
-                                <Image src={WEBSITE_QR.src} alt={WEBSITE_QR.alt} width={WEBSITE_QR.width} height={WEBSITE_QR.height} className="size-36" />
-                            </a>
+            <div className="site-container py-12 lg:py-16">
+                <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-12 lg:gap-10">
+                    {/* Brand. */}
+                    <div className="lg:col-span-4">
+                        <NavigationLink href="/" className="inline-block rounded-md">
+                            <Image src={BRAND_LOGO.src} alt={tNav('logoAlt')} width={BRAND_LOGO.width} height={BRAND_LOGO.height} className="h-16 w-auto lg:h-20" />
+                        </NavigationLink>
+                        <IsoBadge className="mt-4 flex w-fit" />
+                        <p className="mt-6 font-display-wide text-lg font-bold leading-snug">{FOOTER_COPY.tagline}</p>
+                        <p className="mt-3 max-w-sm text-sm leading-relaxed text-muted-foreground">{FOOTER_COPY.description}</p>
+                        {socials.length > 0 && (
+                            <ul className="mt-6 flex flex-wrap gap-2">
+                                {socials.map(({network, url}) => (
+                                    <li key={network}>
+                                        <a href={url} target="_blank" rel="noopener noreferrer" className="inline-flex h-9 items-center gap-1.5 rounded-full border border-border bg-card px-4 text-xs font-semibold transition-colors hover:border-foreground/30">
+                                            {SOCIAL_LABELS[network]}
+                                            <ArrowUpRight aria-hidden="true" className="size-3.5" />
+                                        </a>
+                                    </li>
+                                ))}
+                            </ul>
                         )}
-                        <div className="mt-4 grid w-fit max-w-full gap-3.5">
-                            {!isPlaceholder(CONTACT_CONFIG.website) && (
-                                <ContactRow icon={<Globe aria-hidden="true" className="size-4" />} label={t('website')} value={CONTACT_CONFIG.website} link={contact.website} />
-                            )}
-                            <ContactRow icon={<Mail aria-hidden="true" className="size-4" />} label={t('email')} value={CONTACT_CONFIG.email} link={contact.email} />
-                            {!isPlaceholder(CONTACT_CONFIG.secondaryEmail) && (
-                                <ContactRow icon={<Mail aria-hidden="true" className="size-4" />} label={t('email')} value={CONTACT_CONFIG.secondaryEmail} link={contact.secondaryEmail} />
-                            )}
+                    </div>
+
+                    {/* Links — phones: one disclosure per group (Shop open). */}
+                    <div className="rounded-2xl border border-border bg-card px-5 md:hidden">
+                        {linkGroups.map((group, index) => (
+                            <FooterAccordionItem key={group.key} title={group.title} links={group.links} accent={GROUP_ACCENTS[index % GROUP_ACCENTS.length]} open={index === 0} />
+                        ))}
+                    </div>
+                    {/* Links — md+: titled columns. */}
+                    <div className="hidden md:block lg:col-span-4 lg:pt-2">
+                        <div className="grid grid-cols-3 gap-x-6">
+                            {linkGroups.map((group, index) => (
+                                <FooterColumn key={group.key} title={group.title} links={group.links} accent={GROUP_ACCENTS[index % GROUP_ACCENTS.length]} />
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Contact card: phone, WhatsApp, email(s), address, website QR + quote. */}
+                    <div className="md:col-span-2 lg:col-span-4">
+                        <div className="rounded-2xl border border-border bg-card p-5 shadow-[0_18px_40px_-30px_rgb(0_0_0/0.35)] sm:p-6">
+                            <p className="mb-3 text-[15px] font-bold">
+                                <GroupTitle title={t('contact')} accent="bg-brand" />
+                            </p>
+                            <div className="grid gap-1 sm:grid-cols-2 lg:grid-cols-1">
+                                <ContactRow icon={<Phone aria-hidden="true" className="size-4" />} tone="bg-tint-blue text-logo-blue-deep" label={t('phone')} value={CONTACT_CONFIG.phone} link={contact.phone} />
+                                <ContactRow icon={<WhatsAppIcon aria-hidden="true" className="size-4" />} tone="bg-[#effaf3] text-[#1c9e52]" label={t('whatsapp')} value={CONTACT_CONFIG.whatsapp} link={contact.whatsapp} />
+                                <ContactRow icon={<Mail aria-hidden="true" className="size-4" />} tone="bg-tint-orange text-logo-orange-deep" label={t('email')} value={CONTACT_CONFIG.email} link={contact.email} />
+                                {!isPlaceholder(CONTACT_CONFIG.secondaryEmail) && (
+                                    <ContactRow icon={<Mail aria-hidden="true" className="size-4" />} tone="bg-tint-orange text-logo-orange-deep" label={t('email')} value={CONTACT_CONFIG.secondaryEmail} link={contact.secondaryEmail} />
+                                )}
+                                <ContactRow
+                                    icon={<MapPin aria-hidden="true" className="size-4" />}
+                                    tone="bg-tint-green text-logo-green-deep"
+                                    label={t('address')}
+                                    value={<address className="font-normal not-italic">{CONTACT_CONFIG.address}</address>}
+                                />
+                            </div>
+                            <div className="mt-4 flex items-center gap-4 border-t border-border pt-4">
+                                {!isPlaceholder(CONTACT_CONFIG.website) && (
+                                    <a href={contact.website.href} {...externalLinkProps(contact.website)} className="shrink-0 rounded-xl border border-border bg-white p-1.5 transition-shadow hover:shadow-md">
+                                        <Image src={WEBSITE_QR.src} alt={WEBSITE_QR.alt} width={WEBSITE_QR.width} height={WEBSITE_QR.height} className="size-20" />
+                                    </a>
+                                )}
+                                <QuoteButton className={cn(siteButton({variant: 'brand', size: 'md'}), 'flex-1 sm:flex-none')} />
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div className="border-t border-border">
-                <div className="site-container flex flex-col gap-4 pb-24 pt-6 text-[13px] text-muted-foreground lg:flex-row lg:items-center lg:justify-between lg:gap-8 lg:py-6">
-                    <div className="flex flex-col gap-1.5 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-5">
+            {/* Credit bar. */}
+            <div className="border-t border-border bg-card/70">
+                <div className="site-container flex flex-col items-center gap-3 pb-24 pt-6 text-center text-[13px] text-muted-foreground lg:flex-row lg:justify-between lg:gap-8 lg:py-5 lg:text-left">
+                    <div className="flex flex-col items-center gap-1.5 sm:flex-row sm:flex-wrap sm:justify-center sm:gap-x-4">
                         <p>&copy; {COPYRIGHT_YEAR} {t('copyright')}</p>
+                        <span aria-hidden="true" className="hidden size-1 rounded-full bg-muted-foreground/40 sm:block" />
                         <p className="font-semibold text-foreground">{t('isoCompany')}</p>
                     </div>
-                    <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-3 lg:mr-16 lg:shrink-0 lg:flex-nowrap lg:justify-start">
+                    <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 lg:mr-16 lg:shrink-0">
+                        {!isPlaceholder(CONTACT_CONFIG.marketedBy) && (
+                            <p>
+                                {t('marketedBy')} <span className="font-semibold text-foreground">{CONTACT_CONFIG.marketedBy}</span>
+                            </p>
+                        )}
                         <a
                             href="https://dripfunnel.com/"
                             target="_blank"

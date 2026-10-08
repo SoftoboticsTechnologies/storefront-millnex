@@ -148,6 +148,7 @@ export interface HeroSlide {
 }
 
 export const HERO_SLIDES: HeroSlide[] = [
+    // 1.png and 2.png restored 2026-10-08 at the client's request (they also show a fafda machine).
     {
         src: '/hero/1.webp',
         mobileSrc: '/hero/1-1024.webp',
@@ -162,6 +163,42 @@ export const HERO_SLIDES: HeroSlide[] = [
         width: 2048,
         height: 768,
     },
+    {
+        // 6.png (2026-10-08): the three atta chakkis from banner 2.png (right of
+        // its fafda machine), on that banner's own background, blurred and extended,
+        // with the Millnex logo (public/logo/millnex-logo.png) and headline on the left.
+        src: '/hero/6.webp',
+        mobileSrc: '/hero/6-1024.webp',
+        alt: 'Millnex Atta Chakki — fully automatic domestic flour mill. Fresh atta, better taste, made right at home. Three Millnex Atta Chakkis — a pink 1.5 HP 2-in-1, one open to show the grinding chamber and steel drum, and a floral-door model — beside wheat and flour',
+        width: 2048,
+        height: 768,
+    },
+    {
+        // 7.png (2026-10-08): the three real photos from public/live images side by side.
+        src: '/hero/7.webp',
+        mobileSrc: '/hero/7-1024.webp',
+        alt: 'Real photos of a Millnex 1.5 HP 2-in-1 Atta Chakki — grinding chamber, designer door panel and stainless-steel feed hopper',
+        width: 2048,
+        height: 768,
+    },
+    {
+        // 5.png (2026-10-08): the atta chakki line-up cropped from banner 1.png
+        // (below its certification row, left of the fafda machine) and scaled
+        // to 2048×768, so the hero shows only Millnex Atta Chakkis.
+        src: '/hero/5.webp',
+        mobileSrc: '/hero/5-1024.webp',
+        alt: 'Five Millnex Atta Chakki domestic flour mills with designer door panels, beside fresh flour and wheat',
+        width: 2048,
+        height: 768,
+    },
+];
+
+/*
+ * Hidden 2026-10-08 — banners 3 and 4 show pulverizers, a gravy machine and
+ * cutters. The client wants the hero to show only the Atta Chakki (banners 1
+ * and 2 were restored on request); the PNG/WebP files stay in public/hero.
+ */
+export const HIDDEN_HERO_SLIDES: HeroSlide[] = [
     {
         src: '/hero/3.webp',
         mobileSrc: '/hero/3-1024.webp',
@@ -270,4 +307,17 @@ export const LIVE_PHOTOS: Array<CatalogImage & {caption: string}> = [
         width: 760,
         height: 1013,
     },
+];
+
+/**
+ * Millnex 1.5 HP 2-in-1 Atta Chakki in three designer door panels (client's
+ * own photos, 2026-10-08; black screenshot bars trimmed, WebP). White
+ * backgrounds — show whole (`object-contain`, `mix-blend-multiply` on a
+ * light stage). The "7 KG" badge is part of the client's artwork. Brand
+ * imagery, not product records: price/stock always come from Vendure.
+ */
+export const DESIGN_PHOTOS: CatalogImage[] = [
+    {src: '/products%20category/products%20image/millnex-atta-chakki-1-5hp-2in1-design-01.webp', alt: 'Millnex 1.5 HP 2-in-1 Atta Chakki with a black door panel printed with butterflies', width: 668, height: 917},
+    {src: '/products%20category/products%20image/millnex-atta-chakki-1-5hp-2in1-design-02.webp', alt: 'Millnex 1.5 HP 2-in-1 Atta Chakki with a black floral door and lid', width: 668, height: 960},
+    {src: '/products%20category/products%20image/millnex-atta-chakki-1-5hp-2in1-design-03.webp', alt: 'Millnex 1.5 HP 2-in-1 Atta Chakki with a colourful splash-art door panel', width: 668, height: 926},
 ];

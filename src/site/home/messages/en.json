@@ -1,7 +1,7 @@
 {
   "Home": {
-    "metaTitle": "Millnex | Flour Mills, Pulverizers & Food-Processing Machinery",
-    "metaDescription": "Millnex manufactures domestic flour mills (atta chakki), pulverizers and food-processing machinery in Rajkot, Gujarat. Explore the range, compare machines and request a quote.",
+    "metaTitle": "Millnex Atta Chakki | Domestic Flour Mill for Fresh Atta at Home",
+    "metaDescription": "Buy Millnex Atta Chakki for fresh, hygienic and convenient flour milling at home. Book a free home demo and get free shipping up to {km} KM.",
     "heroTitle": "Explore our products",
     "shopNow": "Shop now",
     "browseCategories": "Browse categories",
@@ -31,7 +31,7 @@
     "liveCatalogue": "In the catalogue now",
     "machineCount": "{count, plural, one {# machine} other {# machines}}",
     "categoryCount": "{count, plural, one {# category} other {# categories}}",
-    "viewAllMachines": "View all machines",
+    "viewAllMachines": "View all Atta Chakki models",
     "exploreCategory": "Explore Category",
     "finderStep": "Step {current} of {total}",
     "finderBack": "Back",
@@ -51,15 +51,19 @@
     "compareAvailability": "Availability",
     "compareVariants": "Variants",
     "compareNote": "Only details listed in our catalogue are shown. For motor power, capacity and dimensions, request a quote or contact our team.",
-    "compareMachines": "Compare Machines",
-    "compareMetaTitle": "Compare Machines",
-    "compareMetaDescription": "Compare Millnex flour mills, pulverizers and food-processing machines side by side — price, availability and catalogue specifications.",
+    "compareMachines": "Compare Models",
+    "compareMetaTitle": "Compare Atta Chakki Models",
+    "compareMetaDescription": "Compare Millnex Atta Chakki models side by side — price, availability and catalogue specifications.",
     "compareEmpty": "Comparisons appear here once a category has at least two machines.",
     "inThisRange": "In this range",
     "heroCarousel": "Millnex highlights",
     "heroPrevious": "Previous slide",
     "heroNext": "Next slide",
     "heroGoTo": "Go to slide {index}",
-    "heroSlideOf": "Slide {index} of {total}"
+    "heroSlideOf": "Slide {index} of {total}",
+    "viewAttaChakki": "View Atta Chakki",
+    "bookFreeHomeDemo": "Book a Free Home Demo",
+    "whatsappUs": "WhatsApp Us",
+    "compareShared": "Every model:"
   }
 }

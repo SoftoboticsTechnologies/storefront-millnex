@@ -50,7 +50,8 @@ export default async function SearchPage() {
             <div className="site-container pb-16 lg:pb-24">
                 <SearchResults
                     collectionNames={collectionNames}
-                    categories={categories.map(({name, slug}) => ({name: name.trim(), slug}))}
+                    // A single category (the catalog focus) is no filter.
+                    categories={categories.length > 1 ? categories.map(({name, slug}) => ({name: name.trim(), slug})) : undefined}
                 />
             </div>
         </div>

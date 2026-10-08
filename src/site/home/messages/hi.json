@@ -1,7 +1,7 @@
 {
   "Home": {
-    "metaTitle": "Millnex | आटा चक्की, पल्वराइज़र और खाद्य-प्रसंस्करण मशीनें",
-    "metaDescription": "Millnex राजकोट, गुजरात में घरेलू आटा चक्की, पल्वराइज़र और खाद्य-प्रसंस्करण मशीनें बनाता है। रेंज देखें, मशीनों की तुलना करें और कोटेशन मंगाएं।",
+    "metaTitle": "Millnex आटा चक्की | घर पर ताज़ा आटे के लिए घरेलू आटा चक्की",
+    "metaDescription": "घर पर ताज़ा, स्वच्छ और सुविधाजनक आटा पिसाई के लिए Millnex आटा चक्की खरीदें। मुफ़्त होम डेमो बुक करें और {km} किमी तक मुफ़्त शिपिंग पाएं।",
     "heroTitle": "हमारे उत्पाद देखें",
     "shopNow": "अभी खरीदें",
     "browseCategories": "श्रेणियाँ देखें",
@@ -31,7 +31,7 @@
     "liveCatalogue": "अभी कैटलॉग में",
     "machineCount": "{count} मशीनें",
     "categoryCount": "{count} श्रेणियाँ",
-    "viewAllMachines": "सभी मशीनें देखें",
+    "viewAllMachines": "सभी आटा चक्की मॉडल देखें",
     "exploreCategory": "श्रेणी देखें",
     "finderStep": "चरण {current} / {total}",
     "finderBack": "वापस",
@@ -51,15 +51,19 @@
     "compareAvailability": "उपलब्धता",
     "compareVariants": "वेरिएंट",
     "compareNote": "केवल हमारे कैटलॉग में दी गई जानकारी दिखाई गई है। मोटर पावर, क्षमता और आयाम के लिए कोटेशन मंगाएं या हमारी टीम से संपर्क करें।",
-    "compareMachines": "मशीनों की तुलना करें",
-    "compareMetaTitle": "मशीनों की तुलना करें",
-    "compareMetaDescription": "Millnex आटा चक्की, पल्वराइज़र और खाद्य-प्रसंस्करण मशीनों की तुलना करें — कीमत, उपलब्धता और कैटलॉग विनिर्देश।",
+    "compareMachines": "मॉडलों की तुलना करें",
+    "compareMetaTitle": "आटा चक्की मॉडलों की तुलना",
+    "compareMetaDescription": "Millnex आटा चक्की मॉडलों की साथ-साथ तुलना करें — कीमत, उपलब्धता और कैटलॉग विवरण।",
     "compareEmpty": "जब किसी श्रेणी में कम से कम दो मशीनें होंगी, तुलना यहाँ दिखेगी।",
     "inThisRange": "इस रेंज में",
     "heroCarousel": "Millnex की झलकियाँ",
     "heroPrevious": "पिछली स्लाइड",
     "heroNext": "अगली स्लाइड",
     "heroGoTo": "स्लाइड {index} पर जाएं",
-    "heroSlideOf": "स्लाइड {index} / {total}"
+    "heroSlideOf": "स्लाइड {index} / {total}",
+    "viewAttaChakki": "आटा चक्की देखें",
+    "bookFreeHomeDemo": "मुफ़्त होम डेमो बुक करें",
+    "whatsappUs": "WhatsApp करें",
+    "compareShared": "हर मॉडल में:"
   }
 }

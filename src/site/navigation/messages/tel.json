@@ -20,11 +20,12 @@
     "insights": "అంతర్దృష్టులు",
     "contact": "సంప్రదించండి",
     "primaryNavigation": "ప్రధాన నావిగేషన్",
-    "whatsappGreeting": "నమస్తే Millnex, మీ యంత్రాల గురించి మరింత తెలుసుకోవాలనుకుంటున్నాను.",
+    "whatsappGreeting": "నమస్తే Millnex, Millnex ఆటా చక్కీ గురించి మరింత తెలుసుకోవాలనుకుంటున్నాను.",
     "logoAlt": "Millnex ఆటా చక్కీ లోగో",
     "chatWithUs": "మాతో చాట్ చేయండి",
     "skipToContent": "కంటెంట్‌కు వెళ్లండి",
     "shop": "షాప్",
+    "shopAll": "అన్ని ఉత్పత్తులు",
     "categories": "వర్గాలు",
     "allProducts": "అన్ని ఉత్పత్తులు",
     "myAccount": "నా ఖాతా",
@@ -63,6 +64,11 @@
     "closeSearch": "శోధన మూసివేయి",
     "chatWithMillnex": "Millnexతో చాట్ చేయండి",
     "company": "సంస్థ",
-    "callUs": "కాల్ చేయండి {phone}"
+    "callUs": "కాల్ చేయండి {phone}",
+    "attaChakki": "ఆటా చక్కీ",
+    "whyMillnex": "Millnex ఎందుకు",
+    "utilityDemo": "ఉచిత హోమ్ డెమో",
+    "utilityShipping": "{km} కి.మీ. వరకు ఉచిత షిప్పింగ్",
+    "compareModels": "మోడళ్లను పోల్చండి"
   }
 }

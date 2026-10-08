@@ -138,7 +138,7 @@ export function MachineComparison({groups}: {groups: ComparisonGroup[]}) {
                                             <ArrowUpRight aria-hidden="true" className="size-4" />
                                         </Link>
                                         {!product.inStock && (
-                                            <QuoteButton product={product.slug} hideIcon className="inline-flex h-10 items-center justify-center rounded-lg border border-foreground/15 px-3 text-sm font-semibold hover:border-foreground/35">
+                                            <QuoteButton product={product.slug} intent="quote" hideIcon className="inline-flex h-10 items-center justify-center rounded-lg border border-foreground/15 px-3 text-sm font-semibold hover:border-foreground/35">
                                                 {tProduct('askAvailability')}
                                             </QuoteButton>
                                         )}

@@ -1,14 +1,16 @@
 import type {MetadataRoute} from 'next';
 import {routing} from '@/platform/i18n/routing';
 import {buildCanonicalUrl} from '@/config/metadata';
-import {getPopularProductSlugs} from '@/features/products/data';
-import {getTopCollections} from '@/features/collections/data';
+import {getListedProductSlugs} from '@/features/products/data';
+import {getShopCategories} from '@/features/collections/data';
 
 type SitemapPage = {path: string; priority: number; changeFrequency: MetadataRoute.Sitemap[number]['changeFrequency']};
 
 /**
  * sitemap.xml (exported statically at build): storefront + company pages,
- * plus every Vendure product and collection page that is prerendered.
+ * plus every Vendure product and collection page listed to visitors (the
+ * catalog focus — config/catalog-focus.ts; unlisted products' pages are
+ * still prerendered, just not advertised).
  * Session-bound routes (cart, checkout, account, search) are excluded.
  */
 const STATIC_PAGES: SitemapPage[] = [
@@ -27,8 +29,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // across locales unless translated, in which case the per-locale page
     // canonicalizes itself.
     const [productSlugs, collections] = await Promise.all([
-        getPopularProductSlugs(routing.defaultLocale),
-        getTopCollections(routing.defaultLocale),
+        getListedProductSlugs(routing.defaultLocale),
+        getShopCategories(routing.defaultLocale),
     ]);
 
     const pages: SitemapPage[] = [

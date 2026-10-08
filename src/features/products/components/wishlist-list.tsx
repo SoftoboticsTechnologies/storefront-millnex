@@ -82,7 +82,7 @@ export function WishlistList() {
                         {t('browse')}
                         <ArrowRight aria-hidden="true" className="size-4 transition-transform group-hover/btn:translate-x-0.5" />
                     </Link>
-                    <QuoteButton className="inline-flex h-12 items-center justify-center gap-2 rounded-lg border border-foreground/15 bg-card px-6 text-[15px] font-semibold text-foreground transition-[transform,border-color] duration-200 outline-none hover:-translate-y-0.5 hover:border-foreground/35 focus-visible:ring-3 focus-visible:ring-brand/40 [&_svg]:size-4">
+                    <QuoteButton intent="quote" className="inline-flex h-12 items-center justify-center gap-2 rounded-lg border border-foreground/15 bg-card px-6 text-[15px] font-semibold text-foreground transition-[transform,border-color] duration-200 outline-none hover:-translate-y-0.5 hover:border-foreground/35 focus-visible:ring-3 focus-visible:ring-brand/40 [&_svg]:size-4">
                         <MessageSquareText aria-hidden="true" />
                         {t('emptyEnquire')}
                     </QuoteButton>

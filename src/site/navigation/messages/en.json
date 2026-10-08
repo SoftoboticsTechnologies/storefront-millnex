@@ -20,11 +20,12 @@
     "insights": "Insights",
     "contact": "Contact",
     "primaryNavigation": "Main navigation",
-    "whatsappGreeting": "Hello Millnex, I'd like to know more about your machines.",
+    "whatsappGreeting": "Hello Millnex, I'd like to know more about the Millnex Atta Chakki.",
     "logoAlt": "Millnex Atta Chakki logo",
     "chatWithUs": "Chat with us",
     "skipToContent": "Skip to content",
     "shop": "Shop",
+    "shopAll": "Shop All",
     "categories": "Categories",
     "allProducts": "All products",
     "myAccount": "My account",
@@ -63,6 +64,11 @@
     "closeSearch": "Close search",
     "chatWithMillnex": "Chat with Millnex",
     "company": "Company",
-    "callUs": "Call {phone}"
+    "callUs": "Call {phone}",
+    "attaChakki": "Atta Chakki",
+    "whyMillnex": "Why Millnex",
+    "utilityDemo": "Free Home Demo",
+    "utilityShipping": "Free Shipping up to {km} KM",
+    "compareModels": "Compare models"
   }
 }

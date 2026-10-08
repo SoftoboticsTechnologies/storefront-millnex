@@ -43,12 +43,12 @@ function toSearchParamsRecord(searchParams: URLSearchParams): {[key: string]: st
     return record;
 }
 
-function fetchCatalog(searchParamsString: string, locale: string, collectionSlug?: string): Promise<SearchProductsResult> {
+function fetchCatalog(searchParamsString: string, locale: string, collectionSlug?: string, allProducts?: boolean): Promise<SearchProductsResult> {
     const record = toSearchParamsRecord(new URLSearchParams(searchParamsString));
 
     return getActiveCurrencyCode().then((currencyCode) =>
         query(SearchProductsQuery, {
-            input: buildSearchInput({searchParams: record, collectionSlug}),
+            input: buildSearchInput({searchParams: record, collectionSlug, allProducts}),
         }, {languageCode: locale, currencyCode})
     );
 }
@@ -125,6 +125,8 @@ export interface CatalogResultsProps {
     collectionNames?: Record<string, string>;
     /** Categories offered as a filter (unscoped listings only — see FacetFilters). */
     categories?: FilterCategory[];
+    /** Ignore the catalog focus and list every product (`/shop`). */
+    allProducts?: boolean;
 }
 
 /**
@@ -138,7 +140,7 @@ function fulfilled<T>(value: T): Promise<T> {
     return Object.assign(Promise.resolve(value), {status: 'fulfilled' as const, value});
 }
 
-export function CatalogResults({collectionSlug, collectionId, initialProducts, collectionNames, categories}: CatalogResultsProps) {
+export function CatalogResults({collectionSlug, collectionId, initialProducts, collectionNames, categories, allProducts}: CatalogResultsProps) {
     const locale = useLocale();
     const t = useTranslations('Listing');
     // Defaults to '' (no filters/sort/page) so the first render — including
@@ -166,10 +168,10 @@ export function CatalogResults({collectionSlug, collectionId, initialProducts, c
     useEffect(() => {
         if (!hasSyncedParams) return;
         startTransition(() => {
-            setResultPromise(fetchCatalog(searchParamsString, locale, collectionSlug));
+            setResultPromise(fetchCatalog(searchParamsString, locale, collectionSlug, allProducts));
             setResultParams(searchParamsString);
         });
-    }, [collectionSlug, searchParamsString, locale, hasSyncedParams, attempt]);
+    }, [collectionSlug, allProducts, searchParamsString, locale, hasSyncedParams, attempt]);
 
     // Remember every facet value seen so far (labels for chips / selected values
     // that drop out of the current result — see FacetValueIndex).

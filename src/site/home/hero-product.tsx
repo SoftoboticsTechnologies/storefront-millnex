@@ -1,24 +1,27 @@
 import Image from 'next/image';
-import {ArrowRight, Check, ImageOff} from 'lucide-react';
+import {ArrowRight, CalendarCheck, Check, ImageOff, Truck} from 'lucide-react';
 import {QuoteButton} from '@/features/enquiry/quote-dialog';
 import type {ProductCardData} from '@/features/products/product-card-data';
 import {ProductCardPrice} from '@/features/products/product-price-client';
-import {HERO_PRODUCT_COPY} from '@/site/content/home';
-import {LIVE_PHOTOS} from '@/site/content/media';
+import {DEMO_COPY, HERO_PRODUCT_COPY, HOME_HERO} from '@/site/content/home';
+import {DESIGN_PHOTOS} from '@/site/content/media';
 import {NavigationLink} from '@/site/navigation/navigation-link';
 import {arrowNudge, siteButton} from '@/site/ui/button-styles';
 
 /**
  * Flagship highlight for Millnex's hero product (HERO_PRODUCT_COPY, matched
  * by name in home/page.tsx): the Vendure product photo on a stage with the
- * real machine photos (media.ts#LIVE_PHOTOS) beside it, then the title, the
- * banner's feature list, the live Vendure price (with its % OFF) and CTAs.
+ * the 1.5 HP's three door designs (media.ts#DESIGN_PHOTOS; real photos were
+ * LIVE_PHOTOS until 2026-10-08 — they stay in the LivePhotos band) beside it, then the title, the
+ * product's feature list (from its Vendure description), the live Vendure
+ * price (with its % OFF), the demo/shipping offers and CTAs ("View Product",
+ * "Book a Free Demo").
  * Renders nothing when the product isn't in the catalog.
  */
 export function HeroProduct({product}: {product: ProductCardData | undefined}) {
     if (!product) return null;
     const href = `/product/${product.slug}`;
-    const photos = LIVE_PHOTOS.slice(0, 3);
+    const photos = DESIGN_PHOTOS.slice(0, 3);
 
     return (
         <section id="flagship" aria-labelledby="flagship-title" className="relative isolate scroll-mt-28 overflow-hidden border-y border-border bg-tint-blue py-16 sm:py-20 lg:py-24">
@@ -44,7 +47,7 @@ export function HeroProduct({product}: {product: ProductCardData | undefined}) {
                     </NavigationLink>
                     {photos.map((photo) => (
                         <div key={photo.src} className="relative col-span-1 aspect-[3/4] overflow-hidden rounded-xl border border-border bg-stage max-sm:hidden">
-                            <Image src={photo.src} alt={photo.alt} fill sizes="12vw" className="object-cover" />
+                            <Image src={photo.src} alt={photo.alt} fill sizes="12vw" className="object-contain p-1.5 mix-blend-multiply" />
                         </div>
                     ))}
                 </div>
@@ -72,6 +75,18 @@ export function HeroProduct({product}: {product: ProductCardData | undefined}) {
                             <ProductCardPrice slug={product.slug} initial={product.price} />
                         </p>
                     )}
+
+                    {/* Customer offers (home.ts#DEMO_COPY), right by the price and CTAs. */}
+                    <ul className="mt-5 flex flex-wrap gap-2.5 text-sm font-semibold">
+                        <li className="inline-flex items-center gap-2 rounded-full border border-logo-green/30 bg-card px-3.5 py-1.5 text-logo-green-deep">
+                            <CalendarCheck aria-hidden="true" className="size-4" />
+                            {HOME_HERO.trust[0]}
+                        </li>
+                        <li className="inline-flex items-center gap-2 rounded-full border border-brand/25 bg-card px-3.5 py-1.5 text-brand">
+                            <Truck aria-hidden="true" className="size-4" />
+                            {DEMO_COPY.shippingTitle}
+                        </li>
+                    </ul>
 
                     <div className="mt-7 flex flex-col gap-3 sm:flex-row">
                         <NavigationLink href={href} className={siteButton({variant: 'brand', size: 'lg'})}>

@@ -28,14 +28,14 @@ export async function generateMetadata(): Promise<Metadata> {
     });
 }
 
-/** Hero visual: one large pulverizer stage flanked by two smaller mills. */
+/** Hero visual: one large atta chakki stage flanked by two smaller mills (was a pulverizer + gravy machine until 2026-10-08). */
 function HeroVisual() {
     const {heroImage} = MANUFACTURING_PAGE_COPY;
     return (
         <div className="animate-hero-image-in grid grid-cols-3 grid-rows-2 gap-3 sm:gap-4" style={{'--hero-delay': '160ms'} as React.CSSProperties}>
             <MachineStage image={heroImage} priority sizes="(min-width: 1024px) 30vw, 64vw" className="col-span-2 row-span-2 aspect-auto h-full" />
             <MachineStage image={MILL_GALLERY[0]} priority sizes="(min-width: 1024px) 14vw, 30vw" />
-            <MachineStage image={MACHINE_GALLERY[5]} priority sizes="(min-width: 1024px) 14vw, 30vw" />
+            <MachineStage image={MACHINE_GALLERY[3]} priority sizes="(min-width: 1024px) 14vw, 30vw" />
         </div>
     );
 }

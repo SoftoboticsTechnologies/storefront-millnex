@@ -16,7 +16,8 @@ import {
     BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 import { notFound } from 'next/navigation';
-import {ArrowRight, FileText, HelpCircle, MessageSquareText, PackageSearch, ShieldCheck, Truck} from 'lucide-react';
+import {ArrowRight, CalendarCheck, FileText, HelpCircle, MessageSquareText, PackageSearch, ShieldCheck, Truck} from 'lucide-react';
+import {CUSTOMER_OFFERS, isFocusCollection} from '@/config/catalog-focus';
 import {Tabs, TabsContent, TabsList, TabsTrigger} from '@/components/ui/tabs';
 import {QuoteButton} from '@/features/enquiry/quote-dialog';
 import {cn} from '@/lib/utils';
@@ -176,6 +177,7 @@ export default async function ProductDetailPage({
     const hasDescription = stripHtml(product.description).length > 0;
 
     const enquiryHref = `/contact?product=${encodeURIComponent(product.slug)}#enquiry`;
+    const hasOffers = isFocusCollection(primaryCollection?.slug);
     // Specifications = only real Vendure data: collection, facet values,
     // SKU(s) and variant names. Nothing is typed in by hand.
     const specRows: Array<{label: string; value: string}> = [
@@ -320,9 +322,11 @@ export default async function ProductDetailPage({
                             payment runs through the secure checkout, orders are
                             tracked in the account, and enquiries reach the team. */}
                         <TabsContent value="delivery" keepMounted className={tabPanel}>
-                            <ul className="grid gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-2">
+                            <ul className="grid gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-2 sm:[&>li:last-child:nth-child(odd)]:col-span-2">
                                 {[
-                                    {icon: Truck, title: t('shippingTitle'), body: t('shippingBody')},
+                                    // Atta Chakki products: free shipping radius + free home demo (config/catalog-focus.ts).
+                                    {icon: Truck, title: t('shippingTitle'), body: hasOffers ? t('shippingFreeBody', {km: CUSTOMER_OFFERS.freeShippingKm}) : t('shippingBody')},
+                                    ...(hasOffers ? [{icon: CalendarCheck, title: t('offerDemoTitle'), body: t('offerDemoBody')}] : []),
                                     {icon: ShieldCheck, title: t('paymentTitle'), body: t('paymentBody')},
                                     {icon: PackageSearch, title: t('ordersTitle'), body: t('ordersBody'), href: '/account/orders', cta: t('viewOrders')},
                                     {icon: MessageSquareText, title: t('helpTitle'), body: t('helpBody'), href: enquiryHref, cta: t('productEnquiry')},
@@ -389,7 +393,7 @@ function SpecSheetCard({slug, className, t}: {slug: string; className?: string; 
             <FileText aria-hidden="true" className="size-6 text-brand" />
             <h3 className="mt-4 text-lg font-bold">{t.title}</h3>
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{t.body}</p>
-            <QuoteButton product={slug} className={cn(inkButton, 'mt-5 w-full whitespace-normal text-center')}>
+            <QuoteButton product={slug} intent="quote" className={cn(inkButton, 'mt-5 w-full whitespace-normal text-center')}>
                 <FileText aria-hidden="true" />
                 {t.cta}
             </QuoteButton>

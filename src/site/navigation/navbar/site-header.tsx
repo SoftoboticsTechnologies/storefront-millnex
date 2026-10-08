@@ -3,11 +3,12 @@
 import {useEffect, useRef, useState} from 'react';
 import Image from 'next/image';
 import {usePathname} from 'next/navigation';
-import {ArrowRight, ChevronDown, Heart, LogIn, Menu, Package, Phone, Search, ShieldCheck, ShoppingCart, User, UserPlus} from 'lucide-react';
+import {ArrowRight, ArrowUpRight, ChevronDown, Heart, ImageOff, LogIn, Menu, Package, Phone, Search, ShieldCheck, ShoppingCart, User, UserPlus} from 'lucide-react';
 import {Sheet, SheetClose, SheetContent, SheetTitle, SheetTrigger} from '@/components/ui/sheet';
 import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from '@/components/ui/accordion';
 import {cn} from '@/lib/utils';
 import {Link} from '@/platform/i18n/navigation';
+import {FOCUS_COLLECTION_SLUGS} from '@/config/catalog-focus';
 import {useAuth} from '@/features/authentication/auth-context';
 import {CartDrawer} from '@/features/cart/cart-drawer';
 import {useWishlist} from '@/features/products/wishlist';
@@ -20,6 +21,14 @@ export interface SiteNavItem {
     label: string;
     /** Locale-less path (the i18n Link adds the locale), e.g. "/shop". */
     href: string;
+    /** Hover dropdown links (desktop) / accordion (mobile menu), e.g. the Atta Chakki models. */
+    children?: SiteNavChild[];
+}
+
+export interface SiteNavChild {
+    label: string;
+    href: string;
+    imageUrl: string | null;
 }
 
 export interface MegaMenuProduct {
@@ -86,8 +95,10 @@ function routeSegment(pathname: string): string {
 function activeKeyFor(segment: string): string | null {
     if (segment === '') return 'home';
     const first = segment.split('/')[0];
-    if (['shop', 'search', 'product', 'compare'].includes(first)) return 'shop';
-    if (first === 'collection') return 'categories';
+    // The focus collection page is "Atta Chakki"; every other collection (grinders,
+    // cutters…) belongs to "Shop" ("categories" while the mega menu was shown).
+    if (first === 'collection' && FOCUS_COLLECTION_SLUGS.includes(segment.split('/')[1] ?? '')) return 'attaChakki';
+    if (['shop', 'search', 'product', 'compare', 'collection'].includes(first)) return 'shop';
     return ['about', 'manufacturing', 'faq', 'contact'].includes(first) ? first : null;
 }
 
@@ -219,6 +230,13 @@ export function SiteHeader({items, mega, logo, phone, labels}: SiteHeaderProps) 
                                         </li>
                                     );
                                 }
+                                if (item.children && item.children.length > 0) {
+                                    return (
+                                        <li key={item.key} onMouseEnter={scheduleCloseMega}>
+                                            <NavDropdown item={item} active={active} viewAll={labels.megaViewCategory} linkClassName={navLink(active)} underlineClassName={underline(active)} />
+                                        </li>
+                                    );
+                                }
                                 return (
                                     <li key={item.key} onMouseEnter={scheduleCloseMega}>
                                         <Link href={item.href} aria-current={active ? 'page' : undefined} className={navLink(active)}>
@@ -319,6 +337,38 @@ export function SiteHeader({items, mega, logo, phone, labels}: SiteHeaderProps) 
                                                     </AccordionItem>
                                                 </Accordion>
                                             </li>
+                                        ) : item.children && item.children.length > 0 ? (
+                                            <li key={item.key}>
+                                                <Accordion>
+                                                    <AccordionItem value={item.key} className="border-0">
+                                                        <AccordionTrigger className={cn('min-h-12 items-center py-0 text-base font-bold hover:no-underline', item.key === activeKey && 'text-brand')}>{item.label}</AccordionTrigger>
+                                                        <AccordionContent className="pb-3">
+                                                            <ul className="space-y-0.5">
+                                                                {item.children.map((child) => (
+                                                                    <li key={child.href}>
+                                                                        <SheetClose
+                                                                            nativeButton={false}
+                                                                            render={<Link href={child.href} className="flex min-h-10 items-center gap-3 rounded-lg px-1 text-sm font-medium text-foreground/80 hover:text-foreground" />}
+                                                                        >
+                                                                            <NavChildThumb imageUrl={child.imageUrl} className="size-9" />
+                                                                            <span className="truncate">{child.label}</span>
+                                                                        </SheetClose>
+                                                                    </li>
+                                                                ))}
+                                                                <li>
+                                                                    <SheetClose
+                                                                        nativeButton={false}
+                                                                        render={<Link href={item.href} className="mt-1 flex min-h-10 items-center gap-1.5 px-1 text-sm font-semibold text-brand" />}
+                                                                    >
+                                                                        {labels.megaViewCategory}
+                                                                        <ArrowRight aria-hidden="true" className="size-3.5" />
+                                                                    </SheetClose>
+                                                                </li>
+                                                            </ul>
+                                                        </AccordionContent>
+                                                    </AccordionItem>
+                                                </Accordion>
+                                            </li>
                                         ) : (
                                             <li key={item.key}>
                                                 <SheetClose
@@ -392,5 +442,60 @@ export function SiteHeader({items, mega, logo, phone, labels}: SiteHeaderProps) 
 
             <SearchOverlay open={searchOpen} onOpenChange={setSearchOpen} categories={mega.categories} />
         </header>
+    );
+}
+
+function NavChildThumb({imageUrl, className}: {imageUrl: string | null; className?: string}) {
+    return (
+        <span className={cn('relative shrink-0 overflow-hidden rounded-md border border-border bg-stage', className)}>
+            {imageUrl ? (
+                <Image src={`${imageUrl}?preset=thumb`} alt="" fill sizes="48px" className="object-contain mix-blend-multiply" />
+            ) : (
+                <ImageOff aria-hidden="true" className="absolute inset-0 m-auto size-4 text-muted-foreground" />
+            )}
+        </span>
+    );
+}
+
+/**
+ * Desktop nav item with a hover/focus dropdown (e.g. "Atta Chakki" → its
+ * models). The label still links to the item's page; the panel opens on
+ * hover or keyboard focus (CSS only) and lists name + photo — no stock
+ * state, at client request.
+ */
+function NavDropdown({item, active, viewAll, linkClassName, underlineClassName}: {
+    item: SiteNavItem;
+    active: boolean;
+    viewAll: string;
+    linkClassName: string;
+    underlineClassName: string;
+}) {
+    return (
+        <div className="group/dd relative">
+            <Link href={item.href} aria-current={active ? 'page' : undefined} aria-haspopup="true" className={linkClassName}>
+                {item.label}
+                <ChevronDown aria-hidden="true" className="size-3.5 opacity-70 transition-transform duration-200 group-hover/dd:rotate-180 group-focus-within/dd:rotate-180" />
+                <span aria-hidden="true" className={underlineClassName} />
+            </Link>
+            <div className="invisible absolute left-0 top-full z-50 -translate-y-1 pt-1 opacity-0 transition-[opacity,transform,visibility] duration-200 ease-out group-hover/dd:visible group-hover/dd:translate-y-0 group-hover/dd:opacity-100 group-focus-within/dd:visible group-focus-within/dd:translate-y-0 group-focus-within/dd:opacity-100">
+                <div className="w-80 rounded-xl border border-border bg-background p-2 shadow-[0_24px_48px_-24px_rgb(10_15_25/0.45)]">
+                    <ul className="max-h-[min(70vh,32rem)] overflow-y-auto">
+                        {(item.children ?? []).map((child) => (
+                            <li key={child.href}>
+                                <Link href={child.href} className="group/item flex items-center gap-3 rounded-lg px-2 py-1.5 transition-colors outline-none hover:bg-muted focus-visible:bg-muted">
+                                    <NavChildThumb imageUrl={child.imageUrl} className="size-11" />
+                                    <span className="min-w-0 flex-1 text-sm font-semibold leading-snug group-hover/item:text-brand">{child.label}</span>
+                                    <ArrowUpRight aria-hidden="true" className="size-4 shrink-0 text-steel opacity-0 transition-opacity group-hover/item:opacity-100" />
+                                </Link>
+                            </li>
+                        ))}
+                    </ul>
+                    <Link href={item.href} className="mt-1 flex items-center gap-1.5 border-t border-border px-2 pb-1 pt-2.5 text-sm font-semibold text-brand outline-none hover:underline focus-visible:underline">
+                        {viewAll}
+                        <ArrowRight aria-hidden="true" className="size-3.5" />
+                    </Link>
+                </div>
+            </div>
+        </div>
     );
 }

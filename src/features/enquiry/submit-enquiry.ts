@@ -5,6 +5,8 @@ export interface EnquiryPayload {
     phone: string;
     email?: string;
     company?: string;
+    /** Visit address (home demo bookings). */
+    address?: string;
     /** Human-readable business type label (quote requests). */
     businessType?: string;
     /** Human-readable product name (not the slug). */

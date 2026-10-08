@@ -1,6 +1,7 @@
 import {query} from '@/platform/vendure/api';
 import {ResultOf} from '@/platform/vendure/graphql';
 import {GetTopCollectionsQuery} from './graphql';
+import {hasCatalogFocus, isFocusCollection} from '@/config/catalog-focus';
 
 // Page size used while enumerating the full catalog at build time.
 const COLLECTION_PAGE_SIZE = 100;
@@ -66,12 +67,20 @@ const MAX_CATEGORY_PRODUCT_IMAGES = 4;
  * another collection. GetTopCollectionsQuery returns the whole collection
  * tree flattened (root children *and* their children), so this derives the
  * roots from the data instead of assuming a root collection id.
+ *
+ * Only the catalog focus categories are returned while a focus is set
+ * (config/catalog-focus.ts): every other collection stays in Vendure and its
+ * page is still prerendered (getTopCollections), but isn't offered to
+ * visitors in navigation, tabs, footer, compare or the homepage. If none of
+ * the focus slugs exist in the store, every category is returned. Pass
+ * `{all: true}` for every category regardless of the focus (`/shop`).
  */
-export async function getShopCategories(locale: string): Promise<ShopCategory[]> {
+export async function getShopCategories(locale: string, {all = false}: {all?: boolean} = {}): Promise<ShopCategory[]> {
     const collections = await getTopCollections(locale);
     const childIds = new Set(collections.flatMap((collection) => collection.children?.map((child) => child.id) ?? []));
-    return collections
-        .filter((collection) => !childIds.has(collection.id))
+    const roots = collections.filter((collection) => !childIds.has(collection.id));
+    const focused = roots.filter((collection) => isFocusCollection(collection.slug));
+    return (!all && hasCatalogFocus() && focused.length > 0 ? focused : roots)
         .map(({productVariants, ...collection}) => {
             const productImages: ShopCategory['productImages'] = [];
             const seen = new Set<string>();

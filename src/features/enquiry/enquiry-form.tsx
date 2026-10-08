@@ -26,7 +26,7 @@ export interface EnquiryProductOption {
 
 const PHONE_PATTERN = /^\+?[\d\s()-]{10,20}$/;
 
-function createEnquirySchema(t: ReturnType<typeof useTranslations<'Enquiry'>>) {
+function createEnquirySchema(t: ReturnType<typeof useTranslations<'Enquiry'>>, requireAddress: boolean) {
     return z.object({
         name: z.string().trim().min(2, t('validation.name')),
         phone: z
@@ -39,6 +39,10 @@ function createEnquirySchema(t: ReturnType<typeof useTranslations<'Enquiry'>>) {
             }, t('validation.phone')),
         email: z.union([z.literal(''), z.email(t('validation.email'))]),
         company: z.string().trim().max(120),
+        // Required for a home demo booking — the team visits this address.
+        address: requireAddress
+            ? z.string().trim().min(10, t('validation.address')).max(500, t('validation.addressTooLong'))
+            : z.string().trim().max(500, t('validation.addressTooLong')),
         businessType: z.string(),
         product: z.string(),
         quantity: z.string().trim().max(200),
@@ -73,6 +77,8 @@ interface EnquiryFormProps {
     defaultMessage?: string;
     /** Overrides the submit button label. */
     submitLabel?: string;
+    /** `demo`: a free home demo booking (submit label, subject and hand-off intro say so). */
+    intent?: 'quote' | 'demo';
 }
 
 /**
@@ -82,25 +88,27 @@ interface EnquiryFormProps {
  * read from window.location after mount — never via useSearchParams, which
  * would de-opt the whole static page to client rendering (docs/decisions.md).
  */
-export function EnquiryForm({products, className, variant = 'contact', defaultProduct, defaultMessage, submitLabel}: EnquiryFormProps) {
+export function EnquiryForm({products, className, variant = 'contact', defaultProduct, defaultMessage, submitLabel, intent = 'quote'}: EnquiryFormProps) {
     const t = useTranslations('Enquiry');
     const [status, setStatus] = useState<Status>({state: 'idle'});
+    const isDemo = intent === 'demo';
+    // A home demo booking needs no business type or quantity (2026-10-08).
+    const isQuote = variant === 'quote' && !isDemo;
 
     const form = useForm<EnquiryFormData>({
-        resolver: zodResolver(createEnquirySchema(t)),
+        resolver: zodResolver(createEnquirySchema(t, isDemo)),
         defaultValues: {
             name: '',
             phone: '',
             email: '',
             company: '',
+            address: '',
             businessType: '',
             product: defaultProduct && products.some((product) => product.value === defaultProduct) ? defaultProduct : '',
             quantity: '',
             message: defaultMessage ?? '',
         },
     });
-    const isQuote = variant === 'quote';
-
     useEffect(() => {
         if (defaultProduct) return;
         // `?product=<slug>` (from a product page); `?machine=` kept for old links.
@@ -119,6 +127,7 @@ export function EnquiryForm({products, className, variant = 'contact', defaultPr
             phone: data.phone,
             email: data.email || undefined,
             company: data.company || undefined,
+            address: data.address || undefined,
             businessType: data.businessType ? t(`businessTypes.${data.businessType as (typeof BUSINESS_TYPES)[number]}`) : undefined,
             product: productLabel ?? (data.product ? data.product : undefined),
             quantity: data.quantity || undefined,
@@ -131,16 +140,17 @@ export function EnquiryForm({products, className, variant = 'contact', defaultPr
                 phone: t('fields.phone'),
                 email: t('fields.email'),
                 company: t('fields.company'),
+                address: t('fields.address'),
                 businessType: t('fields.businessType'),
                 product: t('fields.product'),
                 quantity: t('fields.quantity'),
                 message: t('fields.message'),
             },
-            t('handoffIntro', {company: CONTACT_CONFIG.companyName}),
+            t(isDemo ? 'demoHandoffIntro' : 'handoffIntro', {company: CONTACT_CONFIG.companyName}),
         );
 
         try {
-            const result = await submitEnquiry(payload, text, t('subject', {product: productLabel ?? t('generalEnquiry')}));
+            const result = await submitEnquiry(payload, text, t(isDemo ? 'demoSubject' : 'subject', {product: productLabel ?? t('generalEnquiry')}));
             // Still inside the submit gesture's activation window; the success
             // state also offers a link in case a popup blocker wins.
             if (result.kind === 'whatsapp') {
@@ -251,6 +261,19 @@ export function EnquiryForm({products, className, variant = 'contact', defaultPr
                         </FormItem>
                     )}
                 />
+                {isDemo && <FormField
+                    control={form.control}
+                    name="address"
+                    render={({field}) => (
+                        <FormItem className="sm:col-span-2">
+                            <FormLabel>{t('fields.address')} <span className="text-brand">*</span></FormLabel>
+                            <FormControl>
+                                <Textarea rows={2} autoComplete="street-address" placeholder={t('placeholders.address')} className={cn(inputClass, 'h-auto min-h-20 py-3')} {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />}
                 {isQuote && <FormField
                     control={form.control}
                     name="businessType"
@@ -355,7 +378,7 @@ export function EnquiryForm({products, className, variant = 'contact', defaultPr
                             </>
                         ) : (
                             <>
-                                {submitLabel ?? (isQuote ? t('submitQuote') : t('submit'))}
+                                {submitLabel ?? (isDemo ? t('submitDemo') : isQuote ? t('submitQuote') : t('submit'))}
                                 <ArrowRight aria-hidden="true" className="size-[18px] transition-transform group-hover/btn:translate-x-0.5" />
                             </>
                         )}

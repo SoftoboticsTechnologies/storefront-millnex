@@ -2,7 +2,7 @@
 
 import {useCallback, useEffect, useRef, useState} from 'react';
 import {useTranslations} from 'next-intl';
-import {ArrowRight, ChevronLeft, ChevronRight, FileText} from 'lucide-react';
+import {ArrowRight, CalendarCheck, ChevronLeft, ChevronRight} from 'lucide-react';
 import {cn} from '@/lib/utils';
 import {Link} from '@/platform/i18n/navigation';
 import {QuoteButton} from '@/features/enquiry/quote-dialog';
@@ -14,7 +14,7 @@ export interface HeroCaption {
     title: string;
     body: string;
     actions: Array<{label: string; href: string}>;
-    /** Adds a "Request a Quote" button that opens the site-wide quote modal. */
+    /** Adds the primary "Book a Free Demo" button (site-wide demo modal) before the actions. */
     quote: boolean;
 }
 
@@ -191,18 +191,20 @@ export function HeroCarousel({slides, captions = []}: {slides: HeroSlide[]; capt
                                         <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground sm:text-base">{caption.body}</p>
                                     </div>
                                     <div className="flex shrink-0 flex-col gap-3 sm:flex-row">
+                                        {/* 2026-10-08: "Book a Free Demo" is the primary CTA; catalog actions are secondary.
+                                            Previously the actions were primary (brand) and "Request a Quote" secondary. */}
+                                        {caption.quote && (
+                                            <QuoteButton className={siteButton({variant: 'brand', size: 'lg'})}>
+                                                <CalendarCheck aria-hidden="true" />
+                                                {tEnquiry('bookDemo')}
+                                            </QuoteButton>
+                                        )}
                                         {caption.actions.map((action) => (
-                                            <Link key={action.label} href={action.href} className={siteButton({variant: 'brand', size: 'lg'})}>
+                                            <Link key={action.label} href={action.href} className={siteButton({variant: caption.quote ? 'secondary' : 'brand', size: 'lg'})}>
                                                 {action.label}
                                                 <ArrowRight aria-hidden="true" className={arrowNudge} />
                                             </Link>
                                         ))}
-                                        {caption.quote && (
-                                            <QuoteButton className={siteButton({variant: 'secondary', size: 'lg'})}>
-                                                <FileText aria-hidden="true" />
-                                                {tEnquiry('requestQuoteButton')}
-                                            </QuoteButton>
-                                        )}
                                     </div>
                                 </div>
                             );

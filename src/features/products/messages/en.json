@@ -98,7 +98,15 @@
     "readFaq": "Read the FAQ",
     "youMayAlsoLike": "You May Also Like",
     "previousSlide": "Previous products",
-    "nextSlide": "Next products"
+    "nextSlide": "Next products",
+    "offerDemoTitle": "Free Home Demo",
+    "offerDemoBody": "See it before you buy — we come to your home, demonstrate the Atta Chakki and answer all your questions. You decide only after you're satisfied.",
+    "offerShippingTitle": "Free Shipping up to {km} KM",
+    "offerShippingBody": "Enjoy free shipping for orders within {km} KM.",
+    "trustFreeShipping": "Free shipping up to {km} km",
+    "shippingFreeBody": "Shipping is free for orders within {km} km. Delivery options for your address are shown at checkout before you pay.",
+    "whatsappUs": "WhatsApp Us",
+    "whatsappProductGreeting": "Hello Millnex, I'm interested in the {product}."
   },
   "Wishlist": {
     "title": "Wishlist",

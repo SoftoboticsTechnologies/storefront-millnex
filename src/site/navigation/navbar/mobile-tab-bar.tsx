@@ -48,6 +48,7 @@ export function MobileTabBar() {
                     </Link>
                     <Link href="/shop" className={itemClass(['shop', 'collection', 'product'].includes(first))}>
                         <LayoutGrid className="size-5" />
+                        {/* 2026-10-08: "Shop" opens all listed products (briefly labelled t('attaChakki')). */}
                         {t('shop')}
                     </Link>
                     <button type="button" onClick={() => setSearchOpen(true)} className={itemClass(first === 'search')}>

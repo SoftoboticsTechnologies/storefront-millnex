@@ -20,11 +20,12 @@
     "insights": "जानकारी",
     "contact": "संपर्क",
     "primaryNavigation": "मुख्य नेविगेशन",
-    "whatsappGreeting": "नमस्ते Millnex, मैं आपकी मशीनों के बारे में और जानना चाहता/चाहती हूँ।",
+    "whatsappGreeting": "नमस्ते Millnex, मैं Millnex आटा चक्की के बारे में और जानना चाहता/चाहती हूँ।",
     "logoAlt": "Millnex आटा चक्की लोगो",
     "chatWithUs": "हमसे चैट करें",
     "skipToContent": "सामग्री पर जाएँ",
     "shop": "शॉप",
+    "shopAll": "सभी उत्पाद",
     "categories": "श्रेणियाँ",
     "allProducts": "सभी उत्पाद",
     "myAccount": "मेरा खाता",
@@ -63,6 +64,11 @@
     "closeSearch": "खोज बंद करें",
     "chatWithMillnex": "Millnex से चैट करें",
     "company": "कंपनी",
-    "callUs": "कॉल करें {phone}"
+    "callUs": "कॉल करें {phone}",
+    "attaChakki": "आटा चक्की",
+    "whyMillnex": "Millnex क्यों",
+    "utilityDemo": "मुफ़्त होम डेमो",
+    "utilityShipping": "{km} किमी तक मुफ़्त शिपिंग",
+    "compareModels": "मॉडलों की तुलना करें"
   }
 }

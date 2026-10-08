@@ -5,6 +5,7 @@ import {getRouteLocale} from '@/platform/i18n/server';
 import {routing} from '@/platform/i18n/routing';
 import {toOgLocale} from '@/platform/i18n/locale-utils';
 import {buildCanonicalUrl, SITE_NAME} from '@/config/metadata';
+import {CUSTOMER_OFFERS} from '@/config/catalog-focus';
 import {getActiveCurrencyCode} from '@/features/currency/currency-server';
 import {getCollectionNames, getShopCategories} from '@/features/collections/data';
 import {SearchProductsQuery} from '@/features/search/graphql';
@@ -21,14 +22,14 @@ export async function generateMetadata(): Promise<Metadata> {
 
     return {
         title: t('title'),
-        description: t('metaDescription', {siteName: SITE_NAME}),
+        description: t('metaDescription', {siteName: SITE_NAME, km: CUSTOMER_OFFERS.freeShippingKm}),
         alternates: {
             canonical: url,
             languages: Object.fromEntries(routing.locales.map((l) => [l, buildCanonicalUrl(`/${l}/shop/`)])),
         },
         openGraph: {
             title: t('title'),
-            description: t('metaDescription', {siteName: SITE_NAME}),
+            description: t('metaDescription', {siteName: SITE_NAME, km: CUSTOMER_OFFERS.freeShippingKm}),
             type: 'website',
             locale: toOgLocale(locale),
             url,
@@ -37,7 +38,9 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 /**
- * Shop all products ("Explore Millnex Machines"). Unlike `/search`
+ * Shop all products ("Explore Millnex Machines"). Lists every Vendure
+ * product and category — the one listing that ignores the Atta Chakki
+ * catalog focus (client direction 2026-10-08, config/catalog-focus.ts). Unlike `/search`
  * (query-string driven, noindex), the default listing here is fetched from
  * Vendure at build time so the exported HTML carries real, crawlable product
  * cards; filters/sort/pagination then run live client-side (see
@@ -50,8 +53,8 @@ export default async function ShopPage() {
     const currencyCode = await getActiveCurrencyCode();
 
     const [initialProducts, categories, collectionNames] = await Promise.all([
-        query(SearchProductsQuery, {input: buildSearchInput({searchParams: {}})}, {languageCode: locale, currencyCode}),
-        getShopCategories(locale),
+        query(SearchProductsQuery, {input: buildSearchInput({searchParams: {}, allProducts: true})}, {languageCode: locale, currencyCode}),
+        getShopCategories(locale, {all: true}),
         getCollectionNames(locale),
     ]);
 
@@ -76,7 +79,9 @@ export default async function ShopPage() {
                 <SearchResults
                     initialProducts={initialProducts.data}
                     collectionNames={collectionNames}
-                    categories={tabCategories}
+                    allProducts
+                    // A single category is no filter.
+                    categories={tabCategories.length > 1 ? tabCategories : undefined}
                 />
             </div>
         </div>

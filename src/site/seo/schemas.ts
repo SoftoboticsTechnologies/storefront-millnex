@@ -15,7 +15,8 @@ export function organizationSchema(locale: string) {
         name: SITE_NAME,
         url: buildCanonicalUrl(`/${locale}/`),
         logo: buildCanonicalUrl(BRAND_LOGO.src),
-        description: 'Manufacturer of domestic flour mills, pulverizers, masala machinery and food-processing machines.',
+        // Hidden 2026-10-08: 'Manufacturer of domestic flour mills, pulverizers, masala machinery and food-processing machines.'
+        description: 'Manufacturer of the Millnex Atta Chakki — fully automatic domestic flour mills for fresh, hygienic atta at home.',
     };
 
     if (!isPlaceholder(CONTACT_CONFIG.email)) schema.email = CONTACT_CONFIG.email;

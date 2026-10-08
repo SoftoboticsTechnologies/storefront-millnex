@@ -1,7 +1,7 @@
 {
   "Home": {
-    "metaTitle": "Millnex | పిండి మిల్లులు, పల్వరైజర్లు & ఆహార ప్రాసెసింగ్ యంత్రాలు",
-    "metaDescription": "Millnex రాజ్‌కోట్, గుజరాత్‌లో గృహ పిండి మిల్లులు, పల్వరైజర్లు మరియు ఆహార ప్రాసెసింగ్ యంత్రాలను తయారు చేస్తుంది. శ్రేణిని చూడండి, యంత్రాలను పోల్చండి, కొటేషన్ కోరండి.",
+    "metaTitle": "Millnex ఆటా చక్కీ | ఇంట్లోనే తాజా ఆటా కోసం గృహ పిండి మిల్లు",
+    "metaDescription": "ఇంట్లోనే తాజా, శుభ్రమైన, సౌకర్యవంతమైన పిండి కోసం Millnex ఆటా చక్కీని కొనండి. ఉచిత హోమ్ డెమో బుక్ చేసుకోండి, {km} కి.మీ. వరకు ఉచిత షిప్పింగ్ పొందండి.",
     "heroTitle": "మా ఉత్పత్తులను చూడండి",
     "shopNow": "ఇప్పుడే కొనండి",
     "browseCategories": "వర్గాలను చూడండి",
@@ -31,7 +31,7 @@
     "liveCatalogue": "ప్రస్తుతం కేటలాగ్‌లో",
     "machineCount": "{count} యంత్రాలు",
     "categoryCount": "{count} వర్గాలు",
-    "viewAllMachines": "అన్ని యంత్రాలు చూడండి",
+    "viewAllMachines": "అన్ని ఆటా చక్కీ మోడళ్లు చూడండి",
     "exploreCategory": "వర్గాన్ని చూడండి",
     "finderStep": "దశ {current} / {total}",
     "finderBack": "వెనుకకు",
@@ -51,15 +51,19 @@
     "compareAvailability": "లభ్యత",
     "compareVariants": "వేరియంట్లు",
     "compareNote": "మా కేటలాగ్‌లో ఉన్న వివరాలు మాత్రమే చూపబడ్డాయి. మోటార్ శక్తి, సామర్థ్యం మరియు కొలతల కోసం కొటేషన్ కోరండి లేదా మా బృందాన్ని సంప్రదించండి.",
-    "compareMachines": "యంత్రాలను పోల్చండి",
-    "compareMetaTitle": "యంత్రాలను పోల్చండి",
-    "compareMetaDescription": "Millnex పిండి మిల్లులు, పల్వరైజర్లు మరియు ఆహార ప్రాసెసింగ్ యంత్రాలను పక్కపక్కనే పోల్చండి — ధర, లభ్యత, కేటలాగ్ వివరాలు.",
+    "compareMachines": "మోడళ్లను పోల్చండి",
+    "compareMetaTitle": "ఆటా చక్కీ మోడళ్ల పోలిక",
+    "compareMetaDescription": "Millnex ఆటా చక్కీ మోడళ్లను పక్కపక్కనే పోల్చండి — ధర, లభ్యత, క్యాటలాగ్ వివరాలు.",
     "compareEmpty": "ఒక వర్గంలో కనీసం రెండు యంత్రాలు ఉన్నప్పుడు పోలికలు ఇక్కడ కనిపిస్తాయి.",
     "inThisRange": "ఈ శ్రేణిలో",
     "heroCarousel": "Millnex ముఖ్యాంశాలు",
     "heroPrevious": "మునుపటి స్లయిడ్",
     "heroNext": "తదుపరి స్లయిడ్",
     "heroGoTo": "స్లయిడ్ {index}కి వెళ్ళండి",
-    "heroSlideOf": "స్లయిడ్ {index} / {total}"
+    "heroSlideOf": "స్లయిడ్ {index} / {total}",
+    "viewAttaChakki": "ఆటా చక్కీ చూడండి",
+    "bookFreeHomeDemo": "ఉచిత హోమ్ డెమో బుక్ చేయండి",
+    "whatsappUs": "WhatsApp చేయండి",
+    "compareShared": "ప్రతి మోడల్‌లో:"
   }
 }

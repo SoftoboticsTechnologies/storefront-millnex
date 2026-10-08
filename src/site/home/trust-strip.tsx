@@ -1,15 +1,16 @@
 import type {CSSProperties} from 'react';
 import Image from 'next/image';
-import {Building2, Cog, Headset, Wrench, Zap, type LucideIcon} from 'lucide-react';
+import {CalendarCheck, Headset, ShieldCheck, Truck, Zap, type LucideIcon} from 'lucide-react';
 import {cn} from '@/lib/utils';
 import {CERTIFICATION, TRUST_STRIP, WHY_SECTION} from '@/site/content/home';
 import {ISO_MARK} from '@/site/content/media';
 
+// Hidden 2026-10-08 (previous items): ruler: Cog, wrench: Wrench, scale: Building2.
 const ICONS: Record<(typeof TRUST_STRIP)[number]['icon'], LucideIcon> = {
-    ruler: Cog,
+    demo: CalendarCheck,
+    truck: Truck,
     zap: Zap,
-    wrench: Wrench,
-    scale: Building2,
+    shield: ShieldCheck,
     headset: Headset,
 };
 
@@ -18,14 +19,14 @@ const ORANGE = {ring: 'ring-logo-orange/30', fill: 'from-white to-tint-orange', 
 const GREEN = {ring: 'ring-logo-green/30', fill: 'from-white to-tint-green', icon: 'text-logo-green-deep'};
 const ISO_TONE = {ring: 'ring-logo-blue/30', fill: 'from-white to-tint-blue', icon: ''};
 const TONES: Record<(typeof TRUST_STRIP)[number]['icon'], typeof ORANGE> = {
-    ruler: ORANGE,
+    demo: ORANGE,
+    truck: ORANGE,
     zap: GREEN,
-    wrench: ORANGE,
-    scale: ORANGE,
+    shield: ORANGE,
     headset: GREEN,
 };
 
-/** "Domestic & Commercial" → ["Domestic &", "Commercial"]: first part in brand orange, last word dark. */
+/** "Free Home Demo" → ["Free Home", "Demo"]: first part in brand orange, last word dark. */
 function splitTitle(title: string): [string, string] {
     const cut = title.lastIndexOf(' ');
     return cut > 0 ? [title.slice(0, cut), title.slice(cut + 1)] : [title, ''];
@@ -33,8 +34,9 @@ function splitTitle(title: string): [string, string] {
 
 /**
  * Trust strip directly under the hero: the ISO 9001:2015 certification first
- * (home.ts#CERTIFICATION), then qualities restated from millnex.in —
- * deliberately no numeric statistics (none are published). Centered items:
+ * (home.ts#CERTIFICATION), then the customer offers (free home demo, free
+ * shipping radius) and Atta Chakki qualities — deliberately no numeric
+ * statistics (none are published). Centered items:
  * logo-tinted icon circle, two-tone title, short brand rule, description;
  * full-width warm gradient band, hairline dividers between items, wheat
  * art at the screen edges from 2xl.

@@ -5,9 +5,11 @@ import {useRouter} from '@/platform/i18n/navigation';
 import {Button} from '@/components/ui/button';
 import {Label} from '@/components/ui/label';
 import {RadioGroup, RadioGroupItem} from '@/components/ui/radio-group';
-import {ShoppingCart, CheckCircle2, Minus, Plus, Zap, Lock, MessageSquareText, Check, PackageX} from 'lucide-react';
+import {ShoppingCart, CheckCircle2, Minus, Plus, Zap, Lock, MessageSquareText, Check, PackageX, CalendarCheck, Truck, MessageCircle} from 'lucide-react';
 import {cn} from '@/lib/utils';
 import {QuoteButton} from '@/features/enquiry/quote-dialog';
+import {CUSTOMER_OFFERS, isFocusCollection} from '@/config/catalog-focus';
+import {getWhatsAppUrl} from '@/config/contact';
 import {WishlistButton} from './wishlist-button';
 import {StockBadge} from './stock-badge';
 import {Link} from '@/platform/i18n/navigation';
@@ -73,6 +75,11 @@ const MAX_QUANTITY = 99;
 
 export function ProductInfo({product, buildCurrencyCode, initialVariantId, category}: ProductInfoProps) {
     const t = useTranslations('Product');
+    // Atta Chakki products carry the free home demo + free shipping offer
+    // (config/catalog-focus.ts); unlisted products keep the plain quote flow.
+    const showOffers = !!category && isFocusCollection(category.slug);
+    const km = CUSTOMER_OFFERS.freeShippingKm;
+    const whatsappUrl = showOffers ? getWhatsAppUrl(t('whatsappProductGreeting', {product: product.name.trim()})) : null;
     // Build-time price/stock for every variant, in the channel default
     // currency — the first paint and static HTML. `refreshStock` always
     // re-fetches live from Vendure on mount, so stock added in admin after
@@ -311,7 +318,7 @@ export function ProductInfo({product, buildCurrencyCode, initialVariantId, categ
                             {t('outOfStockNotice')}
                         </p>
                         <div className="grid gap-3 sm:grid-cols-2">
-                            <QuoteButton product={product.slug} className={cn(primaryAction, 'sm:col-span-1')}>
+                            <QuoteButton product={product.slug} intent="quote" className={cn(primaryAction, 'sm:col-span-1')}>
                                 <MessageSquareText aria-hidden="true" className="size-5" />
                                 {t('askAvailability')}
                             </QuoteButton>
@@ -401,16 +408,45 @@ export function ProductInfo({product, buildCurrencyCode, initialVariantId, categ
                         <MessageSquareText aria-hidden="true" className="size-[18px]" />
                         {t('productEnquiry')}
                     </Link>
-                    <QuoteButton product={product.slug} className={cn(secondaryAction, '[&_svg]:size-[18px] min-[420px]:col-span-2 xl:col-span-1')} />
+                    <QuoteButton product={product.slug} intent={showOffers ? 'demo' : 'quote'} className={cn(secondaryAction, '[&_svg]:size-[18px] min-[420px]:col-span-2 xl:col-span-1')} />
                 </div>
             </div>
+
+            {/* Free home demo + free shipping (client offer, 2026-10-08) — Atta Chakki products only. */}
+            {showOffers && (
+                <div className="overflow-hidden rounded-xl border border-logo-green/30 bg-tint-green">
+                    <div className="flex gap-3.5 p-4 sm:p-5">
+                        <CalendarCheck aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-logo-green-deep" />
+                        <div className="min-w-0">
+                            <p className="font-bold text-foreground">{t('offerDemoTitle')}</p>
+                            <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{t('offerDemoBody')}</p>
+                            <div className="mt-3.5 flex flex-wrap gap-2.5">
+                                <QuoteButton product={product.slug} className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-brand px-4 text-sm font-semibold text-brand-foreground transition-colors hover:bg-[oklch(0.52_0.17_37)] [&_svg]:size-4" />
+                                {whatsappUrl && (
+                                    <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-[#1c9e52]/25 bg-[#effaf3] px-4 text-sm font-semibold text-[#0f6b37] transition-colors hover:bg-[#e2f6e9]">
+                                        <MessageCircle aria-hidden="true" className="size-4" />
+                                        {t('whatsappUs')}
+                                    </a>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                    <div className="flex gap-3.5 border-t border-logo-green/20 bg-card/70 p-4 sm:px-5">
+                        <Truck aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-brand" />
+                        <div className="min-w-0">
+                            <p className="font-bold text-foreground">{t('offerShippingTitle', {km})}</p>
+                            <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{t('offerShippingBody', {km})}</p>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Trust list — only what the store actually does (see the
                 Delivery & Support tab for the full statements). */}
             <ul className="grid gap-x-6 gap-y-3 border-t border-border pt-6 text-sm sm:grid-cols-2">
                 {[
                     {label: t('trustSecure')},
-                    {label: t('trustDelivery')},
+                    {label: showOffers ? t('trustFreeShipping', {km}) : t('trustDelivery')},
                     {label: t('trustSupport'), href: enquiryHref},
                     {label: t('trustAfterSales'), href: enquiryHref},
                 ].map(({label, href}) => (

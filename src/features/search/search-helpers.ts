@@ -1,3 +1,5 @@
+import { focusSearchScope } from '@/config/catalog-focus';
+
 export const DEFAULT_SORT = 'featured';
 
 export interface SearchInputParams {
@@ -17,9 +19,11 @@ export interface SearchInputParams {
 interface BuildSearchInputOptions {
     searchParams: { [key: string]: string | string[] | undefined };
     collectionSlug?: string;
+    /** List every product, ignoring the catalog focus (the `/shop` all-products page). */
+    allProducts?: boolean;
 }
 
-export function buildSearchInput({ searchParams, collectionSlug }: BuildSearchInputOptions): SearchInputParams {
+export function buildSearchInput({ searchParams, collectionSlug, allProducts }: BuildSearchInputOptions): SearchInputParams {
     const page = Number(searchParams.page) || 1;
     const take = 12;
     const skip = (page - 1) * take;
@@ -70,7 +74,10 @@ export function buildSearchInput({ searchParams, collectionSlug }: BuildSearchIn
         ...(sortMapping[sort] && { sort: sortMapping[sort] }),
         // A collection page is already scoped to one collection, so the
         // category filter only applies to unscoped listings (shop, search).
-        ...(!collectionSlug && categorySlugs.length > 0 && { collectionSlugs: categorySlugs }),
+        // Without a category filter those listings are scoped to the catalog
+        // focus (config/catalog-focus.ts — Atta Chakki only), if one is set,
+        // except the `/shop` all-products page.
+        ...(!collectionSlug && (categorySlugs.length > 0 ? { collectionSlugs: categorySlugs } : !allProducts && focusSearchScope())),
         ...(facetValueIdsByFacet.size > 0 && {
             facetValueFilters: Array.from(facetValueIdsByFacet.values()).map(ids => ({ or: ids }))
         }),

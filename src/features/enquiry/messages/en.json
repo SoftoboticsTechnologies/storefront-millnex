@@ -8,7 +8,8 @@
       "product": "Product interested in",
       "message": "Requirement / message",
       "businessType": "Business type",
-      "quantity": "Quantity / requirement"
+      "quantity": "Quantity / requirement",
+      "address": "Address"
     },
     "placeholders": {
       "name": "Your full name",
@@ -16,7 +17,8 @@
       "email": "you@business.com",
       "company": "Optional",
       "message": "What will you grind, roughly how much per day, and where should we deliver?",
-      "quantity": "e.g. 1 machine, ~20 kg per day"
+      "quantity": "e.g. 1 machine, ~20 kg per day",
+      "address": "House no., street, area, city, PIN code"
     },
     "productNotSure": "Not sure yet — help me choose",
     "validation": {
@@ -24,7 +26,9 @@
       "phone": "Please enter a valid phone number (10–15 digits).",
       "email": "Please enter a valid email address.",
       "message": "Please tell us a little about your requirement (at least 10 characters).",
-      "messageTooLong": "Please keep your message under 2000 characters."
+      "messageTooLong": "Please keep your message under 2000 characters.",
+      "address": "Please enter your full address (at least 10 characters).",
+      "addressTooLong": "Please keep the address under 500 characters."
     },
     "requiredNote": "* Required. We only use your details to respond to this enquiry.",
     "submit": "Send Enquiry",
@@ -65,6 +69,14 @@
     "quoteAssurance": "Our team replies with a recommendation and price. No obligation.",
     "preferWhatsApp": "Prefer WhatsApp?",
     "chatOnWhatsApp": "Chat on WhatsApp",
-    "requestQuoteButton": "Request a Quote"
+    "requestQuoteButton": "Request a Quote",
+    "bookDemo": "Book a Free Demo",
+    "demoTitle": "Book a free home demo",
+    "demoDescription": "We come to your home, demonstrate the Atta Chakki and answer all your questions. You decide only after you're satisfied.",
+    "demoAssurance": "The demo is free and there's no obligation to buy.",
+    "demoMessage": "I'd like a free home demo of the Millnex Atta Chakki.",
+    "demoHandoffIntro": "Hello {company}, I'd like to book a free home demo. My details:",
+    "demoSubject": "Free home demo request: {product}",
+    "submitDemo": "Book Free Demo"
   }
 }

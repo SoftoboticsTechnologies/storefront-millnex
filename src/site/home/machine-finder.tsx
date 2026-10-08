@@ -215,7 +215,7 @@ export function MachineFinder() {
                                 )}
                                 <button
                                     type="button"
-                                    onClick={() => openQuote({message: requirement})}
+                                    onClick={() => openQuote({message: requirement, intent: 'quote'})}
                                     className="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-brand px-5 text-sm font-semibold text-brand-foreground transition-colors hover:bg-[oklch(0.52_0.17_37)]"
                                 >
                                     {t('finderQuote')}
