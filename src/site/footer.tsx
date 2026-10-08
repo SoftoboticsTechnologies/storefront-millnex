@@ -129,7 +129,8 @@ function EmailRow({label, emails}: {label: string; emails: Array<{value: string;
  * Site footer (redesigned 2026-10-08): logo-colour stripe, a closing CTA card
  * (quote modal + WhatsApp), then brand column · Shop (Home, Atta Chakki,
  * compare) / Company / Customer link columns · contact card (CONTACT_CONFIG
- * rows + website QR), and the credit bar (copyright, ISO, marketing credit,
+ * rows + website QR) with the ISO line and marketing credit centred under it,
+ * and the credit bar (copyright,
  * DripFunnel). The "Website" row was removed at client request; the QR still
  * links to the site.
  */
@@ -217,7 +218,8 @@ export async function Footer() {
                     <span className="flex-1 bg-logo-orange" />
                 </div>
 
-                <div className="site-container py-12 lg:py-16">
+                {/* Bottom padding trimmed 2026-10-08 (was py-12 lg:py-16) so the credit bar sits right under the ISO line. */}
+                <div className="site-container pb-5 pt-12 lg:pt-16">
                     <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-12 lg:gap-10">
                         {/* Brand. */}
                         <div className="lg:col-span-5">
@@ -287,21 +289,36 @@ export async function Footer() {
                                     <QuoteButton className={cn(siteButton({variant: 'brand', size: 'md'}), 'flex-1 sm:flex-none')} />
                                 </div>
                             </div>
+
+                            {/* ISO + marketing credit, centred under the contact card (moved from the credit bar, client request 2026-10-08). */}
+                            <div className="mt-6 flex flex-col items-center justify-center gap-2 text-center text-[13px] text-muted-foreground sm:flex-row sm:gap-x-3.5">
+                                <p className="font-semibold text-foreground">{t('isoCompany')}</p>
+                                {!isPlaceholder(CONTACT_CONFIG.marketedBy) && (
+                                    <>
+                                        <span aria-hidden="true" className="hidden h-4 w-px bg-foreground/25 sm:block" />
+                                        <p>
+                                            {t('marketedBy')} <span className="font-semibold text-foreground">{CONTACT_CONFIG.marketedBy}</span>
+                                        </p>
+                                    </>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Credit bar: one line from xl (client request) — 12px text, tight gaps, and right padding that keeps it clear of the
-                    WhatsApp / back-to-top floats; below xl the lines stack, centred and narrow enough to stay clear of the floats. */}
+                {/* Credit bar (thin, client request 2026-10-08): copyright on the left, Powered By DripFunnel on the right, from sm.
+                    lg+ right padding keeps it clear of the WhatsApp / back-to-top floats; below lg the bottom padding clears the
+                    mobile tab bar. Phones stack both lines, centred. (Was centred, pt-6 / lg:pb-8, one line from xl.) */}
                 <div className="border-t border-border bg-card/70">
-                    <div className="site-container flex flex-col items-center gap-3 pb-24 pt-6 text-center text-[13px] text-muted-foreground lg:pb-8 xl:flex-row xl:justify-center xl:gap-x-3.5 xl:pr-20 xl:text-xs xl:whitespace-nowrap">
-                        <div className="flex flex-col items-center gap-1.5 sm:flex-row sm:flex-wrap sm:justify-center sm:gap-x-4 xl:flex-nowrap xl:gap-x-3.5">
+                    <div className="site-container flex flex-col items-center gap-2 pb-24 pt-3 text-center text-xs text-muted-foreground sm:flex-row sm:justify-between sm:text-left lg:py-2.5 lg:pr-20 lg:whitespace-nowrap">
+                        <div className="flex items-center">
                             <p>&copy; {COPYRIGHT_YEAR} {t('copyright')}</p>
+                            {/* Moved under the contact card 2026-10-08 (client request):
                             <span aria-hidden="true" className="hidden size-1 rounded-full bg-muted-foreground/40 sm:block" />
-                            <p className="font-semibold text-foreground">{t('isoCompany')}</p>
+                            <p className="font-semibold text-foreground">{t('isoCompany')}</p> */}
                         </div>
-                        <span aria-hidden="true" className="hidden h-5 w-px bg-foreground/25 xl:block" />
-                        <div className="flex flex-col items-center justify-center gap-2.5 xl:flex-row xl:gap-x-3.5">
+                        <div className="flex items-center">
+                            {/* Moved under the contact card 2026-10-08 (client request):
                             {!isPlaceholder(CONTACT_CONFIG.marketedBy) && (
                                 <>
                                     <p>
@@ -309,16 +326,16 @@ export async function Footer() {
                                     </p>
                                     <span aria-hidden="true" className="hidden h-5 w-px bg-foreground/25 xl:block" />
                                 </>
-                            )}
+                            )} */}
                             <a
                                 href="https://dripfunnel.com/"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 aria-label={t('poweredByDripFunnel')}
-                                className="flex items-center gap-2.5 font-semibold text-foreground transition-opacity hover:opacity-80"
+                                className="flex items-center gap-2 font-semibold text-foreground transition-opacity hover:opacity-80"
                             >
                                 <span aria-hidden="true">{t('poweredBy')}</span>
-                                <Image src="/logo/dripfunnel-logo.png" alt="" width={845} height={143} className="h-5 w-auto xl:h-[18px]" />
+                                <Image src="/logo/dripfunnel-logo.png" alt="" width={845} height={143} className="h-4 w-auto" />
                             </a>
                         </div>
                     </div>
